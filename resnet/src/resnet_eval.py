@@ -117,6 +117,7 @@ def eval_once(saver, summary_writer, summary_op, model, grads):
            model.labels])
 
         print("YO", time.time()-t_eval_start)
+        sys.stdout.flush()
 
         truth = np.argmax(truth, axis=1)
         predictions = np.argmax(predictions, axis=1)
@@ -135,6 +136,7 @@ def eval_once(saver, summary_writer, summary_op, model, grads):
       while step < num_iter and not coord.should_stop():
         gradients = sess.run(grads)
         print(len(gradients), gradients[0].shape, time.time()-r_R_start)
+        sys.stdout.flush()
         gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
         gradient *= FLAGS.batch_size
 
