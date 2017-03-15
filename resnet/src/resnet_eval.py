@@ -109,34 +109,23 @@ def eval_once(saver, summary_writer, summary_op, model, grads):
       computed_loss = 0
       step = 0
 
+      sum_of_norms, norm_of_sums = None, None
+
       # First pass - compute losses and training error
       t_eval_start = time.time()
       while step < num_iter and not coord.should_stop():
-        (summaries, loss, predictions, truth) = sess.run(
+        r = sess.run(
           [model.summaries, model.cost, model.predictions,
-           model.labels])
+           model.labels, grads])
 
-        print("YO", time.time()-t_eval_start)
-        sys.stdout.flush()
+        summaries, loss, predictions, truth, gradients = r[0], r[1], r[2], r[3], r[4:]
 
         truth = np.argmax(truth, axis=1)
         predictions = np.argmax(predictions, axis=1)
         correct_prediction += np.sum(truth == predictions)
         total_prediction += predictions.shape[0]
         computed_loss += loss
-        step += 1
-      t_eval_end = time.time()
-      print("Loss/Accuracy evaluation time: %f" % (t_eval_end-t_eval_start))
 
-      step = 0
-      sum_of_norms, norm_of_sums = None, None
-
-      # Second pass - compute R
-      t_R_start = time.time()
-      while step < num_iter and not coord.should_stop():
-        gradients = sess.run(grads)
-        print(len(gradients), gradients[0].shape, time.time()-r_R_start)
-        sys.stdout.flush()
         gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
         gradient *= FLAGS.batch_size
 
@@ -144,13 +133,16 @@ def eval_once(saver, summary_writer, summary_op, model, grads):
           sum_of_norms = np.linalg.norm(gradient)**2
         else:
           sum_of_norms += np.linalg.norm(gradient)**2
-\
+
         if norm_of_sums == None:
           norm_of_sums = gradient
         else:
           norm_of_sums += gradient
 
+
         step += 1
+      t_eval_end = time.time()
+      print("Loss/Accuracy evaluation time: %f" % (t_eval_end-t_eval_start))
 
       ratio_R = num_iter * FLAGS.batch_size * sum_of_norms / np.linalg.norm(norm_of_sums)**2
 
@@ -174,6 +166,8 @@ def evaluate():
   """Eval CIFAR-10 for a number of steps."""
   with tf.Graph().as_default() as g:
     # Get images and labels for CIFAR-10.
+    # we require bs=1 for computing norms of individual gradients
+    assert(FLAGS.batch_size == 1)
     images, labels = cifar_input.build_input(FLAGS.dataset, FLAGS.data_dir, FLAGS.batch_size, "train")
     hps = resnet_model.HParams(batch_size=FLAGS.batch_size,
                                num_classes=10 if FLAGS.dataset=="cifar10" else 100,
