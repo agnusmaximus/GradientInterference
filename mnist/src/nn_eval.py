@@ -104,7 +104,7 @@ def do_eval(saver,
       # Compute R
       sum_of_norms, norm_of_sums = None, None
       t_start = time.time()
-      for i in range(dataset.num_examples):
+      for i in range(num_examples):
         feed_dict = mnist.fill_feed_dict(data_set, images_placeholder, labels_placeholder, 1)
         gradients = sess.run(grads, feed_dict=feed_dict)
         gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
@@ -121,7 +121,7 @@ def do_eval(saver,
         else:
           norm_of_sums += gradient
 
-      ratio_R = dataset.num_examples * sum_of_norms / np.linalg.norm(norm_of_sums)**2
+      ratio_R = num_examples * sum_of_norms / np.linalg.norm(norm_of_sums)**2
 
       #print('Num examples: %d  Precision @ 1: %f Loss: %f Time: %f' %
       #      (num_examples, acc, loss, time.time() - start_time))
