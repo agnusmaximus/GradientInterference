@@ -184,7 +184,6 @@ def train(target, dataset, cluster_spec):
     logits = mnist.inference(images, train=True)
 
     val_acc = tf.reduce_sum(mnist.evaluation(logits, labels)) / tf.constant(FLAGS.eval_batch_size)
-    val_loss = mnist.loss(logits, labels)
 
     # Add classification loss.
     total_loss = mnist.loss(logits, labels)
@@ -268,7 +267,7 @@ def train(target, dataset, cluster_spec):
         mon_sess.run([block_workers_op])
         t_evaluate_start = time.time()
         tf.logging.info("Master evaluating...")
-        acc, loss = model_evaluate(mon_sess, dataset, images, labels, FLAGS.eval_batch_size, val_acc, val_loss)
+        acc, loss = model_evaluate(mon_sess, dataset, images, labels, FLAGS.eval_batch_size, val_acc, total_loss)
         tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start, new_epoch_float, acc, loss))
         t_evaluate_end = time.time()
         tf.logging.info("Master done evaluating... Elapsed time: %f" % (t_evaluate_end-t_evaluate_start))
