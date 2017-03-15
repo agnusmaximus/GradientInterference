@@ -70,7 +70,7 @@ class ResNet(object):
 
   def extract_individual_gradients(self, batch_size):
       for i in range(batch_size):
-        with tf.variable_scope('init'):
+        with tf.variable_scope('init', reuse=True):
           x = self._images
 
           rest_shape = x.shape.as_list()
@@ -78,7 +78,7 @@ class ResNet(object):
                        [i] + [0] * (len(rest_shape)-1),
                        [1] + rest_shape[1:])
 
-          x = self._conv('init_conv', x, 3, 3, 16, self._stride_arr(1), reuse=False)
+          x = self._conv('init_conv', x, 3, 3, 16, self._stride_arr(1), reuse=True)
 
         strides = [1, 2, 2]
         activate_before_residual = [True, False, False]
@@ -135,7 +135,7 @@ class ResNet(object):
 
   def _build_model(self):
     """Build the core model within the graph."""
-    with tf.variable_scope('init', reuse=True):
+    with tf.variable_scope('init'):
       x = self._images
       x = self._conv('init_conv', x, 3, 3, 16, self._stride_arr(1))
 
@@ -154,37 +154,37 @@ class ResNet(object):
       # filters = [16, 160, 320, 640]
       # Update hps.num_residual_units to 9
 
-    with tf.variable_scope('unit_1_0', reuse=True):
+    with tf.variable_scope('unit_1_0'):
       x = res_func(x, filters[0], filters[1], self._stride_arr(strides[0]),
                    activate_before_residual[0])
     for i in six.moves.range(1, self.hps.num_residual_units):
-      with tf.variable_scope('unit_1_%d' % i, reuse=True):
+      with tf.variable_scope('unit_1_%d' % i):
         x = res_func(x, filters[1], filters[1], self._stride_arr(1), False)
 
-    with tf.variable_scope('unit_2_0', reuse=True):
+    with tf.variable_scope('unit_2_0'):
       x = res_func(x, filters[1], filters[2], self._stride_arr(strides[1]),
                    activate_before_residual[1])
     for i in six.moves.range(1, self.hps.num_residual_units):
-      with tf.variable_scope('unit_2_%d' % i, reuse=True):
+      with tf.variable_scope('unit_2_%d' % i):
         x = res_func(x, filters[2], filters[2], self._stride_arr(1), False)
 
-    with tf.variable_scope('unit_3_0', reuse=True):
+    with tf.variable_scope('unit_3_0'):
       x = res_func(x, filters[2], filters[3], self._stride_arr(strides[2]),
                    activate_before_residual[2])
     for i in six.moves.range(1, self.hps.num_residual_units):
-      with tf.variable_scope('unit_3_%d' % i, reuse=True):
+      with tf.variable_scope('unit_3_%d' % i):
         x = res_func(x, filters[3], filters[3], self._stride_arr(1), False)
 
-    with tf.variable_scope('unit_last', reuse=True):
+    with tf.variable_scope('unit_last'):
       x = self._batch_norm('final_bn', x)
       x = self._relu(x, self.hps.relu_leakiness)
       x = self._global_avg_pool(x)
 
-    with tf.variable_scope('logit', reuse=True):
+    with tf.variable_scope('logit'):
       logits = self._fully_connected(x, self.hps.num_classes)
       self.predictions = tf.nn.softmax(logits)
 
-    with tf.variable_scope('costs', reuse=True):
+    with tf.variable_scope('costs'):
       xent = tf.nn.softmax_cross_entropy_with_logits(
           logits=logits, labels=self.labels)
       self.cost = tf.reduce_mean(xent, name='xent')
@@ -259,28 +259,29 @@ class ResNet(object):
       return y
 
   def _residual(self, x, in_filter, out_filter, stride,
-                activate_before_residual=False):
+                activate_before_residual=False,
+                reuse=False):
     """Residual unit with 2 sub layers."""
     if activate_before_residual:
-      with tf.variable_scope('shared_activation', reuse=True):
+      with tf.variable_scope('shared_activation', reuse=reuse):
         x = self._batch_norm('init_bn', x)
         x = self._relu(x, self.hps.relu_leakiness)
         orig_x = x
     else:
-      with tf.variable_scope('residual_only_activation', reuse=True):
+      with tf.variable_scope('residual_only_activation', reuse=reuse):
         orig_x = x
         x = self._batch_norm('init_bn', x)
         x = self._relu(x, self.hps.relu_leakiness)
 
-    with tf.variable_scope('sub1', reuse=True):
+    with tf.variable_scope('sub1', reuse=reuse):
       x = self._conv('conv1', x, 3, in_filter, out_filter, stride)
 
-    with tf.variable_scope('sub2', reuse=True):
+    with tf.variable_scope('sub2', reuse=reuse):
       x = self._batch_norm('bn2', x)
       x = self._relu(x, self.hps.relu_leakiness)
       x = self._conv('conv2', x, 3, out_filter, out_filter, [1, 1, 1, 1])
 
-    with tf.variable_scope('sub_add', reuse=True):
+    with tf.variable_scope('sub_add', reuse=reuse):
       if in_filter != out_filter:
         orig_x = tf.nn.avg_pool(orig_x, stride, stride, 'VALID')
         orig_x = tf.pad(
@@ -292,33 +293,33 @@ class ResNet(object):
     return x
 
   def _bottleneck_residual(self, x, in_filter, out_filter, stride,
-                           activate_before_residual=False):
+                           activate_before_residual=False, reuse=False):
     """Bottleneck residual unit with 3 sub layers."""
     if activate_before_residual:
-      with tf.variable_scope('common_bn_relu', reuse=True):
+      with tf.variable_scope('common_bn_relu', reuse=reuse):
         x = self._batch_norm('init_bn', x)
         x = self._relu(x, self.hps.relu_leakiness)
         orig_x = x
     else:
-      with tf.variable_scope('residual_bn_relu', reuse=True):
+      with tf.variable_scope('residual_bn_relu', reuse=reuse):
         orig_x = x
         x = self._batch_norm('init_bn', x)
         x = self._relu(x, self.hps.relu_leakiness)
 
-    with tf.variable_scope('sub1', reuse=True):
+    with tf.variable_scope('sub1', reuse=reuse):
       x = self._conv('conv1', x, 1, in_filter, out_filter/4, stride)
 
-    with tf.variable_scope('sub2', reuse=True):
+    with tf.variable_scope('sub2', reuse=reuse):
       x = self._batch_norm('bn2', x)
       x = self._relu(x, self.hps.relu_leakiness)
       x = self._conv('conv2', x, 3, out_filter/4, out_filter/4, [1, 1, 1, 1])
 
-    with tf.variable_scope('sub3', reuse=True):
+    with tf.variable_scope('sub3', reuse=reuse):
       x = self._batch_norm('bn3', x)
       x = self._relu(x, self.hps.relu_leakiness)
       x = self._conv('conv3', x, 1, out_filter/4, out_filter, [1, 1, 1, 1])
 
-    with tf.variable_scope('sub_add', reuse=True):
+    with tf.variable_scope('sub_add', reuse=reuse):
       if in_filter != out_filter:
         orig_x = self._conv('project', orig_x, 1, in_filter, out_filter, stride)
       x += orig_x
