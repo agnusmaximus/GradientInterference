@@ -72,6 +72,7 @@ class ResNet(object):
       costs = []
       for i in range(batch_size):
         print("%d of %d" % (i, batch_size))
+        sys.stdout.flush()
         rest_label_shape = self.labels.shape.as_list()
         sliced_labels = tf.slice(self.labels,
                                  [i] + [0] * (len(rest_label_shape)-1),
