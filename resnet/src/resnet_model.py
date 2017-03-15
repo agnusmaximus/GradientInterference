@@ -68,6 +68,71 @@ class ResNet(object):
     """Map a stride scalar to the stride array for tf.nn.conv2d."""
     return [1, stride, stride, 1]
 
+  def extract_individual_gradients(self, batch_size):
+      for i in range(batch_size):
+        with tf.variable_scope('init'):
+          x = self._images
+
+
+          x = tf.slice(self._images,
+                       [i] + [0] * (len(rest_shape)-1),
+                       [1] + rest_shape[1:])
+
+          x = self._conv('init_conv', x, 3, 3, 16, self._stride_arr(1))
+
+        strides = [1, 2, 2]
+        activate_before_residual = [True, False, False]
+        if self.hps.use_bottleneck:
+          res_func = self._bottleneck_residual
+          filters = [16, 64, 128, 256]
+        else:
+          res_func = self._residual
+          filters = [16, 16, 32, 64]
+          # Uncomment the following codes to use w28-10 wide residual network.
+          # It is more memory efficient than very deep residual network and has
+          # comparably good performance.
+          # https://arxiv.org/pdf/1605.07146v1.pdf
+          # filters = [16, 160, 320, 640]
+          # Update hps.num_residual_units to 9
+
+        with tf.variable_scope('unit_1_0'):
+          x = res_func(x, filters[0], filters[1], self._stride_arr(strides[0]),
+                       activate_before_residual[0])
+        for i in six.moves.range(1, self.hps.num_residual_units):
+          with tf.variable_scope('unit_1_%d' % i):
+            x = res_func(x, filters[1], filters[1], self._stride_arr(1), False)
+
+        with tf.variable_scope('unit_2_0'):
+          x = res_func(x, filters[1], filters[2], self._stride_arr(strides[1]),
+                       activate_before_residual[1])
+        for i in six.moves.range(1, self.hps.num_residual_units):
+          with tf.variable_scope('unit_2_%d' % i):
+            x = res_func(x, filters[2], filters[2], self._stride_arr(1), False)
+
+        with tf.variable_scope('unit_3_0'):
+          x = res_func(x, filters[2], filters[3], self._stride_arr(strides[2]),
+                       activate_before_residual[2])
+        for i in six.moves.range(1, self.hps.num_residual_units):
+          with tf.variable_scope('unit_3_%d' % i):
+            x = res_func(x, filters[3], filters[3], self._stride_arr(1), False)
+
+        with tf.variable_scope('unit_last'):
+          x = self._batch_norm('final_bn', x)
+          x = self._relu(x, self.hps.relu_leakiness)
+          x = self._global_avg_pool(x)
+
+        with tf.variable_scope('logit'):
+          logits = self._fully_connected(x, self.hps.num_classes)
+          predictions = tf.nn.softmax(logits)
+
+        with tf.variable_scope('costs'):
+          xent = tf.nn.softmax_cross_entropy_with_logits(
+              logits=logits, labels=self.labels)
+          cost = tf.reduce_mean(xent, name='xent')
+          cost += self._decay()
+        costs.append(cost)
+    return [tf.gradient(x, tf.trainable_variables()) for x in costs]
+
   def _build_model(self):
     """Build the core model within the graph."""
     with tf.variable_scope('init'):
