@@ -116,6 +116,7 @@ def model_evaluate(sess, dataset, images, labels, batch_size, val_acc, val_loss)
       [val_acc, val_loss], feed_dict=feed_dict)
 
     tf.logging.info("%d of %d" % (step, num_iter))
+    sys.stdout.flush()
 
     acc += acc_p
     loss += loss_p
