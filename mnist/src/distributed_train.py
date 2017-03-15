@@ -196,7 +196,7 @@ def train(target, dataset, cluster_spec):
         run_options.output_partition_graphs=True
 
       # Compute batchsize ratio
-      new_epoch_float = n_examples_processed / float(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
+      new_epoch_float = n_examples_processed / float(dataset.num_examples)
       new_epoch_track = int(new_epoch_float)
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
 
@@ -223,7 +223,7 @@ def train(target, dataset, cluster_spec):
       if step > FLAGS.max_steps:
         break
 
-      cur_epoch = n_examples_processed / float(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
+      cur_epoch = n_examples_processed / float(dataset.num_examples)
       tf.logging.info("epoch: %f time %f" % (cur_epoch, time.time()-begin_time));
       if cur_epoch >= FLAGS.n_train_epochs:
         break
