@@ -129,7 +129,7 @@ def eval_once(saver, summary_writer, summary_op, model, grads):
       while step < num_iter and not coord.should_stop():
         gradients = sess.run(grads)
         gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
-        gradient *= FLAGS.batch_size
+        gradient *= batchsize
 
         if sum_of_norms == None:
           sum_of_norms = np.linalg.norm(gradient)**2
@@ -179,6 +179,7 @@ def evaluate():
     model.build_graph()
     trainable_variables = tf.trainable_variables()
     grads = tf.gradients(model.cost, trainable_variables)
+    print("YOOO", grads[0].shape)
 
     # Restore the moving average version of the learned variables for eval.
     saver = tf.train.Saver()
