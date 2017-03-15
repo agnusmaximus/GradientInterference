@@ -129,7 +129,7 @@ def eval_once(saver, summary_writer, summary_op, model, grads):
       while step < num_iter and not coord.should_stop():
         gradients = sess.run(grads)
         gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
-        gradient *= batchsize
+        gradient *= FLAGS.batch_size
 
         if sum_of_norms == None:
           sum_of_norms = np.linalg.norm(gradient)**2
