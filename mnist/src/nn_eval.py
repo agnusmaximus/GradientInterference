@@ -102,7 +102,8 @@ def do_eval(saver,
                                          labels_placeholder,
                                          1)
 
-        acc_p, loss_p, gradients = sess.run([val_acc, val_loss, grads], feed_dict=feed_dict)
+        results = sess.run([val_acc, val_loss] + grads, feed_dict=feed_dict)
+        acc_p, loss_p, gradients = results[0], results[1], results[2:]
 
         acc += acc_p
         loss += loss_p
