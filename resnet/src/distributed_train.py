@@ -36,6 +36,9 @@ tf.logging.set_verbosity(tf.logging.INFO)
 
 FLAGS = tf.app.flags.FLAGS
 
+tf.app.flags.DEFINE_boolean('should_evaluate', False, 'Whether Chief should do evaluation per epoch.')
+tf.app.flags.DEFINE_boolean('should_compute_R', False, 'Whether Chief should do compute R per epoch.')
+
 tf.app.flags.DEFINE_boolean('n_train_epochs', 1000, 'Number of epochs to train for')
 tf.app.flags.DEFINE_boolean('should_summarize', False, 'Whether Chief should write summaries.')
 tf.app.flags.DEFINE_boolean('timeline_logging', False, 'Whether to log timeline of events.')
@@ -199,6 +202,21 @@ def train(target, cluster_spec):
     with tf.control_dependencies([apply_gradients_op]):
         train_op = tf.identity(model.cost, name='train_op')
 
+    # Queue for broadcasting R
+    with ops.device(global_step.device):
+      block_workers_queue = data_flow_ops.FIFOQueue(1,
+                                                    tf.int64,
+                                                    shapes=(),
+                                                    name="block_workers_queue",
+                                                    shared_name="block_workers_queue")
+
+    block_workers_op = block_workers_queue.enqueue(tf.constant(0, dtype=tf.int64))
+    unblock_workers_op = block_workers_queue.dequeue()
+
+    workers_block_if_necessary_op = tf.while_loop(lambda x : block_workers_queue.size() > 0,
+                                                  lambda x : tf.constant(0),
+                                                  [tf.constant(0)])
+
   sync_replicas_hook = opt.make_session_run_hook(is_chief)
 
   # Train, checking for Nans. Concurrently run the summary operation at a
@@ -239,6 +257,18 @@ def train(target, cluster_spec):
       # Compute batchsize ratio
       new_epoch_float = n_examples_processed / float(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
       new_epoch_track = int(new_epoch_float)
+
+      # Block workers if necessary if master is computing R or evaluating
+      mon_sess.run([workers_block_if_necessary_op])
+
+      if FLAGS.should_evaluate and FLAGS.task_id == 0 and (new_epoch_track == cur_epoch_track+1 or cur_iteration == 0):
+        mon_sess.run([block_workers_op])
+        mon_sess.run([unblock_workers_op])
+
+      if FLAGS.should_compute_R and FLAGS.task_id == 0 and (new_epoch_track == cur_epoch_track+1 or cur_iteration == 0):
+        mon_sess.run([block_workers_op])
+        mon_sess.run([unblock_workers_op])
+
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
 
       # Dequeue variable batchsize inputs
