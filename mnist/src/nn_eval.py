@@ -110,6 +110,7 @@ def do_eval(saver,
         gradients = sess.run(grads, feed_dict=feed_dict)
         gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
         print("YO %f" % (time.time()-t_start))
+        sys.stdout.flush()
 
         if sum_of_norms == None:
           sum_of_norms = np.linalg.norm(gradient)**2
