@@ -170,7 +170,8 @@ def train(target, cluster_spec):
     # Create a variable to count the number of train() calls. This equals the
     # number of updates applied to the variables. The PS holds the global step.
 
-    images, labels = cifar_input.build_input(FLAGS.dataset, FLAGS.data_dir, FLAGS.batch_size, "train")
+    #images, labels = cifar_input.build_input(FLAGS.dataset, FLAGS.data_dir, FLAGS.batch_size, "train")
+    images, labels = cifar_input.placeholder_inputs()
     variable_batchsize_inputs = cifar_input.build_input_multi_batchsize(FLAGS.dataset, FLAGS.data_dir, FLAGS.batch_size, "train")
 
     hps = resnet_model.HParams(batch_size=FLAGS.batch_size,
@@ -263,16 +264,27 @@ def train(target, cluster_spec):
 
       if FLAGS.should_evaluate and FLAGS.task_id == 0 and (new_epoch_track == cur_epoch_track+1 or cur_iteration == 0):
         mon_sess.run([block_workers_op])
+        t_evaluate_start = time.time()
+        tf.logging.info("Master evaluating...")
+        t_evaluate_end = time.time()
+        computed_precision, computed_loss = model_evaluate(mon_sess, model, images, labels, variable_batchsize_inputs[1000], 1000)
+        tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start, new_epoch_float, computed_precision, computed_loss))
+        tf.logging.info("Master done evaluating... Elapsed time: %f" % (t_evaluate_end-t_evaluate_start))
         mon_sess.run([unblock_workers_op])
 
       if FLAGS.should_compute_R and FLAGS.task_id == 0 and (new_epoch_track == cur_epoch_track+1 or cur_iteration == 0):
         mon_sess.run([block_workers_op])
+        t_compute_r_start = time.time()
+        tf.logging.info("Master computing R...")
+        t_compute_r_end = time.time()
+        tf.logging.info("Master done computing R... Elapsed time: %f" % (t_compute_r_end-t_compute_r_start))
         mon_sess.run([unblock_workers_op])
 
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
 
       # Dequeue variable batchsize inputs
-      loss_value, step = mon_sess.run([train_op, global_step], run_metadata=run_metadata, options=run_options)
+      images_real, labels_real = sess.run(variable_batchsize_inputs[FLAGS.batch_size], feed_dict={images_pl:np.zeros([1, 32, 32, 3]), labels_pl: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
+      loss_value, step = mon_sess.run([train_op, global_step], run_metadata=run_metadata, options=run_options, feed_dict={images:images_real,labels:labels_real})
       n_examples_processed += FLAGS.batch_size * num_workers
 
       # This uses the queuerunner which does not support variable batch sizes

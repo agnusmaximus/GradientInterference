@@ -227,12 +227,21 @@ def train(target, dataset, cluster_spec):
       # Block workers if necessary if master is computing R or evaluating
       mon_sess.run([workers_block_if_necessary_op])
 
+
       if FLAGS.should_evaluate and FLAGS.task_id == 0 and (new_epoch_track == cur_epoch_track+1 or cur_iteration == 0):
         mon_sess.run([block_workers_op])
+        t_evaluate_start = time.time()
+        tf.logging.info("Master evaluating...")
+        t_evaluate_end = time.time()
+        tf.logging.info("Master done evaluating... Elapsed time: %f" % (t_evaluate_end-t_evaluate_start))
         mon_sess.run([unblock_workers_op])
 
       if FLAGS.should_compute_R and FLAGS.task_id == 0 and (new_epoch_track == cur_epoch_track+1 or cur_iteration == 0):
         mon_sess.run([block_workers_op])
+        t_compute_r_start = time.time()
+        tf.logging.info("Master computing R...")
+        t_compute_r_end = time.time()
+        tf.logging.info("Master done computing R... Elapsed time: %f" % (t_compute_r_end-t_compute_r_start))
         mon_sess.run([unblock_workers_op])
 
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
