@@ -283,7 +283,7 @@ def train(target, cluster_spec):
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
 
       # Dequeue variable batchsize inputs
-      images_real, labels_real = sess.run(variable_batchsize_inputs[FLAGS.batch_size], feed_dict={images_pl:np.zeros([1, 32, 32, 3]), labels_pl: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
+      images_real, labels_real = sess.run(variable_batchsize_inputs[FLAGS.batch_size], feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
       loss_value, step = mon_sess.run([train_op, global_step], run_metadata=run_metadata, options=run_options, feed_dict={images:images_real,labels:labels_real})
       n_examples_processed += FLAGS.batch_size * num_workers
 
