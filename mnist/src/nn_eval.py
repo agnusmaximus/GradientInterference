@@ -81,6 +81,8 @@ def do_eval(saver,
       sys.stdout.flush()
       return -1
 
+    checkpoint_time = time.time()
+
     global_step = ckpt.model_checkpoint_path.split('/')[-1].split('-')[-1]
 
     # Don't evaluate on the same checkpoint
@@ -126,7 +128,7 @@ def do_eval(saver,
 
     #print('Num examples: %d  Precision @ 1: %f Loss: %f Time: %f' %
     #      (num_examples, acc, loss, time.time() - start_time))
-    print("Info: %f %f %f %f %f" % (time.time()-start_time, float(global_step), acc, loss, ratio_R))
+    print("Info: %f %f %f %f %f" % (checkpoint_time-start_time, float(global_step), acc, loss, ratio_R))
     sys.stdout.flush()
 
     # Summarize accuracy

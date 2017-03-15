@@ -95,6 +95,8 @@ def eval_once(saver, summary_writer, summary_op, model, grads):
       sys.stdout.flush()
       return
 
+    checkpoint_time = time.time()
+
     # Start the queue runners.
     coord = tf.train.Coordinator()
     try:
@@ -148,7 +150,7 @@ def eval_once(saver, summary_writer, summary_op, model, grads):
 
       # Compute precision @ 1.
       precision = 1.0 * correct_prediction / total_prediction
-      print("Info: %f %f %f %f %f" % (time.time()-start_time, float(global_step), precision, computed_loss, ratio_R))
+      print("Info: %f %f %f %f %f" % (checkpoint_time-start_time, float(global_step), precision, computed_loss, ratio_R))
       sys.stdout.flush()
 
       summary = tf.Summary()
