@@ -33,6 +33,8 @@ FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_boolean('should_evaluate', False, 'Whether Chief should do evaluation per epoch.')
 tf.app.flags.DEFINE_boolean('should_compute_R', False, 'Whether Chief should do compute R per epoch.')
+tf.app.flags.DEFINE_integer('evaluate_batchsize', 1000,
+                           """Batchsize for evaluation""")
 
 tf.app.flags.DEFINE_boolean('should_summarize', False, 'Whether Chief should write summaries.')
 tf.app.flags.DEFINE_boolean('timeline_logging', False, 'Whether to log timeline of events.')
@@ -177,7 +179,7 @@ def train(target, dataset, cluster_spec):
     # Label 0 is reserved for an (unused) background class.
     logits = mnist.inference(images, train=True)
 
-    val_acc = tf.reduce_sum(mnist.evaluation(logits, labels)) / tf.constant(FLAGS.batch_size)
+    val_acc = tf.reduce_sum(mnist.evaluation(logits, labels)) / tf.constant(FLAGS.evaluate_batchsize)
 
     # Add classification loss.
     total_loss = mnist.loss(logits, labels)
@@ -261,10 +263,11 @@ def train(target, dataset, cluster_spec):
         mon_sess.run([block_workers_op])
         t_evaluate_start = time.time()
         tf.logging.info("Master evaluating...")
-        acc, loss = model_evaluate(mon_sess, dataset, images, labels, FLAGS.batch_size, val_acc, total_loss)
-        tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start, new_epoch_float, acc, loss))
+        acc, loss = model_evaluate(mon_sess, dataset, images, labels, FLAGS.evaluate_batchsize, val_acc, total_loss)
+        tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times), new_epoch_float, acc, loss))
         t_evaluate_end = time.time()
         tf.logging.info("Master done evaluating... Elapsed time: %f" % (t_evaluate_end-t_evaluate_start))
+        evaluate_times.append(t_evaluate_end-t_evaluate_start)
         mon_sess.run([unblock_workers_op])
 
       if FLAGS.should_compute_R and FLAGS.task_id == 0 and (new_epoch_track == cur_epoch_track+1 or cur_iteration == 0):
@@ -272,7 +275,9 @@ def train(target, dataset, cluster_spec):
         t_compute_r_start = time.time()
         tf.logging.info("Master computing R...")
         t_compute_r_end = time.time()
+        #R = compute_R(mon_sess, dataset, images, labels, FLAGS.batch_size)
         tf.logging.info("Master done computing R... Elapsed time: %f" % (t_compute_r_end-t_compute_r_start))
+        compute_R_times.append(t_compute_r_end-t_compute_r_start)
         mon_sess.run([unblock_workers_op])
 
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
