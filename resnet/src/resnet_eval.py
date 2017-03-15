@@ -110,6 +110,7 @@ def eval_once(saver, summary_writer, summary_op, model, grads):
       step = 0
 
       # First pass - compute losses and training error
+      t_eval_start = time.time()
       while step < num_iter and not coord.should_stop():
         (summaries, loss, predictions, truth) = sess.run(
           [model.summaries, model.cost, model.predictions,
@@ -121,14 +122,17 @@ def eval_once(saver, summary_writer, summary_op, model, grads):
         total_prediction += predictions.shape[0]
         computed_loss += loss
         step += 1
+      t_eval_end = time.time()
+      print("Loss/Accuracy evaluation time: %f" % (t_eval_end-t_eval_start))
 
       step = 0
       sum_of_norms, norm_of_sums = None, None
 
       # Second pass - compute R
+      t_R_start = time.time()
       while step < num_iter and not coord.should_stop():
         gradients = sess.run(grads)
-        print(len(gradients), gradients[0].shape)
+        print(len(gradients), gradients[0].shape, time.time()-r_R_start)
         gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
         gradient *= FLAGS.batch_size
 
@@ -180,7 +184,6 @@ def evaluate():
     model.build_graph()
     trainable_variables = tf.trainable_variables()
     grads = tf.gradients(model.cost, trainable_variables)
-    print("YOOO", grads[0].shape)
 
     # Restore the moving average version of the learned variables for eval.
     saver = tf.train.Saver()
