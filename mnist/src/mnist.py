@@ -128,6 +128,7 @@ def inference(images, train=True):
   # Reshape the feature map cuboid into a 2D matrix to feed it to the
   # fully connected layers.
   pool_shape = pool.get_shape().as_list()
+  tf.logging.info(pool_shape)
   reshape = tf.reshape(
       pool,
       [pool_shape[0], pool_shape[1] * pool_shape[2] * pool_shape[3]])
