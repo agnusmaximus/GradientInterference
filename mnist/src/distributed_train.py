@@ -98,6 +98,29 @@ RMSPROP_DECAY = 0.9                # Decay term for RMSProp.
 RMSPROP_MOMENTUM = 0.9             # Momentum in RMSProp.
 RMSPROP_EPSILON = 1.0              # Epsilon term for RMSProp.
 
+def compute_R(sess, dataset, images, labels, grads):
+  num_examples = dataset.num_examples
+  sum_of_norms, norm_of_sums = None, None
+  for i in range(num_examples):
+    feed_dict = mnist.fill_feed_dict(dataset, images, labels, 1)
+    results = sess.run(grads, feed_dict=feed_dict)
+    gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
+
+    if sum_of_norms == None:
+      sum_of_norms = np.linalg.norm(gradient)**2
+    else:
+      sum_of_norms += np.linalg.norm(gradient)**2
+
+    if norm_of_sums == None:
+      norm_of_sums = gradient
+    else:
+      norm_of_sums += gradient
+
+  # Compute R
+  ratio_R = num_examples * sum_of_norms / np.linalg.norm(norm_of_sums)**2
+  return ratio_R
+
+
 def model_evaluate(sess, dataset, images, labels, batch_size, val_acc, val_loss):
   tf.logging.info("Evaluating model...")
   num_examples = dataset.num_examples
