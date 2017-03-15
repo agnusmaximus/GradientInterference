@@ -70,9 +70,12 @@ class ResNet(object):
 
   def extract_individual_gradients(self, batch_size):
       for i in range(batch_size):
+        rest_label_shape = self.labels.shape.as_list()
+        sliced_labels = tf.slice(self.labels,
+                                 [i] + [0] * (len(rest_label_shape)-1),
+                                 [1] + rest_label_shape[1:])
         with tf.variable_scope('init', reuse=True):
           x = self._images
-
           rest_shape = x.shape.as_list()
           x = tf.slice(self._images,
                        [i] + [0] * (len(rest_shape)-1),
@@ -127,7 +130,7 @@ class ResNet(object):
 
         with tf.variable_scope('costs', reuse=True):
           xent = tf.nn.softmax_cross_entropy_with_logits(
-              logits=logits, labels=self.labels)
+              logits=logits, labels=sliced_labels)
           cost = tf.reduce_mean(xent, name='xent')
           cost += self._decay()
         costs.append(cost)
