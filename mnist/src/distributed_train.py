@@ -177,6 +177,8 @@ def train(target, dataset, cluster_spec):
 
   checkpoint_save_secs = 60 * 2
 
+  print("StART TRAINING")
+
   with tf.train.MonitoredTrainingSession(
       master=target, is_chief=is_chief,
       hooks=[sync_replicas_hook],
