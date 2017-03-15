@@ -70,7 +70,7 @@ class ResNet(object):
 
   def extract_individual_gradients(self, batch_size):
       for i in range(batch_size):
-        with tf.variable_scope('init', reuse=True):
+        with tf.variable_scope('init'):
           x = self._images
 
           rest_shape = x.shape.as_list()
