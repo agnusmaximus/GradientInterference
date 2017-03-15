@@ -183,6 +183,8 @@ def evaluate():
     model = resnet_model.ResNet(hps, images, labels, "train")
     model.build_graph()
     grads_for_each_example = model.extract_individual_gradients(FLAGS.batch_size)
+    print("YOOO")
+    sys.stdout.flush()
     #individual_examples = [
 
     # Restore the moving average version of the learned variables for eval.
