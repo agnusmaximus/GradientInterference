@@ -337,7 +337,7 @@ class ResNet(object):
 
     return tf.multiply(self.hps.weight_decay_rate, tf.add_n(costs))
 
-  def _conv(self, name, x, filter_size, in_filters, out_filters, strides, reuse=True):
+  def _conv(self, name, x, filter_size, in_filters, out_filters, strides, reuse=False):
     """Convolution."""
     with tf.variable_scope(name, reuse=reuse):
       n = filter_size * filter_size * out_filters
