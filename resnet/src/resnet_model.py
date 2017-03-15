@@ -215,7 +215,7 @@ class ResNet(object):
   # TODO(xpan): Consider batch_norm in contrib/layers/python/layers/layers.py
   def _batch_norm(self, name, x):
     """Batch normalization."""
-    with tf.variable_scope(name):
+    with tf.variable_scope(name, reuse=True):
       params_shape = [x.get_shape()[-1]]
 
       beta = tf.get_variable(
@@ -262,25 +262,25 @@ class ResNet(object):
                 activate_before_residual=False):
     """Residual unit with 2 sub layers."""
     if activate_before_residual:
-      with tf.variable_scope('shared_activation'):
+      with tf.variable_scope('shared_activation', reuse=True):
         x = self._batch_norm('init_bn', x)
         x = self._relu(x, self.hps.relu_leakiness)
         orig_x = x
     else:
-      with tf.variable_scope('residual_only_activation'):
+      with tf.variable_scope('residual_only_activation', reuse=True):
         orig_x = x
         x = self._batch_norm('init_bn', x)
         x = self._relu(x, self.hps.relu_leakiness)
 
-    with tf.variable_scope('sub1'):
+    with tf.variable_scope('sub1', reuse=True):
       x = self._conv('conv1', x, 3, in_filter, out_filter, stride)
 
-    with tf.variable_scope('sub2'):
+    with tf.variable_scope('sub2', reuse=True):
       x = self._batch_norm('bn2', x)
       x = self._relu(x, self.hps.relu_leakiness)
       x = self._conv('conv2', x, 3, out_filter, out_filter, [1, 1, 1, 1])
 
-    with tf.variable_scope('sub_add'):
+    with tf.variable_scope('sub_add', reuse=True):
       if in_filter != out_filter:
         orig_x = tf.nn.avg_pool(orig_x, stride, stride, 'VALID')
         orig_x = tf.pad(
@@ -295,30 +295,30 @@ class ResNet(object):
                            activate_before_residual=False):
     """Bottleneck residual unit with 3 sub layers."""
     if activate_before_residual:
-      with tf.variable_scope('common_bn_relu'):
+      with tf.variable_scope('common_bn_relu', reuse=True):
         x = self._batch_norm('init_bn', x)
         x = self._relu(x, self.hps.relu_leakiness)
         orig_x = x
     else:
-      with tf.variable_scope('residual_bn_relu'):
+      with tf.variable_scope('residual_bn_relu', reuse=True):
         orig_x = x
         x = self._batch_norm('init_bn', x)
         x = self._relu(x, self.hps.relu_leakiness)
 
-    with tf.variable_scope('sub1'):
+    with tf.variable_scope('sub1', reuse=True):
       x = self._conv('conv1', x, 1, in_filter, out_filter/4, stride)
 
-    with tf.variable_scope('sub2'):
+    with tf.variable_scope('sub2', reuse=True):
       x = self._batch_norm('bn2', x)
       x = self._relu(x, self.hps.relu_leakiness)
       x = self._conv('conv2', x, 3, out_filter/4, out_filter/4, [1, 1, 1, 1])
 
-    with tf.variable_scope('sub3'):
+    with tf.variable_scope('sub3', reuse=True):
       x = self._batch_norm('bn3', x)
       x = self._relu(x, self.hps.relu_leakiness)
       x = self._conv('conv3', x, 1, out_filter/4, out_filter, [1, 1, 1, 1])
 
-    with tf.variable_scope('sub_add'):
+    with tf.variable_scope('sub_add', reuse=True):
       if in_filter != out_filter:
         orig_x = self._conv('project', orig_x, 1, in_filter, out_filter, stride)
       x += orig_x
@@ -338,7 +338,7 @@ class ResNet(object):
 
   def _conv(self, name, x, filter_size, in_filters, out_filters, strides):
     """Convolution."""
-    with tf.variable_scope(name):
+    with tf.variable_scope(name, reuse=True):
       n = filter_size * filter_size * out_filters
       kernel = tf.get_variable(
           'DW', [filter_size, filter_size, in_filters, out_filters],
