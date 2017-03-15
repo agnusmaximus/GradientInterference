@@ -64,82 +64,77 @@ def do_eval(saver,
     data_set: The set of images and labels to evaluate, from
       input_data.read_data_sets().
   """
-  try:
-    with tf.Session() as sess:
+  with tf.Session() as sess:
 
-      # Load checkpoint
-      ckpt = tf.train.get_checkpoint_state(FLAGS.checkpoint_dir)
-      if ckpt and ckpt.model_checkpoint_path:
-        if os.path.isabs(ckpt.model_checkpoint_path):
-          # Restores from checkpoint with absolute path.
-          saver.restore(sess, ckpt.model_checkpoint_path)
-        else:
-          # Restores from checkpoint with relative path.
-          saver.restore(sess, os.path.join(FLAGS.checkpoint_dir,
-                                           ckpt.model_checkpoint_path))
+    # Load checkpoint
+    ckpt = tf.train.get_checkpoint_state(FLAGS.checkpoint_dir)
+    if ckpt and ckpt.model_checkpoint_path:
+      if os.path.isabs(ckpt.model_checkpoint_path):
+        # Restores from checkpoint with absolute path.
+        saver.restore(sess, ckpt.model_checkpoint_path)
       else:
-        print('No checkpoint file found')
-        sys.stdout.flush()
-        return -1
-
-      global_step = ckpt.model_checkpoint_path.split('/')[-1].split('-')[-1]
-
-      # Don't evaluate on the same checkpoint
-      if prev_global_step == global_step:
-        return prev_global_step
-
-      print('Succesfully loaded model from %s at step=%s.' %
-            (ckpt.model_checkpoint_path, global_step))
+        # Restores from checkpoint with relative path.
+        saver.restore(sess, os.path.join(FLAGS.checkpoint_dir,
+                                         ckpt.model_checkpoint_path))
+    else:
+      print('No checkpoint file found')
       sys.stdout.flush()
+      return -1
 
-      # Compute accuracy
-      num_examples = data_set.num_examples
-      acc, loss = 0
-      sum_of_norms, norm_of_sums = None, None
-      for i in range(num_examples):
-        feed_dict = mnist.fill_feed_dict(data_set,
-                                         images_placeholder,
-                                         labels_placeholder,
-                                         1)
+    global_step = ckpt.model_checkpoint_path.split('/')[-1].split('-')[-1]
 
-        results = sess.run([val_acc, val_loss] + grads, feed_dict=feed_dict)
-        acc_p, loss_p, gradients = results[0], results[1], results[2:]
+    # Don't evaluate on the same checkpoint
+    if prev_global_step == global_step:
+      return prev_global_step
 
-        acc += acc_p
-        loss += loss_p
+    print('Succesfully loaded model from %s at step=%s.' %
+          (ckpt.model_checkpoint_path, global_step))
+    sys.stdout.flush()
 
-        gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
+    # Compute accuracy
+    num_examples = data_set.num_examples
+    acc, loss = 0
+    sum_of_norms, norm_of_sums = None, None
+    for i in range(num_examples):
+      feed_dict = mnist.fill_feed_dict(data_set,
+                                       images_placeholder,
+                                       labels_placeholder,
+                                       1)
 
-        if sum_of_norms == None:
-          sum_of_norms = np.linalg.norm(gradient)**2
-        else:
-          sum_of_norms += np.linalg.norm(gradient)**2
+      results = sess.run([val_acc, val_loss] + grads, feed_dict=feed_dict)
+      acc_p, loss_p, gradients = results[0], results[1], results[2:]
 
-        if norm_of_sums == None:
-          norm_of_sums = gradient
-        else:
-          norm_of_sums += gradient
+      acc += acc_p
+      loss += loss_p
 
-      acc /= float(num_examples)
+      gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
 
-      # Compute R
-      ratio_R = num_examples * sum_of_norms / np.linalg.norm(norm_of_sums)**2
+      if sum_of_norms == None:
+        sum_of_norms = np.linalg.norm(gradient)**2
+      else:
+        sum_of_norms += np.linalg.norm(gradient)**2
 
-      #print('Num examples: %d  Precision @ 1: %f Loss: %f Time: %f' %
-      #      (num_examples, acc, loss, time.time() - start_time))
-      print("Info: %f %f %f %f %f" % (time.time()-start_time, float(global_step), acc, loss, ratio_R))
-      sys.stdout.flush()
+      if norm_of_sums == None:
+        norm_of_sums = gradient
+      else:
+        norm_of_sums += gradient
 
-      # Summarize accuracy
-      summary = tf.Summary()
-      summary.value.add(tag="Validation Accuracy", simple_value=float(acc))
-      summary.value.add(tag="Validation Loss", simple_value=float(loss))
-      writer.add_summary(summary, global_step)
-    return global_step
+    acc /= float(num_examples)
 
-  except Exception as e:
-    print(e.__doc__)
-    print(e.message)
+    # Compute R
+    ratio_R = num_examples * sum_of_norms / np.linalg.norm(norm_of_sums)**2
+
+    #print('Num examples: %d  Precision @ 1: %f Loss: %f Time: %f' %
+    #      (num_examples, acc, loss, time.time() - start_time))
+    print("Info: %f %f %f %f %f" % (time.time()-start_time, float(global_step), acc, loss, ratio_R))
+    sys.stdout.flush()
+
+    # Summarize accuracy
+    summary = tf.Summary()
+    summary.value.add(tag="Validation Accuracy", simple_value=float(acc))
+    summary.value.add(tag="Validation Loss", simple_value=float(loss))
+    writer.add_summary(summary, global_step)
+  return global_step
 
 def evaluate(dataset):
   """Evaluate model on Dataset for a number of steps."""
