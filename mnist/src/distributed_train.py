@@ -112,8 +112,9 @@ def model_evaluate(sess, dataset, images, labels, batch_size, val_acc, val_loss)
     feed_dict = mnist.fill_feed_dict(dataset, images, labels, batch_size)
     tf.logging.info("FILLED")
     sys.stdout.flush()
-    acc_p, loss_p = sess.run(
-      [val_acc, val_loss], feed_dict=feed_dict)
+    #acc_p, loss_p = sess.run(
+    #  [val_acc, val_loss], feed_dict=feed_dict)
+    acc_p, loss_p = 0, 0
 
     tf.logging.info("%d of %d" % (step, num_iter))
     sys.stdout.flush()
