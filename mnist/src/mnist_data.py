@@ -127,9 +127,6 @@ class DataSet(object):
       assert batch_size <= self._num_examples
     end = self._index_in_epoch
 
-    tf.logging.info("YOYOOY")
-    sys.stdout.flush()
-
     # Most of the time return the non distorted image
     return self._images[start:end], self._labels[start:end]
 
