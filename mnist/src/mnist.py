@@ -131,8 +131,7 @@ def inference(images, train=True):
   tf.logging.info(pool_shape)
   reshape = tf.reshape(
       pool,
-      #[pool_shape[0], pool_shape[1] * pool_shape[2] * pool_shape[3]])
-    [64, pool_shape[1] * pool_shape[2] * pool_shape[3]])
+      [-1, pool_shape[1] * pool_shape[2] * pool_shape[3]])
   # Fully connected layer. Note that the '+' operation automatically
   # broadcasts the biases.
   hidden = tf.nn.relu(tf.matmul(reshape, fc1_weights) + fc1_biases)
