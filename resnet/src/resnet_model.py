@@ -73,7 +73,7 @@ class ResNet(object):
         with tf.variable_scope('init'):
           x = self._images
 
-          rest_shape = x.shape
+          rest_shape = x.shape.as_list()
           x = tf.slice(self._images,
                        [i] + [0] * (len(rest_shape)-1),
                        [1] + rest_shape[1:])
