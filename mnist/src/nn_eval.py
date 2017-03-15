@@ -99,7 +99,12 @@ def do_eval(saver,
                                        labels_placeholder,
                                        num_examples)
 
-      acc, loss, gradients = sess.run([val_acc, val_loss, grads], feed_dict=feed_dict)
+      acc, loss = sess.run([val_acc, val_loss], feed_dict=feed_dict)
+
+      # Compute R
+      for i in range(dataset.num_examples):
+        feed_dict = mnist.fill_feed_dict(data_set, images_placeholder, labels_placeholder, 1)
+
       gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
       gradient *= dataset.num_examples
       ratio_R = dataset.num_examples * np.linalg.norm(gradient)**2 / np.linalg.norm(gradient)**2
