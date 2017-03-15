@@ -182,6 +182,7 @@ def evaluate():
                                optimizer='sgd')
     model = resnet_model.ResNet(hps, images, labels, "train")
     model.build_graph()
+    print("YOOASFDOAFO")
     grads_for_each_example = model.extract_individual_gradients(FLAGS.batch_size)
     print("YOOO")
     sys.stdout.flush()
