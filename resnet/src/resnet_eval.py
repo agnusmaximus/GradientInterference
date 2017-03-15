@@ -169,7 +169,6 @@ def evaluate():
   with tf.Graph().as_default() as g:
     # Get images and labels for CIFAR-10.
     # we require bs=1 for computing norms of individual gradients
-    assert(FLAGS.batch_size == 1)
     images, labels = cifar_input.build_input(FLAGS.dataset, FLAGS.data_dir, FLAGS.batch_size, "train")
     hps = resnet_model.HParams(batch_size=FLAGS.batch_size,
                                num_classes=10 if FLAGS.dataset=="cifar10" else 100,
@@ -182,8 +181,7 @@ def evaluate():
                                optimizer='sgd')
     model = resnet_model.ResNet(hps, images, labels, "train")
     model.build_graph()
-    trainable_variables = tf.trainable_variables()
-    grads = tf.gradients(model.cost, trainable_variables)
+    grads_for_each_example = model.extract_individual_gradients(FLAGS.batch_size)
     #individual_examples = [
 
     # Restore the moving average version of the learned variables for eval.
