@@ -116,6 +116,8 @@ def eval_once(saver, summary_writer, summary_op, model, grads):
           [model.summaries, model.cost, model.predictions,
            model.labels])
 
+        print("YO", time.time()-t_eval_start)
+
         truth = np.argmax(truth, axis=1)
         predictions = np.argmax(predictions, axis=1)
         correct_prediction += np.sum(truth == predictions)
@@ -184,6 +186,7 @@ def evaluate():
     model.build_graph()
     trainable_variables = tf.trainable_variables()
     grads = tf.gradients(model.cost, trainable_variables)
+    #individual_examples = [
 
     # Restore the moving average version of the learned variables for eval.
     saver = tf.train.Saver()
