@@ -33,8 +33,6 @@ FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_boolean('should_evaluate', False, 'Whether Chief should do evaluation per epoch.')
 tf.app.flags.DEFINE_boolean('should_compute_R', False, 'Whether Chief should do compute R per epoch.')
-tf.app.flags.DEFINE_integer('eval_batch_size', 1000,
-                           """Batchsize to use for evaluation""")
 
 tf.app.flags.DEFINE_boolean('should_summarize', False, 'Whether Chief should write summaries.')
 tf.app.flags.DEFINE_boolean('timeline_logging', False, 'Whether to log timeline of events.')
@@ -108,10 +106,8 @@ def model_evaluate(sess, dataset, images, labels, batch_size, val_acc, val_loss)
 
   while step < num_iter:
     feed_dict = mnist.fill_feed_dict(dataset, images, labels, batch_size)
-    #acc_p = sess.run(
-    #  [val_acc], feed_dict=feed_dict)
     acc_p = sess.run(
-      [val_acc])
+      [val_acc], feed_dict=feed_dict)
     acc_p, loss_p = 0, 0
 
     tf.logging.info("%d of %d" % (step, num_iter))
@@ -182,8 +178,7 @@ def train(target, dataset, cluster_spec):
     # Label 0 is reserved for an (unused) background class.
     logits = mnist.inference(images, train=True)
 
-    #val_acc = tf.reduce_sum(mnist.evaluation(logits, labels)) / tf.constant(FLAGS.eval_batch_size)
-    val_acc = tf.Print(global_step, [global_step], message="HI")
+    val_acc = tf.reduce_sum(mnist.evaluation(logits, labels)) / tf.constant(FLAGS.batch_size)
 
     # Add classification loss.
     total_loss = mnist.loss(logits, labels)
@@ -267,7 +262,7 @@ def train(target, dataset, cluster_spec):
         mon_sess.run([block_workers_op])
         t_evaluate_start = time.time()
         tf.logging.info("Master evaluating...")
-        acc, loss = model_evaluate(mon_sess, dataset, images, labels, FLAGS.eval_batch_size, val_acc, total_loss)
+        acc, loss = model_evaluate(mon_sess, dataset, images, labels, FLAGS.batch_size, val_acc, total_loss)
         tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start, new_epoch_float, acc, loss))
         t_evaluate_end = time.time()
         tf.logging.info("Master done evaluating... Elapsed time: %f" % (t_evaluate_end-t_evaluate_start))
