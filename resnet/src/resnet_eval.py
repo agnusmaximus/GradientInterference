@@ -116,6 +116,8 @@ def eval_once(saver, summary_writer, summary_op, model, grads):
       # First pass - compute losses and training error
       t_eval_start = time.time()
       while step < num_iter and not coord.should_stop():
+        print("Computing...")
+        sys.stdout.flush()
         summaries, loss, predictions, truth, gradients_real = sess.run(
           [model.summaries, model.cost, model.predictions,
            model.labels, grads])
