@@ -70,7 +70,7 @@ class ResNet(object):
 
   def extract_individual_gradients(self, batch_size):
       for i in range(batch_size):
-        with tf.variable_scope('init'):
+        with tf.variable_scope('init', reuse=True):
           x = self._images
 
           rest_shape = x.shape.as_list()
@@ -95,37 +95,37 @@ class ResNet(object):
           # filters = [16, 160, 320, 640]
           # Update hps.num_residual_units to 9
 
-        with tf.variable_scope('unit_1_0'):
+        with tf.variable_scope('unit_1_0', reuse=True):
           x = res_func(x, filters[0], filters[1], self._stride_arr(strides[0]),
                        activate_before_residual[0])
         for i in six.moves.range(1, self.hps.num_residual_units):
-          with tf.variable_scope('unit_1_%d' % i):
+          with tf.variable_scope('unit_1_%d' % i, reuse=True):
             x = res_func(x, filters[1], filters[1], self._stride_arr(1), False)
 
-        with tf.variable_scope('unit_2_0'):
+        with tf.variable_scope('unit_2_0', reuse=True):
           x = res_func(x, filters[1], filters[2], self._stride_arr(strides[1]),
                        activate_before_residual[1])
         for i in six.moves.range(1, self.hps.num_residual_units):
-          with tf.variable_scope('unit_2_%d' % i):
+          with tf.variable_scope('unit_2_%d' % i, reuse=True):
             x = res_func(x, filters[2], filters[2], self._stride_arr(1), False)
 
-        with tf.variable_scope('unit_3_0'):
+        with tf.variable_scope('unit_3_0', reuse=True):
           x = res_func(x, filters[2], filters[3], self._stride_arr(strides[2]),
                        activate_before_residual[2])
         for i in six.moves.range(1, self.hps.num_residual_units):
-          with tf.variable_scope('unit_3_%d' % i):
+          with tf.variable_scope('unit_3_%d' % i, reuse=True):
             x = res_func(x, filters[3], filters[3], self._stride_arr(1), False)
 
-        with tf.variable_scope('unit_last'):
+        with tf.variable_scope('unit_last', reuse=True):
           x = self._batch_norm('final_bn', x)
           x = self._relu(x, self.hps.relu_leakiness)
           x = self._global_avg_pool(x)
 
-        with tf.variable_scope('logit'):
+        with tf.variable_scope('logit', reuse=True):
           logits = self._fully_connected(x, self.hps.num_classes)
           predictions = tf.nn.softmax(logits)
 
-        with tf.variable_scope('costs'):
+        with tf.variable_scope('costs', reuse=True):
           xent = tf.nn.softmax_cross_entropy_with_logits(
               logits=logits, labels=self.labels)
           cost = tf.reduce_mean(xent, name='xent')
@@ -135,7 +135,8 @@ class ResNet(object):
 
   def _build_model(self):
     """Build the core model within the graph."""
-    with tf.variable_scope('init'):
+    with tf.variable_scope('init', reuse=True) as sc:
+      sc.
       x = self._images
       x = self._conv('init_conv', x, 3, 3, 16, self._stride_arr(1))
 
@@ -154,37 +155,37 @@ class ResNet(object):
       # filters = [16, 160, 320, 640]
       # Update hps.num_residual_units to 9
 
-    with tf.variable_scope('unit_1_0'):
+    with tf.variable_scope('unit_1_0', reuse=True):
       x = res_func(x, filters[0], filters[1], self._stride_arr(strides[0]),
                    activate_before_residual[0])
     for i in six.moves.range(1, self.hps.num_residual_units):
-      with tf.variable_scope('unit_1_%d' % i):
+      with tf.variable_scope('unit_1_%d' % i, reuse=True):
         x = res_func(x, filters[1], filters[1], self._stride_arr(1), False)
 
-    with tf.variable_scope('unit_2_0'):
+    with tf.variable_scope('unit_2_0', reuse=True):
       x = res_func(x, filters[1], filters[2], self._stride_arr(strides[1]),
                    activate_before_residual[1])
     for i in six.moves.range(1, self.hps.num_residual_units):
-      with tf.variable_scope('unit_2_%d' % i):
+      with tf.variable_scope('unit_2_%d' % i, reuse=True):
         x = res_func(x, filters[2], filters[2], self._stride_arr(1), False)
 
-    with tf.variable_scope('unit_3_0'):
+    with tf.variable_scope('unit_3_0', reuse=True):
       x = res_func(x, filters[2], filters[3], self._stride_arr(strides[2]),
                    activate_before_residual[2])
     for i in six.moves.range(1, self.hps.num_residual_units):
-      with tf.variable_scope('unit_3_%d' % i):
+      with tf.variable_scope('unit_3_%d' % i, reuse=True):
         x = res_func(x, filters[3], filters[3], self._stride_arr(1), False)
 
-    with tf.variable_scope('unit_last'):
+    with tf.variable_scope('unit_last', reuse=True):
       x = self._batch_norm('final_bn', x)
       x = self._relu(x, self.hps.relu_leakiness)
       x = self._global_avg_pool(x)
 
-    with tf.variable_scope('logit'):
+    with tf.variable_scope('logit', reuse=True):
       logits = self._fully_connected(x, self.hps.num_classes)
       self.predictions = tf.nn.softmax(logits)
 
-    with tf.variable_scope('costs'):
+    with tf.variable_scope('costs', reuse=True):
       xent = tf.nn.softmax_cross_entropy_with_logits(
           logits=logits, labels=self.labels)
       self.cost = tf.reduce_mean(xent, name='xent')
