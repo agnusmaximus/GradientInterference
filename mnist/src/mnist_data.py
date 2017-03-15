@@ -24,6 +24,7 @@ import tempfile
 
 import numpy
 from six.moves import urllib
+import sys
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 
@@ -125,6 +126,9 @@ class DataSet(object):
       self._index_in_epoch = batch_size
       assert batch_size <= self._num_examples
     end = self._index_in_epoch
+
+    tf.logging.info("YOYOOY")
+    sys.stdout.flush()
 
     # Most of the time return the non distorted image
     return self._images[start:end], self._labels[start:end]
