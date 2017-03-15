@@ -66,7 +66,7 @@ tf.app.flags.DEFINE_float('learning_rate', .1,
 
 start_time = time.time()
 
-def eval_once(saver, summary_writer, summary_op, model):
+def eval_once(saver, summary_writer, summary_op, model, grads):
   global start_time
 
   """Run Eval once.
@@ -109,6 +109,7 @@ def eval_once(saver, summary_writer, summary_op, model):
       computed_loss = 0
       step = 0
 
+      # First pass - compute losses and training error
       while step < num_iter and not coord.should_stop():
         (summaries, loss, predictions, truth) = sess.run(
           [model.summaries, model.cost, model.predictions,
@@ -121,9 +122,32 @@ def eval_once(saver, summary_writer, summary_op, model):
         computed_loss += loss
         step += 1
 
+      step = 0
+      sum_of_norms, norm_of_sums = None, None
+
+      # Second pass - compute R
+      while step < num_iter and not coord.should_stop():
+        gradients = sess.run(grads)
+        gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
+        gradient *= batchsize
+
+        if sum_of_norms == None:
+          sum_of_norms = np.linalg.norm(gradient)**2
+        else:
+          sum_of_norms += np.linalg.norm(gradient)**2
+
+        if norm_of_sums == None:
+          norm_of_sums = gradient
+        else:
+          norm_of_sums += gradient
+
+        step += 1
+
+      ratio_R = num_iter * FLAGS.batch_size * sum_of_norms / np.linalg.norm(norm_of_sums)**2
+
       # Compute precision @ 1.
       precision = 1.0 * correct_prediction / total_prediction
-      print("Info: %f %f %f %f" % (time.time()-start_time, float(global_step), precision, computed_loss))
+      print("Info: %f %f %f %f %f" % (time.time()-start_time, float(global_step), precision, computed_loss, ratio_R))
       sys.stdout.flush()
 
       summary = tf.Summary()
@@ -153,6 +177,8 @@ def evaluate():
                                optimizer='sgd')
     model = resnet_model.ResNet(hps, images, labels, "train")
     model.build_graph()
+    trainable_variables = tf.trainable_variables()
+    grads = tf.gradients(model.cost, trainable_variables)
 
     # Restore the moving average version of the learned variables for eval.
     saver = tf.train.Saver()
@@ -163,7 +189,7 @@ def evaluate():
     summary_writer = tf.summary.FileWriter(FLAGS.eval_dir, g)
 
     while True:
-      eval_once(saver, summary_writer, summary_op, model)
+      eval_once(saver, summary_writer, summary_op, model, grads)
       if FLAGS.run_once:
         break
       time.sleep(FLAGS.eval_interval_secs)
