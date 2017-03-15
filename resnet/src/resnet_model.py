@@ -260,7 +260,7 @@ class ResNet(object):
 
   def _residual(self, x, in_filter, out_filter, stride,
                 activate_before_residual=False,
-                reuse=False):
+                reuse=None):
     """Residual unit with 2 sub layers."""
     if activate_before_residual:
       with tf.variable_scope('shared_activation', reuse=reuse):
@@ -293,7 +293,7 @@ class ResNet(object):
     return x
 
   def _bottleneck_residual(self, x, in_filter, out_filter, stride,
-                           activate_before_residual=False, reuse=False):
+                           activate_before_residual=False, reuse=None):
     """Bottleneck residual unit with 3 sub layers."""
     if activate_before_residual:
       with tf.variable_scope('common_bn_relu', reuse=reuse):
@@ -337,7 +337,7 @@ class ResNet(object):
 
     return tf.multiply(self.hps.weight_decay_rate, tf.add_n(costs))
 
-  def _conv(self, name, x, filter_size, in_filters, out_filters, strides, reuse=False):
+  def _conv(self, name, x, filter_size, in_filters, out_filters, strides, reuse=None):
     """Convolution."""
     with tf.variable_scope(name, reuse=reuse):
       n = filter_size * filter_size * out_filters
