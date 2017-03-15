@@ -207,6 +207,8 @@ def train(target, dataset, cluster_spec):
     # Add classification loss.
     total_loss = mnist.loss(logits, labels)
 
+    grads = tf.gradients(total_loss, tf.trainable_variables())
+
     # Create an optimizer that performs gradient descent.
     opt = tf.train.GradientDescentOptimizer(lr)
 
@@ -287,7 +289,7 @@ def train(target, dataset, cluster_spec):
         t_evaluate_start = time.time()
         tf.logging.info("Master evaluating...")
         acc, loss = model_evaluate(mon_sess, dataset, images, labels, FLAGS.evaluate_batchsize, val_acc, total_loss)
-        tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times), new_epoch_float, acc, loss))
+        tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times)-sum(compute_R_times), new_epoch_float, acc, loss))
         t_evaluate_end = time.time()
         tf.logging.info("Master done evaluating... Elapsed time: %f" % (t_evaluate_end-t_evaluate_start))
         evaluate_times.append(t_evaluate_end-t_evaluate_start)
@@ -298,7 +300,8 @@ def train(target, dataset, cluster_spec):
         t_compute_r_start = time.time()
         tf.logging.info("Master computing R...")
         t_compute_r_end = time.time()
-        #R = compute_R(mon_sess, dataset, images, labels, FLAGS.batch_size)
+        R = compute_R(mon_sess, dataset, images, labels, FLAGS.batch_size, grads)
+        tf.logging.info("R: %f %f" % (t_compute_r_start-sum(evaluate_times)-sum(compute_R_times), R))
         tf.logging.info("Master done computing R... Elapsed time: %f" % (t_compute_r_end-t_compute_r_start))
         compute_R_times.append(t_compute_r_end-t_compute_r_start)
         mon_sess.run([unblock_workers_op])
