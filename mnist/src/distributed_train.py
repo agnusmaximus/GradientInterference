@@ -202,7 +202,6 @@ def train(target, dataset, cluster_spec):
 
       # Dequeue variable batchsize inputs
       feed_dict = mnist.fill_feed_dict(dataset, images, labels, FLAGS.batch_size)
-      tf.logging.info("YO GOT FD")
       loss_value, step = mon_sess.run([train_op, global_step], run_metadata=run_metadata, options=run_options, feed_dict=feed_dict)
       n_examples_processed += FLAGS.batch_size * num_workers
 

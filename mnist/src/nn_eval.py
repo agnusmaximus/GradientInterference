@@ -103,11 +103,13 @@ def do_eval(saver,
 
       # Compute R
       sum_of_norms, norm_of_sums = None, None
+      t_start = time.time()
       for i in range(dataset.num_examples):
         feed_dict = mnist.fill_feed_dict(data_set, images_placeholder, labels_placeholder, 1)
         gradients = sess.run(grads, feed_dict=feed_dict)
         gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
         gradient *= batchsize
+        print("YO %f" % (time.time()-t_start))
 
         if sum_of_norms == None:
           sum_of_norms = np.linalg.norm(gradient)**2
