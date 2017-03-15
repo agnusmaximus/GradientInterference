@@ -83,10 +83,6 @@ def do_eval(saver,
 
     global_step = ckpt.model_checkpoint_path.split('/')[-1].split('-')[-1]
 
-    # Don't evaluate on the same checkpoint
-    if prev_global_step == global_step:
-      return prev_global_step
-
     print('Succesfully loaded model from %s at step=%s.' %
           (ckpt.model_checkpoint_path, global_step))
     sys.stdout.flush()
@@ -159,7 +155,7 @@ def evaluate(dataset):
                                            graph_def=graph_def)
     step = -1
     while True:
-      step = do_eval(saver, summary_writer, validation_accuracy, validation_loss, images_placeholder, labels_placeholder, dataset, grads, prev_global_step=step)
+      step = do_eval(saver, summary_writer, validation_accuracy, validation_loss, images_placeholder, labels_placeholder, dataset, grads)
       if FLAGS.run_once:
         break
       time.sleep(FLAGS.eval_interval_secs)
