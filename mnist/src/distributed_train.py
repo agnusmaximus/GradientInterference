@@ -32,6 +32,8 @@ FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_boolean('should_evaluate', False, 'Whether Chief should do evaluation per epoch.')
 tf.app.flags.DEFINE_boolean('should_compute_R', False, 'Whether Chief should do compute R per epoch.')
+tf.app.flags.DEFINE_integer('eval_batchsize', 1000,
+                           """Batchsize to use for evaluation""")
 
 tf.app.flags.DEFINE_boolean('should_summarize', False, 'Whether Chief should write summaries.')
 tf.app.flags.DEFINE_boolean('timeline_logging', False, 'Whether to log timeline of events.')
@@ -97,31 +99,26 @@ RMSPROP_EPSILON = 1.0              # Epsilon term for RMSProp.
 
 def model_evaluate(sess, dataset, images, labels, batch_size, val_acc, val_loss):
   tf.logging.info("Evaluating model...")
-  num_iter = int(math.ceil(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / batchsize))
-  correct_prediction, total_prediction = 0, 0
-  total_sample_count = num_iter * batchsize
-  computed_loss = 0
-  step = 0
+  num_examples = dataset.num_examples
+  num_iter = int(math.ceil(num_examples / batchsize))
+  acc, loss = 0, 0
 
   while step < num_iter:
     feed_dict = mnist.fill_feed_dict(dataset, images, labels, batch_size)
-    (acc, loss) = sess.run(
+    (acc_p, loss_p) = sess.run(
       [val_acc, val_loss], feed_dict=feed_dict)
 
     tf.logging.info("%d of %d" % (step, num_iter))
 
-    truth = np.argmax(truth, axis=1)
-    predictions = np.argmax(predictions, axis=1)
-    correct_prediction += np.sum(truth == predictions)
-    total_prediction += predictions.shape[0]
-    computed_loss += loss
+    acc += acc_p
+    loss += loss_p
     step += 1
 
   tf.logging.info("Done evaluating...")
 
   # Compute precision @ 1.
-  precision = 1.0 * correct_prediction / total_prediction
-  return precision, computed_loss
+  acc /= float(num_examples)
+  return acc, loss
 
 def train(target, dataset, cluster_spec):
 
@@ -177,6 +174,9 @@ def train(target, dataset, cluster_spec):
     # Number of classes in the Dataset label set plus 1.
     # Label 0 is reserved for an (unused) background class.
     logits = mnist.inference(images, train=True)
+
+    val_acc = tf.reduce_sum(mnist.evaluation(logits, labels)) / tf.constant(FLAGS.eval_batch_size)
+    val_loss = mnist.loss(logits, labels_placeholder)
 
     # Add classification loss.
     total_loss = mnist.loss(logits, labels)
@@ -260,6 +260,8 @@ def train(target, dataset, cluster_spec):
         mon_sess.run([block_workers_op])
         t_evaluate_start = time.time()
         tf.logging.info("Master evaluating...")
+        acc, loss = model_evaluate(mon_sess, dataset, images, labels, FLAGS.eval_batch_size, val_acc, val_loss)
+        tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start, new_epoch_float, acc, loss))
         t_evaluate_end = time.time()
         tf.logging.info("Master done evaluating... Elapsed time: %f" % (t_evaluate_end-t_evaluate_start))
         mon_sess.run([unblock_workers_op])
