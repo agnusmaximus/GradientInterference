@@ -69,6 +69,7 @@ class ResNet(object):
     return [1, stride, stride, 1]
 
   def extract_individual_gradients(self, batch_size):
+      costs = []
       for i in range(batch_size):
         rest_label_shape = self.labels.shape.as_list()
         sliced_labels = tf.slice(self.labels,
