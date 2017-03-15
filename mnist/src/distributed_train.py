@@ -175,6 +175,11 @@ def train(target, dataset, cluster_spec):
   cur_iteration = -1
   iterations_finished = set()
 
+  n_examples_processed = 0
+  cur_epoch_track = 0
+  compute_R_train_error_time = 0
+  loss_value = -1
+
   checkpoint_save_secs = 60 * 2
 
   with tf.train.MonitoredTrainingSession(
