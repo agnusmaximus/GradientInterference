@@ -101,16 +101,15 @@ RMSPROP_EPSILON = 1.0              # Epsilon term for RMSProp.
 def model_evaluate(sess, dataset, images, labels, batch_size, val_acc, val_loss):
   tf.logging.info("Evaluating model...")
   num_examples = dataset.num_examples
-  tf.logging.info("YO %d" % num_examples)
   num_iter = int(math.ceil(num_examples / batch_size))
   acc, loss = 0, 0
-  tf.logging.info("YO startinggg.")
-  sys.stdout.flush()
 
   while step < num_iter:
     tf.logging.info("YOO FEED DICT")
+    sys.stdout.flush()
     feed_dict = mnist.fill_feed_dict(dataset, images, labels, batch_size)
     tf.logging.info(feed_dict)
+    sys.stdout.flush()
     (acc_p, loss_p) = sess.run(
       [val_acc, val_loss], feed_dict=feed_dict)
 
