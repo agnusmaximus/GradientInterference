@@ -94,13 +94,18 @@ def do_eval(saver,
 
       # Compute accuracy
       num_examples = data_set.num_examples
+      acc, loss = 0
       for i in range(num_examples):
         feed_dict = mnist.fill_feed_dict(data_set,
                                          images_placeholder,
                                          labels_placeholder,
                                          1)
 
-        acc, loss = sess.run([val_acc, val_loss], feed_dict=feed_dict)
+        acc_p, loss_p = sess.run([val_acc, val_loss], feed_dict=feed_dict)
+        acc += acc_p
+        loss += loss_p
+
+      acc /= float(num_examples)
 
       # Compute R
       sum_of_norms, norm_of_sums = None, None
@@ -109,8 +114,6 @@ def do_eval(saver,
         feed_dict = mnist.fill_feed_dict(data_set, images_placeholder, labels_placeholder, 1)
         gradients = sess.run(grads, feed_dict=feed_dict)
         gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
-        print("YO %f" % (time.time()-t_start))
-        sys.stdout.flush()
 
         if sum_of_norms == None:
           sum_of_norms = np.linalg.norm(gradient)**2
