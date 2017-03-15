@@ -78,7 +78,7 @@ class ResNet(object):
                        [i] + [0] * (len(rest_shape)-1),
                        [1] + rest_shape[1:])
 
-          x = self._conv('init_conv', x, 3, 3, 16, self._stride_arr(1))
+          x = self._conv('init_conv', x, 3, 3, 16, self._stride_arr(1), reuse=False)
 
         strides = [1, 2, 2]
         activate_before_residual = [True, False, False]
@@ -336,9 +336,9 @@ class ResNet(object):
 
     return tf.multiply(self.hps.weight_decay_rate, tf.add_n(costs))
 
-  def _conv(self, name, x, filter_size, in_filters, out_filters, strides):
+  def _conv(self, name, x, filter_size, in_filters, out_filters, strides, reuse=True):
     """Convolution."""
-    with tf.variable_scope(name, reuse=True):
+    with tf.variable_scope(name, reuse=reuse):
       n = filter_size * filter_size * out_filters
       kernel = tf.get_variable(
           'DW', [filter_size, filter_size, in_filters, out_filters],
