@@ -32,7 +32,7 @@ FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_boolean('should_evaluate', False, 'Whether Chief should do evaluation per epoch.')
 tf.app.flags.DEFINE_boolean('should_compute_R', False, 'Whether Chief should do compute R per epoch.')
-tf.app.flags.DEFINE_integer('eval_batch_size', 1000,
+tf.app.flags.DEFINE_integer('eval_batch_size', 50000,
                            """Batchsize to use for evaluation""")
 
 tf.app.flags.DEFINE_boolean('should_summarize', False, 'Whether Chief should write summaries.')
@@ -104,6 +104,7 @@ def model_evaluate(sess, dataset, images, labels, batch_size, val_acc, val_loss)
   num_iter = int(math.ceil(num_examples / batch_size))
   acc, loss = 0, 0
   tf.logging.info("YO startinggg.")
+  sys.stdout.flush()
 
   while step < num_iter:
     tf.logging.info("YOO FEED DICT")
