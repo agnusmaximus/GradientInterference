@@ -144,7 +144,7 @@ def eval_once(saver, summary_writer, summary_op, model, grads):
           sum_of_norms = np.linalg.norm(gradient)**2
         else:
           sum_of_norms += np.linalg.norm(gradient)**2
-
+\
         if norm_of_sums == None:
           norm_of_sums = gradient
         else:
@@ -202,8 +202,6 @@ def evaluate():
       eval_once(saver, summary_writer, summary_op, model, grads)
       if FLAGS.run_once:
         break
-      time.sleep(FLAGS.eval_interval_secs)
-
 
 def main(argv=None):  # pylint: disable=unused-argument
   sys.stdout.flush()
