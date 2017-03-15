@@ -201,7 +201,8 @@ def train(target, dataset, cluster_spec):
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
 
       # Dequeue variable batchsize inputs
-      loss_value, step = mon_sess.run([train_op, global_step], run_metadata=run_metadata, options=run_options)
+      feed_dict = mnist.fill_feed_dict(dataset, images, labels, FLAGS.batch_size)
+      loss_value, step = mon_sess.run([train_op, global_step], run_metadata=run_metadata, options=run_options, feed_dict=feed_dict)
       n_examples_processed += FLAGS.batch_size * num_workers
 
       # This uses the queuerunner which does not support variable batch sizes
