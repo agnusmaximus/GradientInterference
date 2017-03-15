@@ -181,6 +181,7 @@ def train(target, dataset, cluster_spec):
     logits = mnist.inference(images, train=True)
 
     val_acc = tf.reduce_sum(mnist.evaluation(logits, labels)) / tf.constant(FLAGS.eval_batch_size)
+    val_acc = tf.Print(global_step, [global_step], message="HI")
 
     # Add classification loss.
     total_loss = mnist.loss(logits, labels)
