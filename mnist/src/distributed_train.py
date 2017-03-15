@@ -106,8 +106,8 @@ def model_evaluate(sess, dataset, images, labels, batch_size, val_acc, val_loss)
 
   while step < num_iter:
     feed_dict = mnist.fill_feed_dict(dataset, images, labels, batch_size)
-    acc_p = sess.run(
-      [val_acc], feed_dict=feed_dict)
+    acc_p, loss_p = sess.run(
+      [val_acc, val_loss], feed_dict=feed_dict)
 
     tf.logging.info("%d of %d" % (step, num_iter))
     sys.stdout.flush()
