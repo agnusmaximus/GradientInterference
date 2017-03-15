@@ -104,6 +104,8 @@ def model_evaluate(sess, dataset, images, labels, batch_size, val_acc, val_loss)
   num_iter = int(math.ceil(num_examples / batch_size))
   acc, loss = 0, 0
 
+  step = 0
+
   while step < num_iter:
     tf.logging.info("YOO FEED DICT")
     sys.stdout.flush()
