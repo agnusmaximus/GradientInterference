@@ -95,6 +95,34 @@ RMSPROP_DECAY = 0.9                # Decay term for RMSProp.
 RMSPROP_MOMENTUM = 0.9             # Momentum in RMSProp.
 RMSPROP_EPSILON = 1.0              # Epsilon term for RMSProp.
 
+def model_evaluate(sess, dataset, images, labels, batch_size, val_acc, val_loss):
+  tf.logging.info("Evaluating model...")
+  num_iter = int(math.ceil(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / batchsize))
+  correct_prediction, total_prediction = 0, 0
+  total_sample_count = num_iter * batchsize
+  computed_loss = 0
+  step = 0
+
+  while step < num_iter:
+    feed_dict = mnist.fill_feed_dict(dataset, images, labels, batch_size)
+    (acc, loss) = sess.run(
+      [val_acc, val_loss], feed_dict=feed_dict)
+
+    tf.logging.info("%d of %d" % (step, num_iter))
+
+    truth = np.argmax(truth, axis=1)
+    predictions = np.argmax(predictions, axis=1)
+    correct_prediction += np.sum(truth == predictions)
+    total_prediction += predictions.shape[0]
+    computed_loss += loss
+    step += 1
+
+  tf.logging.info("Done evaluating...")
+
+  # Compute precision @ 1.
+  precision = 1.0 * correct_prediction / total_prediction
+  return precision, computed_loss
+
 def train(target, dataset, cluster_spec):
 
   """Train Inception on a dataset for a number of steps."""
