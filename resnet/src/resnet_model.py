@@ -135,8 +135,7 @@ class ResNet(object):
 
   def _build_model(self):
     """Build the core model within the graph."""
-    with tf.variable_scope('init', reuse=True) as sc:
-      sc.
+    with tf.variable_scope('init', reuse=True):
       x = self._images
       x = self._conv('init_conv', x, 3, 3, 16, self._stride_arr(1))
 
