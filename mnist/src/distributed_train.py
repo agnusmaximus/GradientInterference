@@ -180,7 +180,7 @@ def train(target, dataset, cluster_spec):
   compute_R_train_error_time = 0
   loss_value = -1
 
-  checkpoint_save_secs = 60 * 2
+  checkpoint_save_secs = 10
 
   with tf.train.MonitoredTrainingSession(
       master=target, is_chief=is_chief,
