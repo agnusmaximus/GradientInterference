@@ -93,7 +93,7 @@ def do_eval(saver,
 
     # Compute accuracy
     num_examples = data_set.num_examples
-    acc, loss = 0
+    acc, loss = 0, 0
     sum_of_norms, norm_of_sums = None, None
     for i in range(num_examples):
       feed_dict = mnist.fill_feed_dict(data_set,
