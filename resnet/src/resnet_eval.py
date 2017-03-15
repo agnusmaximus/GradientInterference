@@ -116,11 +116,9 @@ def eval_once(saver, summary_writer, summary_op, model, grads):
       # First pass - compute losses and training error
       t_eval_start = time.time()
       while step < num_iter and not coord.should_stop():
-        r = sess.run(
+        summaries, loss, predictions, truth, gradients_real = sess.run(
           [model.summaries, model.cost, model.predictions,
-           model.labels] + grads)
-
-        summaries, loss, predictions, truth, gradients = r[0], r[1], r[2], r[3], r[4:]
+           model.labels, grads])
 
         truth = np.argmax(truth, axis=1)
         predictions = np.argmax(predictions, axis=1)
@@ -128,19 +126,20 @@ def eval_once(saver, summary_writer, summary_op, model, grads):
         total_prediction += predictions.shape[0]
         computed_loss += loss
 
-        gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
-        gradient *= FLAGS.batch_size
+        assert(len(gradients_real) == FLAGS.batch_size)
+        for gradients in gradients_real:
+          gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
+          gradient *= FLAGS.batch_size
 
-        if sum_of_norms == None:
-          sum_of_norms = np.linalg.norm(gradient)**2
-        else:
-          sum_of_norms += np.linalg.norm(gradient)**2
+          if sum_of_norms == None:
+            sum_of_norms = np.linalg.norm(gradient)**2
+          else:
+            sum_of_norms += np.linalg.norm(gradient)**2
 
-        if norm_of_sums == None:
-          norm_of_sums = gradient
-        else:
-          norm_of_sums += gradient
-
+          if norm_of_sums == None:
+            norm_of_sums = gradient
+          else:
+            norm_of_sums += gradient
 
         step += 1
       t_eval_end = time.time()
@@ -193,7 +192,7 @@ def evaluate():
     summary_writer = tf.summary.FileWriter(FLAGS.eval_dir, g)
 
     while True:
-      eval_once(saver, summary_writer, summary_op, model, grads)
+      eval_once(saver, summary_writer, summary_op, model, grads_for_each_example)
       if FLAGS.run_once:
         break
 
