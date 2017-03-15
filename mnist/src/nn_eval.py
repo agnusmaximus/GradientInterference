@@ -94,12 +94,13 @@ def do_eval(saver,
 
       # Compute accuracy
       num_examples = data_set.num_examples
-      feed_dict = mnist.fill_feed_dict(data_set,
-                                       images_placeholder,
-                                       labels_placeholder,
-                                       num_examples)
+      for i in range(num_examples):
+        feed_dict = mnist.fill_feed_dict(data_set,
+                                         images_placeholder,
+                                         labels_placeholder,
+                                         num_examples)
 
-      acc, loss = sess.run([val_acc, val_loss], feed_dict=feed_dict)
+        acc, loss = sess.run([val_acc, val_loss], feed_dict=feed_dict)
 
       # Compute R
       sum_of_norms, norm_of_sums = None, None
@@ -143,7 +144,8 @@ def evaluate(dataset):
   """Evaluate model on Dataset for a number of steps."""
   with tf.Graph().as_default():
     # Graph creation
-    batch_size = dataset.num_examples
+    #batch_size = dataset.num_examples
+    batch_size = 1
     images_placeholder, labels_placeholder = mnist.placeholder_inputs(batch_size)
     logits = mnist.inference(images_placeholder, train=False)
     validation_accuracy = tf.reduce_sum(mnist.evaluation(logits, labels_placeholder)) / tf.constant(batch_size)
