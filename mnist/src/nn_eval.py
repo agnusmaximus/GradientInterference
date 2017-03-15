@@ -98,7 +98,7 @@ def do_eval(saver,
         feed_dict = mnist.fill_feed_dict(data_set,
                                          images_placeholder,
                                          labels_placeholder,
-                                         num_examples)
+                                         1)
 
         acc, loss = sess.run([val_acc, val_loss], feed_dict=feed_dict)
 
