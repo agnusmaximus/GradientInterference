@@ -53,6 +53,7 @@ def do_eval(saver,
             images_placeholder,
             labels_placeholder,
             data_set,
+            grads,
             prev_global_step=-1):
   """Runs one evaluation against the full epoch of data.
   Args:
@@ -97,10 +98,15 @@ def do_eval(saver,
                                        images_placeholder,
                                        labels_placeholder,
                                        num_examples)
-      acc, loss = sess.run([val_acc, val_loss], feed_dict=feed_dict)
 
-      print('Num examples: %d  Precision @ 1: %f Loss: %f Time: %f' %
-            (num_examples, acc, loss, time.time() - start_time))
+      acc, loss, gradients = sess.run([val_acc, val_loss, grads], feed_dict=feed_dict)
+      gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
+      gradient *= dataset.num_examples
+      ratio_R = dataset.num_examples * np.linalg.norm(gradient)**2 / np.linalg.norm(gradient)**2
+
+      #print('Num examples: %d  Precision @ 1: %f Loss: %f Time: %f' %
+      #      (num_examples, acc, loss, time.time() - start_time))
+      print("Info: %f %f %f %f %f" % (time.time()-start_time, float(global_step), acc, loss, ratio_R))
       sys.stdout.flush()
 
       # Summarize accuracy
@@ -123,6 +129,8 @@ def evaluate(dataset):
     logits = mnist.inference(images_placeholder, train=False)
     validation_accuracy = tf.reduce_sum(mnist.evaluation(logits, labels_placeholder)) / tf.constant(batch_size)
     validation_loss = mnist.loss(logits, labels_placeholder)
+    trainable_variables = tf.trainable_variables()
+    grads = tf.gradients(validation_loss, trainable_variables)
 
     # Reference to sess and saver
     sess = tf.Session()
@@ -134,7 +142,7 @@ def evaluate(dataset):
                                            graph_def=graph_def)
     step = -1
     while True:
-      step = do_eval(saver, summary_writer, validation_accuracy, validation_loss, images_placeholder, labels_placeholder, dataset, prev_global_step=step)
+      step = do_eval(saver, summary_writer, validation_accuracy, validation_loss, images_placeholder, labels_placeholder, dataset, grads, prev_global_step=step)
       if FLAGS.run_once:
         break
       time.sleep(FLAGS.eval_interval_secs)
