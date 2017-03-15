@@ -137,7 +137,7 @@ class ResNet(object):
           cost = tf.reduce_mean(xent, name='xent')
           cost += self._decay()
         costs.append(cost)
-      return [tf.gradient(x, tf.trainable_variables()) for x in costs]
+      return [tf.gradients(x, tf.trainable_variables()) for x in costs]
 
   def _build_model(self):
     """Build the core model within the graph."""
