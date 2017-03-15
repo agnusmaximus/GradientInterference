@@ -128,6 +128,7 @@ def eval_once(saver, summary_writer, summary_op, model, grads):
       # Second pass - compute R
       while step < num_iter and not coord.should_stop():
         gradients = sess.run(grads)
+        print(len(gradients), gradients[0].shape)
         gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
         gradient *= batchsize
 
