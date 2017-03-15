@@ -162,4 +162,3 @@ def evaluate(dataset):
       step = do_eval(saver, summary_writer, validation_accuracy, validation_loss, images_placeholder, labels_placeholder, dataset, grads, prev_global_step=step)
       if FLAGS.run_once:
         break
-      time.sleep(FLAGS.eval_interval_secs)
