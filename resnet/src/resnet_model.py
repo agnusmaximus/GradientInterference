@@ -213,9 +213,9 @@ class ResNet(object):
     self.train_op = tf.group(*train_ops)
 
   # TODO(xpan): Consider batch_norm in contrib/layers/python/layers/layers.py
-  def _batch_norm(self, name, x):
+  def _batch_norm(self, name, x, reuse=None):
     """Batch normalization."""
-    with tf.variable_scope(name, reuse=True):
+    with tf.variable_scope(name, reuse=reuse):
       params_shape = [x.get_shape()[-1]]
 
       beta = tf.get_variable(
