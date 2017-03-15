@@ -229,8 +229,9 @@ def train(target, dataset, cluster_spec):
 
       cur_epoch = n_examples_processed / float(dataset.num_examples)
       tf.logging.info("epoch: %f time %f" % (cur_epoch, time.time()-begin_time));
-      if cur_epoch >= FLAGS.n_train_epochs:
-        break
+
+      #if cur_epoch >= FLAGS.n_train_epochs:
+      #  break
 
       duration = time.time() - start_time
       examples_per_sec = FLAGS.batch_size / float(duration)
