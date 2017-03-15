@@ -118,7 +118,7 @@ def eval_once(saver, summary_writer, summary_op, model, grads):
       while step < num_iter and not coord.should_stop():
         r = sess.run(
           [model.summaries, model.cost, model.predictions,
-           model.labels, grads])
+           model.labels] + grads)
 
         summaries, loss, predictions, truth, gradients = r[0], r[1], r[2], r[3], r[4:]
 
