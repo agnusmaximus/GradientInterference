@@ -16,27 +16,20 @@ import tensorflow as tf
 import signal
 import sys
 import os
-import math
 
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import variables
-from tensorflow.python.ops import control_flow_ops
 from tensorflow.python.ops import state_ops
-from tensorflow.python.ops import array_ops
 from tensorflow.python.ops import logging_ops
 from tensorflow.python.client import timeline
 from tensorflow.python.ops import data_flow_ops
-from tensorflow.python.training import input as tf_input
-
-import cifar_input
-import resnet_model
+import mnist
 
 np.set_printoptions(threshold=np.nan)
 tf.logging.set_verbosity(tf.logging.INFO)
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_boolean('n_train_epochs', 1000, 'Number of epochs to train for')
 tf.app.flags.DEFINE_boolean('should_summarize', False, 'Whether Chief should write summaries.')
 tf.app.flags.DEFINE_boolean('timeline_logging', False, 'Whether to log timeline of events.')
 tf.app.flags.DEFINE_string('job_name', '', 'One of "ps", "worker"')
@@ -49,18 +42,17 @@ tf.app.flags.DEFINE_string('worker_hosts', '',
                            """worker jobs. e.g. """
                            """'machine1:2222,machine2:1111,machine2:2222'""")
 
-tf.app.flags.DEFINE_string('train_dir', '/tmp/resnet_train',
+tf.app.flags.DEFINE_string('train_dir', '/tmp/imagenet_train',
                            """Directory where to write event logs """
                            """and checkpoint.""")
 tf.app.flags.DEFINE_integer('rpc_port', 1235,
                            """Port for timeout communication""")
 
 tf.app.flags.DEFINE_integer('max_steps', 1000000, 'Number of batches to run.')
+tf.app.flags.DEFINE_integer('batch_size', 128, 'Batch size.')
 tf.app.flags.DEFINE_string('subset', 'train', 'Either "train" or "validation".')
 tf.app.flags.DEFINE_boolean('log_device_placement', False,
                             'Whether to log device placement.')
-tf.app.flags.DEFINE_boolean('variable_batchsize', False,
-                            'Use variable batchsize comptued using R.')
 
 # Task ID is used to select the chief and also to access the local_step for
 # each replica to check staleness of the gradients in sync_replicas_optimizer.
@@ -72,7 +64,7 @@ tf.app.flags.DEFINE_integer(
 tf.app.flags.DEFINE_integer('num_replicas_to_aggregate', -1,
                             """Number of gradients to collect before """
                             """updating the parameters.""")
-tf.app.flags.DEFINE_integer('save_interval_secs', 10,
+tf.app.flags.DEFINE_integer('save_interval_secs', 20,
                             'Save interval seconds.')
 tf.app.flags.DEFINE_integer('save_summaries_secs', 300,
                             'Save summaries interval seconds.')
@@ -88,7 +80,7 @@ tf.app.flags.DEFINE_integer('save_summaries_secs', 300,
 #tf.app.flags.DEFINE_float('initial_learning_rate', 0.045,
 #                          'Initial learning rate.')
 # For flowers
-tf.app.flags.DEFINE_float('initial_learning_rate', 0.01,
+tf.app.flags.DEFINE_float('initial_learning_rate', 0.1,
                           'Initial learning rate.')
 tf.app.flags.DEFINE_float('num_epochs_per_decay', 2.0,
                           'Epochs after which learning rate decays.')
@@ -100,39 +92,7 @@ RMSPROP_DECAY = 0.9                # Decay term for RMSProp.
 RMSPROP_MOMENTUM = 0.9             # Momentum in RMSProp.
 RMSPROP_EPSILON = 1.0              # Epsilon term for RMSProp.
 
-EVAL_BATCHSIZE=2000
-
-def model_evaluate(sess, model, images_pl, labels_pl, inputs_dq, batchsize):
-  tf.logging.info("Evaluating model...")
-  num_iter = int(math.ceil(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / batchsize))
-  correct_prediction, total_prediction = 0, 0
-  total_sample_count = num_iter * batchsize
-  computed_loss = 0
-  step = 0
-
-  while step < num_iter:
-    images_real, labels_real = sess.run(inputs_dq, feed_dict={images_pl:np.zeros([1, 32, 32, 3]), labels_pl: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
-    feed_dict = {images_pl:images_real, labels_pl:labels_real}
-    (summaries, loss, predictions, truth) = sess.run(
-      [model.summaries, model.cost, model.predictions,
-       model.labels], feed_dict=feed_dict)
-
-    tf.logging.info("%d of %d" % (step, num_iter))
-
-    truth = np.argmax(truth, axis=1)
-    predictions = np.argmax(predictions, axis=1)
-    correct_prediction += np.sum(truth == predictions)
-    total_prediction += predictions.shape[0]
-    computed_loss += loss
-    step += 1
-
-  tf.logging.info("Done evaluating...")
-
-  # Compute precision @ 1.
-  precision = 1.0 * correct_prediction / total_prediction
-  return precision, computed_loss
-
-def train(target, cluster_spec):
+def train(target, dataset, cluster_spec):
 
   """Train Inception on a dataset for a number of steps."""
   # Number of workers and parameter servers are infered from the workers and ps
@@ -161,60 +121,59 @@ def train(target, cluster_spec):
         worker_device='/job:worker/task:%d' % FLAGS.task_id,
         cluster=cluster_spec)):
 
-    global_step = tf.Variable(0, name="global_step", trainable=False)
-
-
     # Create a variable to count the number of train() calls. This equals the
     # number of updates applied to the variables. The PS holds the global step.
+    global_step = tf.Variable(0, name="global_step", trainable=False)
 
-    images, labels = cifar_input.build_input(FLAGS.dataset, FLAGS.data_dir, FLAGS.batch_size, "train")
-    variable_batchsize_inputs = cifar_input.build_input_multi_batchsize(FLAGS.dataset, FLAGS.data_dir, FLAGS.batch_size, "train")
+    # Calculate the learning rate schedule.
+    num_batches_per_epoch = (dataset.num_examples / FLAGS.batch_size)
 
-    hps = resnet_model.HParams(batch_size=FLAGS.batch_size,
-                               num_classes=10 if FLAGS.dataset=="cifar10" else 100,
-                               min_lrn_rate=0.0001,
-                               lrn_rate=FLAGS.initial_learning_rate,
-                               num_residual_units=5,
-                               use_bottleneck=False,
-                               weight_decay_rate=0.0002,
-                               relu_leakiness=0.1,
-                               optimizer='sgd')
+    # Decay steps need to be divided by the number of replicas to aggregate.
+    # This was the old decay schedule. Don't want this since it decays too fast with a fixed learning rate.
+    decay_steps = int(num_batches_per_epoch * FLAGS.num_epochs_per_decay / num_replicas_to_aggregate)
+    # New decay schedule. Decay every few steps.
+    #decay_steps = int(num_batches_per_epoch * FLAGS.num_epochs_per_decay / num_workers)
 
-    model = resnet_model.ResNet(hps, images, labels, "train")
-    model.build_graph()
+    # Decay the learning rate exponentially based on the number of steps.
+    lr = tf.train.exponential_decay(FLAGS.initial_learning_rate,
+                                    global_step,
+                                    decay_steps,
+                                    FLAGS.learning_rate_decay_factor,
+                                    staircase=True)
+
+    images, labels = mnist.placeholder_inputs(FLAGS.batch_size)
+
+    # Number of classes in the Dataset label set plus 1.
+    # Label 0 is reserved for an (unused) background class.
+    logits = mnist.inference(images, train=True)
+
+    # Add classification loss.
+    total_loss = mnist.loss(logits, labels)
 
     # Create an optimizer that performs gradient descent.
-    opt = tf.train.GradientDescentOptimizer(FLAGS.initial_learning_rate)
+    opt = tf.train.GradientDescentOptimizer(lr)
 
+    # Use V2 optimizer
     opt = tf.train.SyncReplicasOptimizer(
       opt,
       replicas_to_aggregate=num_replicas_to_aggregate,
-      total_num_replicas=num_workers,
-    )
+      total_num_replicas=num_workers)
 
     # Compute gradients with respect to the loss.
-    grads = opt.compute_gradients(model.cost)
+    grads = opt.compute_gradients(total_loss)
     apply_gradients_op = opt.apply_gradients(grads, global_step=global_step)
 
     with tf.control_dependencies([apply_gradients_op]):
-        train_op = tf.identity(model.cost, name='train_op')
+      train_op = tf.identity(total_loss, name='train_op')
 
   sync_replicas_hook = opt.make_session_run_hook(is_chief)
 
-  # Train, checking for Nans. Concurrently run the summary operation at a
   # specified interval. Note that the summary_op and train_op never run
   # simultaneously in order to prevent running out of GPU memory.
   next_summary_time = time.time() + FLAGS.save_summaries_secs
   begin_time = time.time()
-
-  # Keep track of own iteration
   cur_iteration = -1
   iterations_finished = set()
-
-  n_examples_processed = 0
-  cur_epoch_track = 0
-  compute_R_train_error_time = 0
-  loss_value = -1
 
   checkpoint_save_secs = 60 * 2
 
