@@ -319,9 +319,11 @@ def train(target, cluster_spec):
       tf.logging.info("Master distributing examples for computing R...")
       for i in range(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN):
         img_work, label_work = sess.run(variable_batchsize_inputs[1], feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
+        tf.logging.info(img_work.shape, label_work.shape)
         worker = i % num_workers
         tf.logging.info("Assigning example %d to worker %d for computing R..." % (i, worker))
-        feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])}
+        #feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])}
+        feed_dict={}
         feed_dict[work_image_placeholder] = img_work
         feed_dict[work_label_placeholder] = img_label
         sess.run([enqueue_image_ops_for_r[i], enqueue_label_ops_for_r[i]], feed_dict=feed_dict)
