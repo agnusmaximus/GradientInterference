@@ -275,6 +275,15 @@ def train(target, cluster_spec):
         R_images_work_queue.append(data_flow_ops.FIFOQueue(-1, tf.float32))
         R_labels_work_queue.append(data_flow_ops.FIFOQueue(-1, tf.int64))
 
+      gradient_sums_queue = data_flow_ops.FIFOQueue(-1, tf.float32))
+      sum_of_norms_queue = data_flow_ops.FIFOQueue(-1, tf.float32))
+
+    gradient_sum_placeholder = tf.placeholder(tf.float32, shape=(-1))
+    gradient_sums_enqueue = gradient_sums_queue.enqueue(gradient_sum_placeholder)
+
+    sum_of_norms_placeholder = tf.placeholder(tf.float32, shape=())
+    sum_of_norms_enqueue = sum_of_norms_queue.enqueue(sum_of_norms_placeholder)
+
     # Enqueue operations for adding work to the R queue
     enqueue_image_ops_for_r = []
     enqueue_label_ops_for_r = []
@@ -295,7 +304,7 @@ def train(target, cluster_spec):
       dequeue_work_images.append(R_images_work_queue[i].dequeue())
       dequeue_label_images.append(R_labels_work_queue[i].dequeue())
 
-  def distributed_compute_R():
+  def distributed_compute_R(sess):
 
     worker_id = FLAGS.task_id
 
@@ -313,10 +322,13 @@ def train(target, cluster_spec):
     # For every worker, we pop from its queue and compute R on them
     n_labels_in_queue, n_images_in_queue = -1, -1
     sum_of_norms, norm_of_sums = None, None
-    while n_labels_in_queue > 0 or n_labels_in_queue == -1:
+    n_examples_computed = 0
+    while n_labels_in_queue != 0:
       n_labels_in_queue, n_images_in_queue = sess.run([length_of_images_queue[worker_id],
                                                        length_of_labels_queue[worker_id]])
       assert(n_labels_in_queue == n_images_in_queue)
+      if n_labels_in_queue == 0:
+        break
       work_image, work_label = sess.run([dequeue_work_images[worker_id],
                                          dequeue_label_images[worker_id]])
       feed_dict = {images : work_image, label : work_label}
@@ -333,8 +345,12 @@ def train(target, cluster_spec):
       else:
         norm_of_sums += gradient
 
+    # Worker has computed at least one example -- submit components of R
+    if sum_of_norms != None:
+      fd = {sum_of_norms_placeholder : sum_of_norms,
+            gradient_sum_placeholder = norm_of_sums}
 
-
+      sess.run([gradient_sums_enqueue, sum_of_norms_enqueue], feed_dict=fd)
 
 
 
@@ -399,7 +415,7 @@ def train(target, cluster_spec):
         #mon_sess.run([block_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
         t_compute_r_start = time.time()
         tf.logging.info("Master computing R...")
-        R = distributed_compute_R()
+        R = distributed_compute_R(mon_sess)
         tf.logging.info("R: %f %f" % (t_compute_r_start-sum(evaluate_times)-sum(compute_R_times), R))
         t_compute_r_end = time.time()
         tf.logging.info("Master done computing R... Elapsed time: %f" % (t_compute_r_end-t_compute_r_start))
