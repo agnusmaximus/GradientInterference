@@ -254,7 +254,7 @@ def train(target, dataset, cluster_spec):
   compute_R_train_error_time = 0
   loss_value = -1
 
-  checkpoint_save_secs = 60*2
+  checkpoint_save_secs = 60*5
 
   compute_R_times, evaluate_times = [0], [0]
 
