@@ -278,7 +278,7 @@ def train(target, cluster_spec):
       gradient_sums_queue = data_flow_ops.FIFOQueue(-1, tf.float32)
       sum_of_norms_queue = data_flow_ops.FIFOQueue(-1, tf.float32)
 
-    gradient_sum_placeholder = tf.placeholder(tf.float32, shape=(-1))
+    gradient_sum_placeholder = tf.placeholder(tf.float32, shape=(None))
     gradient_sums_enqueue = gradient_sums_queue.enqueue(gradient_sum_placeholder)
 
     sum_of_norms_placeholder = tf.placeholder(tf.float32, shape=())
@@ -424,6 +424,8 @@ def train(target, cluster_spec):
         t_compute_r_end = time.time()
         tf.logging.info("Master done computing R... Elapsed time: %f" % (t_compute_r_end-t_compute_r_start))
         compute_R_times.append(t_compute_r_end-t_compute_r_start)
+      if FLAGS.should_compute_R and FLAGS.task_id != 0:
+        distributed_compute_R(mon_sess)
 
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
 
