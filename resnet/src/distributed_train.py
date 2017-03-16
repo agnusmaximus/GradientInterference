@@ -369,6 +369,7 @@ def train(target, cluster_spec):
             gradient_sum_placeholder : norm_of_sums}
 
       tf.logging.info("Worker submitting sum of norms and norm of sums to queue...")
+      sys.stdout.flush()
       sess.run([gradient_sums_enqueue, sum_of_norms_enqueue], feed_dict=fd)
 
     # Master waits until there are at least num_worker values in sum of gradients queue
