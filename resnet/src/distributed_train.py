@@ -126,13 +126,10 @@ def compute_R(sess, model, inputs_dq_for_batchsize, images_pl, labels_pl, indivi
     sys.stdout.flush()
 
     images_real, labels_real = sess.run(inputs_dq_for_batchsize, feed_dict={images_pl:np.zeros([1, 32, 32, 3]), labels_pl: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
-    tf.logging.info("computing r %d of %d" % (i, num_iter))
     sys.stdout.flush()
     feed_dict = {images_pl:images_real, labels_pl:labels_real}
-    tf.logging.info("computing r %d of %d" % (i, num_iter))
     sys.stdout.flush()
     gradients_real = sess.run(individual_gradients, feed_dict=feed_dict)
-    tf.logging.info("computing r %d of %d" % (i, num_iter))
     sys.stdout.flush()
 
     assert(len(gradients_real) == batchsize)
