@@ -275,8 +275,8 @@ def train(target, cluster_spec):
         R_images_work_queue.append(data_flow_ops.FIFOQueue(-1, tf.float32))
         R_labels_work_queue.append(data_flow_ops.FIFOQueue(-1, tf.int64))
 
-      gradient_sums_queue = data_flow_ops.FIFOQueue(-1, tf.float32))
-      sum_of_norms_queue = data_flow_ops.FIFOQueue(-1, tf.float32))
+      gradient_sums_queue = data_flow_ops.FIFOQueue(-1, tf.float32)
+      sum_of_norms_queue = data_flow_ops.FIFOQueue(-1, tf.float32)
 
     gradient_sum_placeholder = tf.placeholder(tf.float32, shape=(-1))
     gradient_sums_enqueue = gradient_sums_queue.enqueue(gradient_sum_placeholder)
@@ -308,6 +308,9 @@ def train(target, cluster_spec):
 
     worker_id = FLAGS.task_id
 
+    # We block the work distribution so that when the workers pass this checkpoint,
+    # all its work is in its queue.
+    mon_sess.run([block_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
     # Assign examples to workers
     if worker_id == 0:
       tf.logging.info("Master distributing examples for computing R...")
@@ -318,6 +321,7 @@ def train(target, cluster_spec):
         sess.run(enqueue_image_ops_for_r[i], feed_dict={work_image_placeholder:img_work})
         sess.run(enqueue_label_ops_for_r[i], feed_dict={work_label_placeholder:img_label})
       tf.logging.info("Master done distributing examples for computing R...")
+    mon_sess.run([unblock_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
 
     # For every worker, we pop from its queue and compute R on them
     n_labels_in_queue, n_images_in_queue = -1, -1
@@ -412,7 +416,7 @@ def train(target, cluster_spec):
         mon_sess.run([unblock_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
 
       if FLAGS.should_compute_R and FLAGS.task_id == 0 and (new_epoch_track == cur_epoch_track+1 or cur_iteration == 0):
-        #mon_sess.run([block_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
+
         t_compute_r_start = time.time()
         tf.logging.info("Master computing R...")
         R = distributed_compute_R(mon_sess)
@@ -420,7 +424,6 @@ def train(target, cluster_spec):
         t_compute_r_end = time.time()
         tf.logging.info("Master done computing R... Elapsed time: %f" % (t_compute_r_end-t_compute_r_start))
         compute_R_times.append(t_compute_r_end-t_compute_r_start)
-        #mon_sess.run([unblock_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
 
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
 
