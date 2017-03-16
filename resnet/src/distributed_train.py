@@ -267,13 +267,16 @@ def train(target, cluster_spec):
                                                   lambda x : tf.constant(0),
                                                   [tf.constant(0)])
 
+    work_image_placeholder = tf.placeholder(tf.float32, shape=(1, IMAGE_SIZE, IMAGE_SIZE, 3))
+    work_label_placeholder = tf.placeholder(tf.int64, shape=(1, 10 if FLAGS.dataset == 'cifar10' else 100))
+
     # Queue for distributing computation of R
     with ops.device(global_step.device):
       R_images_work_queue = []
       R_labels_work_queue = []
       for i in range(num_workers):
-        R_images_work_queue.append(data_flow_ops.FIFOQueue(-1, tf.float32))
-        R_labels_work_queue.append(data_flow_ops.FIFOQueue(-1, tf.int64))
+        R_images_work_queue.append(data_flow_ops.FIFOQueue(-1, tf.float32, shapes=(work_image_placeholder.shape())))
+        R_labels_work_queue.append(data_flow_ops.FIFOQueue(-1, tf.int64, shapes=(work_label_placeholder.shape()))
 
       gradient_sums_queue = data_flow_ops.FIFOQueue(-1, tf.float32)
       sum_of_norms_queue = data_flow_ops.FIFOQueue(-1, tf.float32)
@@ -291,8 +294,6 @@ def train(target, cluster_spec):
     enqueue_image_ops_for_r = []
     enqueue_label_ops_for_r = []
     IMAGE_SIZE = 32
-    work_image_placeholder = tf.placeholder(tf.float32, shape=(1, IMAGE_SIZE, IMAGE_SIZE, 3))
-    work_label_placeholder = tf.placeholder(tf.int64, shape=(1, 10 if FLAGS.dataset == 'cifar10' else 100))
     for i in range(num_workers):
       enqueue_image_ops_for_r.append(R_images_work_queue[i].enqueue(work_image_placeholder))
       enqueue_label_ops_for_r.append(R_labels_work_queue[i].enqueue(work_label_placeholder))
