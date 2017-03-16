@@ -296,10 +296,10 @@ def train(target, cluster_spec):
     enqueue_image_ops_for_r = []
     enqueue_label_ops_for_r = []
     for i in range(num_workers):
-      enqueue_image_ops_for_r.append(R_images_work_queue[i].enqueue(work_image_placeholder))
-      enqueue_label_ops_for_r.append(R_labels_work_queue[i].enqueue(work_label_placeholder))
-      enqueue_label_ops_for_r[-1] = tf.Print(global_step, [global_step], message="testing")
-      enqueue_image_ops_for_r[-1] = tf.Print(global_step, [global_step], message="testing")
+      #enqueue_image_ops_for_r.append(R_images_work_queue[i].enqueue(work_image_placeholder))
+      #enqueue_label_ops_for_r.append(R_labels_work_queue[i].enqueue(work_label_placeholder))
+      enqueue_label_ops_for_r.append(tf.Print(global_step, [global_step], message="testing"))
+      enqueue_image_ops_for_r.append(tf.Print(global_step, [global_step], message="testing"))
 
     length_of_images_queue = []
     length_of_labels_queue = []
