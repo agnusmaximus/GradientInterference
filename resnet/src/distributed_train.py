@@ -31,6 +31,8 @@ from tensorflow.python.training import input as tf_input
 import cifar_input
 import resnet_model
 
+IMAGE_SIZE = 32
+
 np.set_printoptions(threshold=np.nan)
 tf.logging.set_verbosity(tf.logging.INFO)
 
@@ -293,7 +295,6 @@ def train(target, cluster_spec):
     # Enqueue operations for adding work to the R queue
     enqueue_image_ops_for_r = []
     enqueue_label_ops_for_r = []
-    IMAGE_SIZE = 32
     for i in range(num_workers):
       enqueue_image_ops_for_r.append(R_images_work_queue[i].enqueue(work_image_placeholder))
       enqueue_label_ops_for_r.append(R_labels_work_queue[i].enqueue(work_label_placeholder))
