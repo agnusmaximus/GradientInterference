@@ -38,7 +38,7 @@ FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_boolean('should_evaluate', False, 'Whether Chief should do evaluation per epoch.')
 tf.app.flags.DEFINE_boolean('should_compute_R', False, 'Whether Chief should do compute R per epoch.')
-tf.app.flags.DEFINE_integer('compute_r_batchsize', 50,
+tf.app.flags.DEFINE_integer('compute_r_batchsize', 5,
                            """Batchsize for computing r""")
 
 tf.app.flags.DEFINE_boolean('n_train_epochs', 1000, 'Number of epochs to train for')
