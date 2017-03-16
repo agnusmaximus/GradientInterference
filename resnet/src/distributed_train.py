@@ -108,16 +108,24 @@ RMSPROP_EPSILON = 1.0              # Epsilon term for RMSProp.
 EVAL_BATCHSIZE=2000
 
 def compute_R(sess, model, inputs_dq_for_batchsize, images_pl, labels_pl, individual_gradients, batchsize):
+  tf.logging.info("YAYAYAY")
+  sys.stdout.flush()
   num_examples = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
+  tf.logging.info("YAYAYAY")
+  sys.stdout.flush()
   num_iter = num_examples / batchsize
+  tf.logging.info("YAYAYAY")
+  sys.stdout.flush()
 
   sum_of_norms, norm_of_sums = None, None
+  tf.logging.info("YAYAYAY")
+  sys.stdout.flush()
 
   for i in range(num_iter):
     tf.logging.info("computing r %d of %d" % (i, num_iter))
     sys.stdout.flush()
 
-    images_real, labels_real = sess.run(inputs_dq, feed_dict={images_pl:np.zeros([1, 32, 32, 3]), labels_pl: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
+    images_real, labels_real = sess.run(inputs_dq_for_batchsize, feed_dict={images_pl:np.zeros([1, 32, 32, 3]), labels_pl: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
     feed_dict = {images_pl:images_real, labels_pl:labels_real}
     gradients_real = sess.run(individual_gradients, feed_dict=feed_dict)
 
@@ -303,8 +311,8 @@ def train(target, cluster_spec):
         mon_sess.run([block_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
         t_evaluate_start = time.time()
         tf.logging.info("Master evaluating...")
-        t_evaluate_end = time.time()
         computed_precision, computed_loss = model_evaluate(mon_sess, model, images, labels, variable_batchsize_inputs[1000], 1000)
+        t_evaluate_end = time.time()
         tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times)-sum(compute_R_times), new_epoch_float, computed_precision, computed_loss))
         tf.logging.info("Master done evaluating... Elapsed time: %f" % (t_evaluate_end-t_evaluate_start))
         evaluate_times.append(t_evaluate_end-t_evaluate_start)
