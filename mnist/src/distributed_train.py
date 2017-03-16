@@ -209,8 +209,6 @@ def train(target, dataset, cluster_spec):
     # Add classification loss.
     total_loss = mnist.loss(logits, labels)
 
-    all_grads = tf.gradients(total_loss, tf.trainable_variables())
-
     # Create an optimizer that performs gradient descent.
     opt = tf.train.GradientDescentOptimizer(lr)
 
@@ -302,7 +300,7 @@ def train(target, dataset, cluster_spec):
         t_compute_r_start = time.time()
         tf.logging.info("Master computing R...")
         t_compute_r_end = time.time()
-        R = compute_R(mon_sess, dataset, images, labels, all_grads)
+        R = compute_R(mon_sess, dataset, images, labels, [x[0] for x in grads])
         tf.logging.info("R: %f %f" % (t_compute_r_start-sum(evaluate_times)-sum(compute_R_times), R))
         tf.logging.info("Master done computing R... Elapsed time: %f" % (t_compute_r_end-t_compute_r_start))
         compute_R_times.append(t_compute_r_end-t_compute_r_start)
