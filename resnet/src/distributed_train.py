@@ -280,7 +280,7 @@ def train(target, cluster_spec):
     enqueue_label_ops_for_r = []
     IMAGE_SIZE = 32
     work_image_placeholder = tf.placeholder(tf.float32, shape=(1, IMAGE_SIZE, IMAGE_SIZE, 3))
-    work_label_placeholder = tf.placeholder(tf.int64, shape(1, 10 if FLAGS.dataset == 'cifar10' else 100))
+    work_label_placeholder = tf.placeholder(tf.int64, shape=(1, 10 if FLAGS.dataset == 'cifar10' else 100))
     for i in range(num_workers):
       enqueue_image_ops_for_r.append(R_images_work_queue[i].enqueue(work_image_placeholder))
       enqueue_label_ops_for_r.append(R_labels_work_queue[i].enqueue(work_label_placeholder))
@@ -312,12 +312,28 @@ def train(target, cluster_spec):
 
     # For every worker, we pop from its queue and compute R on them
     n_labels_in_queue, n_images_in_queue = -1, -1
+    sum_of_norms, norm_of_sums = None, None
     while n_labels_in_queue > 0 or n_labels_in_queue == -1:
       n_labels_in_queue, n_images_in_queue = sess.run([length_of_images_queue[worker_id],
                                                        length_of_labels_queue[worker_id]])
       assert(n_labels_in_queue == n_images_in_queue)
       work_image, work_label = sess.run([dequeue_work_images[worker_id],
                                          dequeue_label_images[worker_id]])
+      feed_dict = {images : work_image, label : work_label}
+      gradients = sess.run(grad, feed_dict=feed_dict)
+      gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
+
+      if sum_of_norms == None:
+        sum_of_norms = np.linalg.norm(gradient)**2
+      else:
+        sum_of_norms += np.linalg.norm(gradient)**2
+
+      if norm_of_sums == None:
+        norm_of_sums = gradient
+      else:
+        norm_of_sums += gradient
+
+
 
 
 
