@@ -110,7 +110,13 @@ EVAL_BATCHSIZE=2000
 def compute_R(sess, model, inputs_dq_for_batchsize, images_pl, labels_pl, individual_gradients, batchsize):
   num_examples = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
   num_iter = num_examples / batchsize
+
+  sum_of_norms, norm_of_sums = None, None
+
   for i in range(num_iter):
+    tf.logging.info("computing r %d of %d" % (i, num_iter))
+    sys.stdout.flush()
+
     images_real, labels_real = sess.run(inputs_dq, feed_dict={images_pl:np.zeros([1, 32, 32, 3]), labels_pl: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
     feed_dict = {images_pl:images_real, labels_pl:labels_real}
     gradients_real = sess.run(individual_gradients, feed_dict=feed_dict)
@@ -130,6 +136,7 @@ def compute_R(sess, model, inputs_dq_for_batchsize, images_pl, labels_pl, indivi
         norm_of_sums += gradient
 
     ratio_R = num_iter * FLAGS.batch_size * sum_of_norms / np.linalg.norm(norm_of_sums)**2
+    return ratio_R
 
 def model_evaluate(sess, model, images_pl, labels_pl, inputs_dq, batchsize):
   tf.logging.info("Evaluating model...")
@@ -308,6 +315,7 @@ def train(target, cluster_spec):
         t_compute_r_start = time.time()
         tf.logging.info("Master computing R...")
         R = compute_R(mon_sess, model, variable_batchsize_inputs[FLAGS.compute_r_batchsize], images, labels, individual_gradients, FLAGS.compute_r_batchsize)
+        tf.logging.info("R: %f %f" % (t_compute_r_start-sum(evaluate_times)-sum(compute_R_times), R))
         t_compute_r_end = time.time()
         tf.logging.info("Master done computing R... Elapsed time: %f" % (t_compute_r_end-t_compute_r_start))
         compute_R_times.append(t_compute_r_end-t_compute_r_start)
