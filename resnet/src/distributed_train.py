@@ -352,7 +352,7 @@ def train(target, cluster_spec):
     # Worker has computed at least one example -- submit components of R
     if sum_of_norms != None:
       fd = {sum_of_norms_placeholder : sum_of_norms,
-            gradient_sum_placeholder = norm_of_sums}
+            gradient_sum_placeholder : norm_of_sums}
 
       sess.run([gradient_sums_enqueue, sum_of_norms_enqueue], feed_dict=fd)
 
