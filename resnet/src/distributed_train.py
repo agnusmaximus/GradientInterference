@@ -107,7 +107,7 @@ RMSPROP_EPSILON = 1.0              # Epsilon term for RMSProp.
 
 EVAL_BATCHSIZE=2000
 
-def compute_R(sess, model, inputs_dq_for_batchsize, images_pl, labels_pl, individual_gradients, batchsize):
+def compute_R_distributed(sess, model, inputs_dq_for_batchsize, images_pl, labels_pl, individual_gradients, batchsize):
   tf.logging.info("YAYAYAY")
   sys.stdout.flush()
   num_examples = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
@@ -236,8 +236,6 @@ def train(target, cluster_spec):
     model = resnet_model.ResNet(hps, images, labels, "train")
     model.build_graph()
 
-    individual_gradients = model.extract_individual_gradients(FLAGS.compute_r_batchsize)
-
     # Create an optimizer that performs gradient descent.
     opt = tf.train.GradientDescentOptimizer(FLAGS.initial_learning_rate)
 
@@ -268,6 +266,23 @@ def train(target, cluster_spec):
     workers_block_if_necessary_op = tf.while_loop(lambda x : block_workers_queue.size() > 0,
                                                   lambda x : tf.constant(0),
                                                   [tf.constant(0)])
+
+    # Queue for distributing computation of R
+    with ops.device(global_step.device):
+      R_images_work_queue = []
+      R_labels_work_queue = []
+      for i in range(num_workers):
+        R_images_work_queue.append(data_flow_ops.FIFOQueue(-1, tf.float32))
+        R_labels_work_queue.append(data_flow_ops.FIFOQueue(-1, tf.int4))
+
+    enqueue_image_ops_for_r = []
+    enqueue_label_ops_for_r = []
+    IMAGE_SIZE = 32
+    work_image_placeholder = tf.placeholder(tf.float32, shape=(1, IMAGE_SIZE, IMAGE_SIZE, 3))
+    work_label_placeholder = tf.placeholder(tf.int64, shape(1, 10 if FLAGS.dataset == 'cifar10' else 100])
+    for i in range(num_workers):
+      enqueue_image_ops_for_r.append(R_images_work_queue[i].enqueue(work_image_placeholder))
+      enqueue_label_ops_for_r.append(R_labels_work_queue[i].enqueue(work_label_placeholder))
 
   sync_replicas_hook = opt.make_session_run_hook(is_chief)
 
@@ -312,7 +327,7 @@ def train(target, cluster_spec):
       new_epoch_float = n_examples_processed / float(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
       new_epoch_track = int(new_epoch_float)
 
-      # Block workers if necessary if master is computing R or evaluating
+      # Block workers if necessary if master is evaluating
       mon_sess.run([workers_block_if_necessary_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
 
       if FLAGS.should_evaluate and FLAGS.task_id == 0 and (new_epoch_track == cur_epoch_track+1 or cur_iteration == 0):
@@ -327,15 +342,28 @@ def train(target, cluster_spec):
         mon_sess.run([unblock_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
 
       if FLAGS.should_compute_R and FLAGS.task_id == 0 and (new_epoch_track == cur_epoch_track+1 or cur_iteration == 0):
-        mon_sess.run([block_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
+        #mon_sess.run([block_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
+        #mon_sess.run([assign_examples],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
+
+        # Assign examples to workers
+        tf.logging.info("Master distributing examples for computing R...")
+        for i in range(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN):
+          img_work, label_work = sess.run(variable_batchsize_inputs[1], feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
+          worker = i % num_workers
+          sess.run(enqueue_image_ops_for_r[i], feed_dict={work_image_placeholder:img_work})
+          sess.run(enqueue_label_ops_for_r[i], feed_dict={work_label_placeholder:img_label})
+
+        tf.logging.info("Master done distributing examples for computing R...")
+
+
         t_compute_r_start = time.time()
         tf.logging.info("Master computing R...")
-        R = compute_R(mon_sess, model, variable_batchsize_inputs[FLAGS.compute_r_batchsize], images, labels, individual_gradients, FLAGS.compute_r_batchsize)
+        #R = compute_R_distributed(mon_sess, model, variable_batchsize_inputs[FLAGS.compute_r_batchsize], images, labels, individual_gradients, FLAGS.compute_r_batchsize)
         tf.logging.info("R: %f %f" % (t_compute_r_start-sum(evaluate_times)-sum(compute_R_times), R))
         t_compute_r_end = time.time()
         tf.logging.info("Master done computing R... Elapsed time: %f" % (t_compute_r_end-t_compute_r_start))
         compute_R_times.append(t_compute_r_end-t_compute_r_start)
-        mon_sess.run([unblock_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
+        #mon_sess.run([unblock_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
 
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
 
