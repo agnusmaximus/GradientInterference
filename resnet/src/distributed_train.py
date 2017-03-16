@@ -337,8 +337,9 @@ def train(target, cluster_spec):
     sum_of_norms, norm_of_sums = None, None
     n_examples_computed = 0
     while n_labels_in_queue != 0:
+      fd = {images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])}
       n_labels_in_queue, n_images_in_queue = sess.run([length_of_images_queue[worker_id],
-                                                       length_of_labels_queue[worker_id]])
+                                                       length_of_labels_queue[worker_id]], feed_dict=fd)
       assert(n_labels_in_queue == n_images_in_queue)
       if n_labels_in_queue == 0:
         break
