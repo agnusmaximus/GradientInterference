@@ -38,6 +38,8 @@ FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_boolean('should_evaluate', False, 'Whether Chief should do evaluation per epoch.')
 tf.app.flags.DEFINE_boolean('should_compute_R', False, 'Whether Chief should do compute R per epoch.')
+tf.app.flags.DEFINE_integer('compute_r_batchsize', 50,
+                           """Batchsize for computing r""")
 
 tf.app.flags.DEFINE_boolean('n_train_epochs', 1000, 'Number of epochs to train for')
 tf.app.flags.DEFINE_boolean('should_summarize', False, 'Whether Chief should write summaries.')
@@ -104,6 +106,30 @@ RMSPROP_MOMENTUM = 0.9             # Momentum in RMSProp.
 RMSPROP_EPSILON = 1.0              # Epsilon term for RMSProp.
 
 EVAL_BATCHSIZE=2000
+
+def compute_R(sess, model, inputs_dq_for_batchsize, images_pl, labels_pl, individual_gradients, batchsize):
+  num_examples = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
+  num_iter = num_examples / batchsize
+  for i in range(num_iter):
+    images_real, labels_real = sess.run(inputs_dq, feed_dict={images_pl:np.zeros([1, 32, 32, 3]), labels_pl: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
+    feed_dict = {images_pl:images_real, labels_pl:labels_real}
+    gradients_real = sess.run(individual_gradients, feed_dict=feed_dict)
+
+    assert(len(gradients_real) == batchsize)
+    for gradients in gradients_real:
+      gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
+
+      if sum_of_norms == None:
+        sum_of_norms = np.linalg.norm(gradient)**2
+      else:
+        sum_of_norms += np.linalg.norm(gradient)**2
+
+      if norm_of_sums == None:
+        norm_of_sums = gradient
+      else:
+        norm_of_sums += gradient
+
+    ratio_R = num_iter * FLAGS.batch_size * sum_of_norms / np.linalg.norm(norm_of_sums)**2
 
 def model_evaluate(sess, model, images_pl, labels_pl, inputs_dq, batchsize):
   tf.logging.info("Evaluating model...")
@@ -187,6 +213,8 @@ def train(target, cluster_spec):
     model = resnet_model.ResNet(hps, images, labels, "train")
     model.build_graph()
 
+    individual_gradients = model.extract_individual_gradients(FLAGS.compute_r_batchsize)
+
     # Create an optimizer that performs gradient descent.
     opt = tf.train.GradientDescentOptimizer(FLAGS.initial_learning_rate)
 
@@ -235,7 +263,9 @@ def train(target, cluster_spec):
   compute_R_train_error_time = 0
   loss_value = -1
 
-  checkpoint_save_secs = 30
+  checkpoint_save_secs = 60*5
+
+  compute_R_times, evaluate_times = [0], [0]
 
   with tf.train.MonitoredTrainingSession(
       master=target, is_chief=is_chief,
@@ -268,16 +298,19 @@ def train(target, cluster_spec):
         tf.logging.info("Master evaluating...")
         t_evaluate_end = time.time()
         computed_precision, computed_loss = model_evaluate(mon_sess, model, images, labels, variable_batchsize_inputs[1000], 1000)
-        tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start, new_epoch_float, computed_precision, computed_loss))
+        tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times)-sum(compute_R_times), new_epoch_float, computed_precision, computed_loss))
         tf.logging.info("Master done evaluating... Elapsed time: %f" % (t_evaluate_end-t_evaluate_start))
+        evaluate_times.append(t_evaluate_end-t_evaluate_start)
         mon_sess.run([unblock_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
 
       if FLAGS.should_compute_R and FLAGS.task_id == 0 and (new_epoch_track == cur_epoch_track+1 or cur_iteration == 0):
         mon_sess.run([block_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
         t_compute_r_start = time.time()
         tf.logging.info("Master computing R...")
+        R = compute_R(mon_sess, model, variable_batchsize_inputs[FLAGS.compute_r_batchsize], images, labels, individual_gradients, FLAGS.compute_r_batchsize)
         t_compute_r_end = time.time()
         tf.logging.info("Master done computing R... Elapsed time: %f" % (t_compute_r_end-t_compute_r_start))
+        compute_R_times.append(t_compute_r_end-t_compute_r_start)
         mon_sess.run([unblock_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
 
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
