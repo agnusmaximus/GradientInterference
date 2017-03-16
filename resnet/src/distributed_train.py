@@ -342,8 +342,10 @@ def train(target, cluster_spec):
       assert(n_labels_in_queue == n_images_in_queue)
       if n_labels_in_queue == 0:
         break
+
+      fd = {images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])}
       work_image, work_label = sess.run([dequeue_work_images[worker_id],
-                                         dequeue_label_images[worker_id]])
+                                         dequeue_label_images[worker_id]], feed_dict=fd)
       tf.logging.info("YO " + str(work_image.shape) + " " + str(work_label.shape))
       sys.stdout.flush()
       feed_dict = {images : work_image, labels : work_label}
