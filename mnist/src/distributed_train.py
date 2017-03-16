@@ -102,7 +102,7 @@ def compute_R(sess, dataset, images, labels, grads):
   num_examples = dataset.num_examples
   sum_of_norms, norm_of_sums = None, None
   for i in range(num_examples):
-    tf.logging.info("%d of %d" % (i, num_examples))
+    #tf.logging.info("%d of %d" % (i, num_examples))
     sys.stdout.flush()
     feed_dict = mnist.fill_feed_dict(dataset, images, labels, 1)
     gradients = sess.run(grads, feed_dict=feed_dict)
@@ -136,7 +136,7 @@ def model_evaluate(sess, dataset, images, labels, batch_size, val_acc, val_loss)
     acc_p, loss_p = sess.run(
       [val_acc, val_loss], feed_dict=feed_dict)
 
-    tf.logging.info("%d of %d" % (step, num_iter))
+    #tf.logging.info("%d of %d" % (step, num_iter))
     sys.stdout.flush()
 
     acc += acc_p * batch_size
