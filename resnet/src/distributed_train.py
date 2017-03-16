@@ -328,7 +328,7 @@ def train(target, cluster_spec):
         sys.stdout.flush()
         feed_dict={}
         feed_dict[work_image_placeholder] = img_work
-        feed_dict[work_label_placeholder] = img_label
+        feed_dict[work_label_placeholder] = label_work
         #sess.run([enqueue_image_ops_for_r[worker], enqueue_label_ops_for_r[worker]], feed_dict=feed_dict)
         #sess.run([enqueue_label_ops_for_r[worker]], feed_dict=feed_dict)
         sess.run([enqueue_label_ops_for_r[worker]])
