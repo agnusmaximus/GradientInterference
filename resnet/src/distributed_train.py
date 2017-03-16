@@ -330,6 +330,7 @@ def train(target, cluster_spec):
         feed_dict[work_label_placeholder] = img_label
         sess.run([enqueue_image_ops_for_r[i], enqueue_label_ops_for_r[i]], feed_dict=feed_dict)
       tf.logging.info("Master done distributing examples for computing R...")
+      sys.stdout.flush()
     mon_sess.run([unblock_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
 
     # For every worker, we pop from its queue and compute R on them
@@ -348,6 +349,7 @@ def train(target, cluster_spec):
       gradients = sess.run(grad, feed_dict=feed_dict)
       gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
       tf.logging.info("Worker computing r on examples...")
+      sys.stdout.flush()
 
       if sum_of_norms == None:
         sum_of_norms = np.linalg.norm(gradient)**2
@@ -374,7 +376,9 @@ def train(target, cluster_spec):
       while n_gradient_sums != n_workers and n_norm_sums != n_workers:
         n_gradient_sums, n_norm_sums = sess.run([gradients_sums_size, sum_of_norms_size])
         tf.logging.info("Accumulated %d gradient sums, %d norm sums (out of %d workers)" % (n_gradient_sums, n_norm_sums, num_workers))
+        sys.stdout.flush()
       tf.logging.info("Master successfully received num workers components for R...")
+      sys.stdout.flush()
 
 
 
