@@ -102,7 +102,7 @@ def compute_R(sess, dataset, images, labels, grads):
   num_examples = dataset.num_examples
   sum_of_norms, norm_of_sums = None, None
   for i in range(num_examples):
-    #tf.logging.info("%d of %d" % (i, num_examples))
+    tf.logging.info("%d of %d" % (i, num_examples))
     sys.stdout.flush()
     feed_dict = mnist.fill_feed_dict(dataset, images, labels, 1)
     gradients = sess.run(grads, feed_dict=feed_dict)
