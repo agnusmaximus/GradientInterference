@@ -138,7 +138,6 @@ def compute_R(sess, model, inputs_dq_for_batchsize, images_pl, labels_pl, indivi
     assert(len(gradients_real) == batchsize)
     for gradients in gradients_real:
       gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
-      tf.logging.info(gradients)
       sys.stdout.flush()
 
       if sum_of_norms == None:
@@ -151,8 +150,9 @@ def compute_R(sess, model, inputs_dq_for_batchsize, images_pl, labels_pl, indivi
       else:
         norm_of_sums += gradient
 
-    ratio_R = num_iter * FLAGS.batch_size * sum_of_norms / np.linalg.norm(norm_of_sums)**2
-    return ratio_R
+
+  ratio_R = num_iter * FLAGS.batch_size * sum_of_norms / np.linalg.norm(norm_of_sums)**2
+  return ratio_R
 
 def model_evaluate(sess, model, images_pl, labels_pl, inputs_dq, batchsize):
   tf.logging.info("Evaluating model...")
