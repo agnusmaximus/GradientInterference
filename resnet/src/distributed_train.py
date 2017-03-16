@@ -275,14 +275,40 @@ def train(target, cluster_spec):
         R_images_work_queue.append(data_flow_ops.FIFOQueue(-1, tf.float32))
         R_labels_work_queue.append(data_flow_ops.FIFOQueue(-1, tf.int4))
 
+    # Enqueue operations for adding work to the R queue
     enqueue_image_ops_for_r = []
     enqueue_label_ops_for_r = []
     IMAGE_SIZE = 32
     work_image_placeholder = tf.placeholder(tf.float32, shape=(1, IMAGE_SIZE, IMAGE_SIZE, 3))
-    work_label_placeholder = tf.placeholder(tf.int64, shape(1, 10 if FLAGS.dataset == 'cifar10' else 100])
+    work_label_placeholder = tf.placeholder(tf.int64, shape(1, 10 if FLAGS.dataset == 'cifar10' else 100))
     for i in range(num_workers):
       enqueue_image_ops_for_r.append(R_images_work_queue[i].enqueue(work_image_placeholder))
       enqueue_label_ops_for_r.append(R_labels_work_queue[i].enqueue(work_label_placeholder))
+
+    length_of_images_queue = []
+    length_of_labels_queue = []
+    for i in range(num_workers):
+      length_of_images_queue.append(R_images_work_queue[i].size())
+      length_of_labels_queue.append(R_labels_work_queue[i].size())
+
+  def distributed_compute_R():
+
+    # Assign examples to workers
+    tf.logging.info("Master distributing examples for computing R...")
+    for i in range(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN):
+      img_work, label_work = sess.run(variable_batchsize_inputs[1], feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
+      worker = i % num_workers
+      tf.logging.info("Assigning example %d to worker %d for computing R..." % (i, worker))
+      sess.run(enqueue_image_ops_for_r[i], feed_dict={work_image_placeholder:img_work})
+      sess.run(enqueue_label_ops_for_r[i], feed_dict={work_label_placeholder:img_label})
+    tf.logging.info("Master done distributing examples for computing R...")
+
+    # For every worker, we pop from its queue and compute R on them
+    n_labels_in_queue, n_images_in_queue = sess.run([length_of_images_queue[i],
+                                                     length_of_labels_queue[i]])
+    assert(n_labels_in_queue == n_images_in_queue)
+
+
 
   sync_replicas_hook = opt.make_session_run_hook(is_chief)
 
@@ -343,22 +369,9 @@ def train(target, cluster_spec):
 
       if FLAGS.should_compute_R and FLAGS.task_id == 0 and (new_epoch_track == cur_epoch_track+1 or cur_iteration == 0):
         #mon_sess.run([block_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
-        #mon_sess.run([assign_examples],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
-
-        # Assign examples to workers
-        tf.logging.info("Master distributing examples for computing R...")
-        for i in range(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN):
-          img_work, label_work = sess.run(variable_batchsize_inputs[1], feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
-          worker = i % num_workers
-          sess.run(enqueue_image_ops_for_r[i], feed_dict={work_image_placeholder:img_work})
-          sess.run(enqueue_label_ops_for_r[i], feed_dict={work_label_placeholder:img_label})
-
-        tf.logging.info("Master done distributing examples for computing R...")
-
-
         t_compute_r_start = time.time()
         tf.logging.info("Master computing R...")
-        #R = compute_R_distributed(mon_sess, model, variable_batchsize_inputs[FLAGS.compute_r_batchsize], images, labels, individual_gradients, FLAGS.compute_r_batchsize)
+        R = distributed_compute_R()
         tf.logging.info("R: %f %f" % (t_compute_r_start-sum(evaluate_times)-sum(compute_R_times), R))
         t_compute_r_end = time.time()
         tf.logging.info("Master done computing R... Elapsed time: %f" % (t_compute_r_end-t_compute_r_start))
