@@ -345,7 +345,7 @@ def train(target, cluster_spec):
       work_image, work_label = sess.run([dequeue_work_images[worker_id],
                                          dequeue_label_images[worker_id]])
       feed_dict = {images : work_image, labels : work_label}
-      gradients = sess.run(grad, feed_dict=feed_dict)
+      gradients = sess.run(grads, feed_dict=feed_dict)
       gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
       tf.logging.info("Worker computing r on examples...")
       sys.stdout.flush()
