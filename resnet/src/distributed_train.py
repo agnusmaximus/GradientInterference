@@ -326,12 +326,12 @@ def train(target, cluster_spec):
         tf.logging.info(str(img_work.shape) + " " + str(label_work.shape))
         worker = i % num_workers
         tf.logging.info("Assigning example %d to worker %d for computing R..." % (i, worker_id))
-        #feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])}
-        feed_dict={}
-        feed_dict[work_image_placeholder] = img_work
-        feed_dict[work_label_placeholder] = img_label
+        feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])}
+        #feed_dict={}
+        #feed_dict[work_image_placeholder] = img_work
+        #feed_dict[work_label_placeholder] = img_label
         #sess.run([enqueue_image_ops_for_r[i], enqueue_label_ops_for_r[i]], feed_dict=feed_dict)
-        sess.run([enqueue_label_ops_for_r[i]])
+        sess.run([enqueue_label_ops_for_r[i]], feed_dict=feed_dict)
       tf.logging.info("Master done distributing examples for computing R...")
     mon_sess.run([unblock_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
 
