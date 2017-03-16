@@ -105,7 +105,7 @@ def compute_R(sess, dataset, images, labels, grads):
     tf.logging.info("%d of %d" % (i, num_examples))
     sys.stdout.flush()
     feed_dict = mnist.fill_feed_dict(dataset, images, labels, 1)
-    results = sess.run(grads, feed_dict=feed_dict)
+    gradients = sess.run(grads, feed_dict=feed_dict)
     gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
 
     if sum_of_norms == None:
