@@ -284,6 +284,9 @@ def train(target, cluster_spec):
     sum_of_norms_placeholder = tf.placeholder(tf.float32, shape=())
     sum_of_norms_enqueue = sum_of_norms_queue.enqueue(sum_of_norms_placeholder)
 
+    gradients_sums_size = gradient_sums_queue.size()
+    sum_of_norms_size = sum_of_norms_queue.size()
+
     # Enqueue operations for adding work to the R queue
     enqueue_image_ops_for_r = []
     enqueue_label_ops_for_r = []
@@ -318,8 +321,10 @@ def train(target, cluster_spec):
         img_work, label_work = sess.run(variable_batchsize_inputs[1], feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
         worker = i % num_workers
         tf.logging.info("Assigning example %d to worker %d for computing R..." % (i, worker))
-        sess.run(enqueue_image_ops_for_r[i], feed_dict={work_image_placeholder:img_work})
-        sess.run(enqueue_label_ops_for_r[i], feed_dict={work_label_placeholder:img_label})
+        feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
+        feed_dict[work_image_placeholder] = img_work
+        feed_dict[work_label_placeholder] = img_label
+        sess.run([enqueue_image_ops_for_r[i], enqueue_label_ops_for_r[i]], feed_dict=feed_dict)
       tf.logging.info("Master done distributing examples for computing R...")
     mon_sess.run([unblock_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
 
@@ -356,6 +361,12 @@ def train(target, cluster_spec):
 
       sess.run([gradient_sums_enqueue, sum_of_norms_enqueue], feed_dict=fd)
 
+    # Master waits until there are at least num_worker values in sum of gradients queue
+    if worker_id == 0:
+      n_gradient_sums, n_norm_sums = 0, 0
+      while n_gradient_sums != n_workers and n_norm_sums != n_workers:
+        n_gradient_sums, n_norm_sums = sess.run([gradients_sums_size, sum_of_norms_size])
+        tf.logging.info("Accumulated %d gradient sums, %d norm sums (out of %d workers)" % (n_gradient_sums, n_norm_sums, num_workers))
 
 
   sync_replicas_hook = opt.make_session_run_hook(is_chief)
