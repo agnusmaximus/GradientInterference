@@ -325,7 +325,7 @@ def train(target, cluster_spec):
         img_work, label_work = sess.run(variable_batchsize_inputs[1], feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
         tf.logging.info(str(img_work.shape) + " " + str(label_work.shape))
         worker = i % num_workers
-        tf.logging.info("Assigning example %d to worker %d for computing R..." % (i, worker))
+        tf.logging.info("Assigning example %d to worker %d for computing R..." % (i, worker_id))
         #feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])}
         feed_dict={}
         feed_dict[work_image_placeholder] = img_work
