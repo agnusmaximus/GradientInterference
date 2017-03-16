@@ -135,6 +135,8 @@ def compute_R(sess, model, inputs_dq_for_batchsize, images_pl, labels_pl, indivi
     tf.logging.info("computing r %d of %d" % (i, num_iter))
     sys.stdout.flush()
 
+    tf.logging.info(len(gradients_real))
+    sys.stdout.flush()
     assert(len(gradients_real) == batchsize)
     for gradients in gradients_real:
       gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
