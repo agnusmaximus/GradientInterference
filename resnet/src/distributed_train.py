@@ -296,10 +296,8 @@ def train(target, cluster_spec):
     enqueue_image_ops_for_r = []
     enqueue_label_ops_for_r = []
     for i in range(num_workers):
-      #enqueue_label_ops_for_r.append(tf.Print(work_label_placeholder, [work_label_placeholder], message="work label placeholder"))
-      enqueue_label_ops_for_r.append(tf.Print(global_step, [global_step], message="YO"))
       enqueue_image_ops_for_r.append(R_images_work_queue[i].enqueue(work_image_placeholder))
-      #enqueue_label_ops_for_r.append(R_labels_work_queue[i].enqueue(work_label_placeholder))
+      enqueue_label_ops_for_r.append(R_labels_work_queue[i].enqueue(work_label_placeholder))
 
     length_of_images_queue = []
     length_of_labels_queue = []
@@ -329,9 +327,7 @@ def train(target, cluster_spec):
         feed_dict={}
         feed_dict[work_image_placeholder] = img_work
         feed_dict[work_label_placeholder] = label_work
-        #sess.run([enqueue_image_ops_for_r[worker], enqueue_label_ops_for_r[worker]], feed_dict=feed_dict)
-        #sess.run([enqueue_label_ops_for_r[worker]], feed_dict=feed_dict)
-        sess.run([enqueue_label_ops_for_r[worker]])
+        sess.run([enqueue_image_ops_for_r[worker], enqueue_label_ops_for_r[worker]], feed_dict=feed_dict)
       tf.logging.info("Master done distributing examples for computing R...")
       sys.stdout.flush()
     mon_sess.run([unblock_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
