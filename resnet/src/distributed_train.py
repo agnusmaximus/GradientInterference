@@ -397,7 +397,7 @@ def train(target, cluster_spec):
       fd = {images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])}
       total_sum_of_norms, total_sum_of_gradients = sess.run([sum_of_norms_dequeue, gradient_sums_dequeue], feed_dict=fd)
       for i in range(num_workers-1):
-        gsum, gnorm = sess.run([sum_of_norms_dequeue, gradient_sums_dequeue], feed_dict=fd)
+        gnorm, gsum = sess.run([sum_of_norms_dequeue, gradient_sums_dequeue], feed_dict=fd)
         total_sum_of_norms += gnorm
         total_sum_of_gradients += gsum
       return cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN * total_sum_of_norms / np.linalg.norm(total_sum_of_gradients) ** 2
