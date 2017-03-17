@@ -282,8 +282,8 @@ def train(target, cluster_spec):
         R_images_work_queue.append(data_flow_ops.FIFOQueue(-1, tf.float32, name=name_images, shared_name=name_images))
         R_labels_work_queue.append(data_flow_ops.FIFOQueue(-1, tf.int64, name=name_labels, shared_name=name_labels))
 
-      gradient_sums_queue = data_flow_ops.FIFOQueue(-1, tf.float32)
-      sum_of_norms_queue = data_flow_ops.FIFOQueue(-1, tf.float32)
+      gradient_sums_queue = data_flow_ops.FIFOQueue(-1, tf.float32, name="gradient_sums_queue")
+      sum_of_norms_queue = data_flow_ops.FIFOQueue(-1, tf.float32, name="gradient_sums_queue")
 
     gradient_sum_placeholder = tf.placeholder(tf.float32, shape=(None))
     gradient_sums_enqueue = gradient_sums_queue.enqueue(gradient_sum_placeholder)
