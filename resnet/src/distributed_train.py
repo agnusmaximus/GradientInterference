@@ -383,7 +383,7 @@ def train(target, cluster_spec):
       tf.logging.info("Master waiting for num workers R components to be submitted...")
       sys.stdout.flush()
       n_gradient_sums, n_norm_sums = 0, 0
-      while n_gradient_sums != n_workers and n_norm_sums != n_workers:
+      while n_gradient_sums != num_workers and n_norm_sums != num_workers:
         n_gradient_sums, n_norm_sums = sess.run([gradients_sums_size, sum_of_norms_size])
         tf.logging.info("Accumulated %d gradient sums, %d norm sums (out of %d workers)" % (n_gradient_sums, n_norm_sums, num_workers))
         sys.stdout.flush()
