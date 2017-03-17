@@ -287,9 +287,11 @@ def train(target, cluster_spec):
 
     gradient_sum_placeholder = tf.placeholder(tf.float32, shape=(None))
     gradient_sums_enqueue = gradient_sums_queue.enqueue(gradient_sum_placeholder)
+    gradient_sums_dequeue = gradient_sums_queue.dequeue()
 
     sum_of_norms_placeholder = tf.placeholder(tf.float32, shape=())
     sum_of_norms_enqueue = sum_of_norms_queue.enqueue(sum_of_norms_placeholder)
+    sum_of_norms_dequeue = sum_of_norms_queue.dequeue()
 
     gradients_sums_size = gradient_sums_queue.size()
     sum_of_norms_size = sum_of_norms_queue.size()
@@ -391,6 +393,14 @@ def train(target, cluster_spec):
       tf.logging.info("Master successfully received num workers components for R...")
       sys.stdout.flush()
 
+      # Dequeue all components
+      fd = {images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])}
+      total_sum_of_norms, total_sum_of_gradients = sess.run([sum_of_norms_dequeue, gradient_sums_dequeue], feed_dict=fd)
+      for i in range(num_workers)-1
+        gsum, gnorm = sess.run([sum_of_norms_dequeue, gradient_sums_dequeue], feed_dict=fd)
+        total_sum_of_norms += gnorm
+        total_sum_of_gradients += gsum
+      return cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN * total_sum_of_norms / np.linalg.norm(total_sum_of_gradients) ** 2
 
   sync_replicas_hook = opt.make_session_run_hook(is_chief)
 
