@@ -378,6 +378,7 @@ def train(target, cluster_spec):
     # Master waits until there are at least num_worker values in sum of gradients queue
     if worker_id == 0:
       tf.logging.info("Master waiting for num workers R components to be submitted...")
+      sys.stdout.flush()
       n_gradient_sums, n_norm_sums = 0, 0
       while n_gradient_sums != n_workers and n_norm_sums != n_workers:
         n_gradient_sums, n_norm_sums = sess.run([gradients_sums_size, sum_of_norms_size])
