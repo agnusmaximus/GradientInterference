@@ -472,6 +472,7 @@ def train(target, cluster_spec):
         distributed_compute_R(mon_sess)
 
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
+      tf.logging.info("Epoch: %d" % int(cur_epoch_track))
 
       # Dequeue variable batchsize inputs
       images_real, labels_real = mon_sess.run(variable_batchsize_inputs[FLAGS.batch_size], feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})

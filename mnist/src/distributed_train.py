@@ -308,6 +308,8 @@ def train(target, dataset, cluster_spec):
 
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
 
+      tf.logging.info("Epoch: %d" % int(cur_epoch_track))
+
       # Dequeue variable batchsize inputs
       feed_dict = mnist.fill_feed_dict(dataset, images, labels, FLAGS.batch_size)
       loss_value, step = mon_sess.run([train_op, global_step], run_metadata=run_metadata, options=run_options, feed_dict=feed_dict)
