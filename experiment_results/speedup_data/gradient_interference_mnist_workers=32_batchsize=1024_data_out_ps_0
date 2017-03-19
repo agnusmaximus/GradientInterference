@@ -1,0 +1,24 @@
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcublas.so.8.0 locally
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcudnn.so.5 locally
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcufft.so.8.0 locally
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcuda.so.1 locally
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcurand.so.8.0 locally
+INFO:tensorflow:PS hosts are: ['172.31.35.13:1234']
+INFO:tensorflow:Worker hosts are: ['172.31.36.141:1234', '172.31.42.187:1234', '172.31.40.21:1234', '172.31.36.26:1234', '172.31.47.169:1234', '172.31.42.81:1234', '172.31.40.125:1234', '172.31.32.178:1234', '172.31.32.116:1234', '172.31.39.74:1234', '172.31.47.202:1234', '172.31.33.116:1234', '172.31.36.103:1234', '172.31.43.199:1234', '172.31.41.43:1234', '172.31.37.100:1234', '172.31.33.66:1234', '172.31.38.144:1234', '172.31.43.250:1234', '172.31.42.133:1234', '172.31.36.33:1234', '172.31.41.16:1234', '172.31.39.215:1234', '172.31.47.100:1234', '172.31.33.137:1234', '172.31.41.39:1234', '172.31.36.125:1234', '172.31.38.76:1234', '172.31.41.215:1234', '172.31.45.236:1234', '172.31.38.110:1234', '172.31.45.195:1234']
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE3 instructions, but these are available on your machine and could speed up CPU computations.
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.1 instructions, but these are available on your machine and could speed up CPU computations.
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.2 instructions, but these are available on your machine and could speed up CPU computations.
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX instructions, but these are available on your machine and could speed up CPU computations.
+I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:910] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:885] Found device 0 with properties: 
+name: GRID K520
+major: 3 minor: 0 memoryClockRate (GHz) 0.797
+pciBusID 0000:00:03.0
+Total memory: 3.94GiB
+Free memory: 3.91GiB
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:906] DMA: 0 
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:916] 0:   Y 
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:975] Creating TensorFlow device (/gpu:0) -> (device: 0, name: GRID K520, pci bus id: 0000:00:03.0)
+I tensorflow/core/distributed_runtime/rpc/grpc_channel.cc:200] Initialize GrpcChannelCache for job ps -> {0 -> localhost:1234}
+I tensorflow/core/distributed_runtime/rpc/grpc_channel.cc:200] Initialize GrpcChannelCache for job worker -> {0 -> 172.31.36.141:1234, 1 -> 172.31.42.187:1234, 2 -> 172.31.40.21:1234, 3 -> 172.31.36.26:1234, 4 -> 172.31.47.169:1234, 5 -> 172.31.42.81:1234, 6 -> 172.31.40.125:1234, 7 -> 172.31.32.178:1234, 8 -> 172.31.32.116:1234, 9 -> 172.31.39.74:1234, 10 -> 172.31.47.202:1234, 11 -> 172.31.33.116:1234, 12 -> 172.31.36.103:1234, 13 -> 172.31.43.199:1234, 14 -> 172.31.41.43:1234, 15 -> 172.31.37.100:1234, 16 -> 172.31.33.66:1234, 17 -> 172.31.38.144:1234, 18 -> 172.31.43.250:1234, 19 -> 172.31.42.133:1234, 20 -> 172.31.36.33:1234, 21 -> 172.31.41.16:1234, 22 -> 172.31.39.215:1234, 23 -> 172.31.47.100:1234, 24 -> 172.31.33.137:1234, 25 -> 172.31.41.39:1234, 26 -> 172.31.36.125:1234, 27 -> 172.31.38.76:1234, 28 -> 172.31.41.215:1234, 29 -> 172.31.45.236:1234, 30 -> 172.31.38.110:1234, 31 -> 172.31.45.195:1234}
+I tensorflow/core/distributed_runtime/rpc/grpc_server_lib.cc:221] Started server with target: grpc://localhost:1234
