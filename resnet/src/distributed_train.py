@@ -479,6 +479,8 @@ def train(target, cluster_spec):
         evaluate_times.append(t_evaluate_end-t_evaluate_start)
         mon_sess.run([unblock_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
 
+      tf.logging.info("YOLO %d %f %d" % (n_examples_processed, new_epoch_float, cur_epoch_track)
+
       if  (new_epoch_track == cur_epoch_track+1 or cur_iteration == 0):
         if FLAGS.should_compute_R and FLAGS.task_id == 0:
 
