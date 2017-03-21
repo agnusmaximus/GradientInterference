@@ -67,7 +67,9 @@ def model_evaluate(sess, dataset, images, labels, batch_size, val_acc, val_loss)
   return acc, loss
 
 def main(unused_args):
+    print("Loading dataset")
     dataset = mnist_data.load_mnist().train
+    print("Done loading dataset")
 
     FLAGS = tf.app.flags.FLAGS
 
