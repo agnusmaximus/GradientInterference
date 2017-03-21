@@ -485,7 +485,7 @@ def train(target, cluster_spec):
       num_steps_per_epoch = int(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / (num_workers * FLAGS.batch_size))
 
       # We use step since it's synchronized across workers
-      if  step % num_steps_per_epoch == 0 or step == -1:
+      if (step % num_steps_per_epoch == 0 and step != 0) or step == -1:
         if FLAGS.should_compute_R and FLAGS.task_id == 0:
 
           t_compute_r_start = time.time()
