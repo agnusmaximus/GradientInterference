@@ -37,7 +37,8 @@ import numpy
 from scipy.ndimage.interpolation import map_coordinates
 from scipy.ndimage.filters import gaussian_filter
 
-SOURCE_URL = 'http://yann.lecun.com/exdb/mnist/'
+#SOURCE_URL = 'http://yann.lecun.com/exdb/mnist/'
+SOURCE_URL = 'https://s3.amazonaws.com/lasagne/recipes/datasets/mnist/'
 
 class DataSet(object):
 
