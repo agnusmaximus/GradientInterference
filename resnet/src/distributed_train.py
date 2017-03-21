@@ -318,9 +318,9 @@ def train(target, cluster_spec):
 
     # We block the work distribution so that when the workers pass this checkpoint,
     # all its work is in its queue.
-    mon_sess.run([block_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
     # Assign examples to workers
     if worker_id == 0:
+      mon_sess.run([block_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
       tf.logging.info("Master distributing examples for computing R...")
       for i in range(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN):
         img_work, label_work = sess.run(variable_batchsize_inputs[1], feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
@@ -331,9 +331,10 @@ def train(target, cluster_spec):
         feed_dict[work_image_placeholder] = img_work
         feed_dict[work_label_placeholder] = label_work
         sess.run([enqueue_image_ops_for_r[worker], enqueue_label_ops_for_r[worker]], feed_dict=feed_dict)
+      mon_sess.run([unblock_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
       tf.logging.info("Master done distributing examples for computing R...")
       sys.stdout.flush()
-    mon_sess.run([unblock_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
+
 
     # For every worker, we pop from its queue and compute R on them
     n_labels_in_queue, n_images_in_queue = -1, -1
