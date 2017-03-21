@@ -1,0 +1,1564 @@
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcublas.so.8.0 locally
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcudnn.so.5 locally
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcufft.so.8.0 locally
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcuda.so.1 locally
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcurand.so.8.0 locally
+INFO:tensorflow:PS hosts are: ['172.31.1.240:1234']
+INFO:tensorflow:Worker hosts are: ['172.31.0.230:1234', '172.31.13.82:1234', '172.31.3.87:1234', '172.31.1.217:1234', '172.31.9.142:1234', '172.31.3.32:1234', '172.31.10.67:1234', '172.31.10.201:1234']
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE3 instructions, but these are available on your machine and could speed up CPU computations.
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.1 instructions, but these are available on your machine and could speed up CPU computations.
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.2 instructions, but these are available on your machine and could speed up CPU computations.
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX instructions, but these are available on your machine and could speed up CPU computations.
+I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:910] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:885] Found device 0 with properties: 
+name: GRID K520
+major: 3 minor: 0 memoryClockRate (GHz) 0.797
+pciBusID 0000:00:03.0
+Total memory: 3.94GiB
+Free memory: 3.91GiB
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:906] DMA: 0 
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:916] 0:   Y 
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:975] Creating TensorFlow device (/gpu:0) -> (device: 0, name: GRID K520, pci bus id: 0000:00:03.0)
+I tensorflow/core/distributed_runtime/rpc/grpc_channel.cc:200] Initialize GrpcChannelCache for job ps -> {0 -> 172.31.1.240:1234}
+I tensorflow/core/distributed_runtime/rpc/grpc_channel.cc:200] Initialize GrpcChannelCache for job worker -> {0 -> localhost:1234, 1 -> 172.31.13.82:1234, 2 -> 172.31.3.87:1234, 3 -> 172.31.1.217:1234, 4 -> 172.31.9.142:1234, 5 -> 172.31.3.32:1234, 6 -> 172.31.10.67:1234, 7 -> 172.31.10.201:1234}
+I tensorflow/core/distributed_runtime/rpc/grpc_server_lib.cc:221] Started server with target: grpc://localhost:1234
+INFO:tensorflow:[None, 7, 7, 64]
+INFO:tensorflow:SyncReplicasV2: replicas_to_aggregate=8; total_num_replicas=8
+INFO:tensorflow:Create CheckpointSaverHook.
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:1
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:2
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:3
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:4
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:5
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:6
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:7
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:1
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:2
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:3
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:4
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:5
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:6
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:7
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:1
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:2
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:3
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:4
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:5
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:6
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:7
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:1
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:2
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:3
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:4
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:5
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:6
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:7
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:1
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:2
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:3
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:4
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:5
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:6
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:7
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:1
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:2
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:3
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:4
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:5
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:6
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:7
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:1
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:2
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:3
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:4
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:5
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:6
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:7
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:1
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:2
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:3
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:4
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:5
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:6
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:7
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:1
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:2
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:3
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:4
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:5
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:6
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:1
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:2
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:3
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:4
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:5
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:6
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:1
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:2
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:3
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:5
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:6
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:2
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:3
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:6
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:3
+I tensorflow/core/distributed_runtime/master.cc:193] CreateSession still waiting for response from worker: /job:worker/replica:0/task:3
+I tensorflow/core/distributed_runtime/master_session.cc:1012] Start master session 84218751b8d4753c with config: 
+
+I tensorflow/core/common_runtime/simple_placer.cc:669] Ignoring device specification /job:worker/task:0 for node 'while/block_workers_queue_Size/Enter' because the input edge from 'block_workers_queue' is a reference connection and already has a device field set to /job:ps/task:0
+I tensorflow/core/common_runtime/simple_placer.cc:669] Ignoring device specification /job:worker/task:0 for node 'while/block_workers_queue_Size' because the input edge from 'while/block_workers_queue_Size/Enter' is a reference connection and already has a device field set to /job:ps/task:0
+I tensorflow/core/common_runtime/simple_placer.cc:669] Ignoring device specification /job:worker/task:0 for node 'block_workers_queue_Dequeue' because the input edge from 'block_workers_queue' is a reference connection and already has a device field set to /job:ps/task:0
+I tensorflow/core/common_runtime/simple_placer.cc:669] Ignoring device specification /job:worker/task:0 for node 'block_workers_queue_enqueue' because the input edge from 'block_workers_queue' is a reference connection and already has a device field set to /job:ps/task:0
+Successfully downloaded train-images-idx3-ubyte.gz 9912422 bytes.
+Extracting MNIST-data/train-images-idx3-ubyte.gz
+Successfully downloaded train-labels-idx1-ubyte.gz 28881 bytes.
+Extracting MNIST-data/train-labels-idx1-ubyte.gz
+Successfully downloaded t10k-images-idx3-ubyte.gz 1648877 bytes.
+Extracting MNIST-data/t10k-images-idx3-ubyte.gz
+Successfully downloaded t10k-labels-idx1-ubyte.gz 4542 bytes.
+Extracting MNIST-data/t10k-labels-idx1-ubyte.gz
+INFO:tensorflow:Saving checkpoints for 0 into /home/ubuntu/inception_shared/gradient_interference_mnist_workers=8_batchsize=1024/train_dir/model.ckpt.
+INFO:tensorflow:Master evaluating...
+INFO:tensorflow:Evaluating model...
+INFO:tensorflow:Done evaluating...
+INFO:tensorflow:IInfo: 1489921157.884482 0.000000 0.099867 464.178569
+INFO:tensorflow:Master done evaluating... Elapsed time: 28.234667
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.017067 time 192.696883
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:46.363178: step 0, loss = 7.378622(4.3 examples/sec; 29.589  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.034133 time 192.750168
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:46.416462: step 0, loss = 7.627231(2407.2 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.051200 time 192.802809
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:46.469112: step 0, loss = 7.533810(2436.0 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.068267 time 192.856061
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:46.522352: step 0, loss = 7.746916(2409.0 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.085333 time 192.906990
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:46.573283: step 0, loss = 7.517368(2518.4 examples/sec; 0.051  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.102400 time 192.960197
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:46.626514: step 0, loss = 8.120647(2409.5 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.119467 time 193.014704
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:46.680997: step 0, loss = 7.928693(2354.2 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.136533 time 193.067703
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:46.733994: step 0, loss = 7.362907(2420.1 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.153600 time 193.119258
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:46.785548: step 1, loss = 12.140941(2488.0 examples/sec; 0.051  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.170667 time 193.176567
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:46.842858: step 1, loss = 8.887957(2237.8 examples/sec; 0.057  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.187733 time 193.228956
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:46.895256: step 1, loss = 11.130163(2447.8 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.204800 time 193.282133
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:46.948426: step 1, loss = 10.560259(2412.2 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.221867 time 193.334063
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:47.000353: step 1, loss = 11.923371(2470.1 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.238933 time 193.384455
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:47.050743: step 1, loss = 10.691839(2545.6 examples/sec; 0.050  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.256000 time 193.436083
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:47.102376: step 1, loss = 9.852761(2484.4 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.273067 time 193.491793
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:47.158082: step 1, loss = 9.649431(2302.7 examples/sec; 0.056  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.290133 time 193.547866
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:47.214151: step 1, loss = 10.159640(2287.2 examples/sec; 0.056  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.307200 time 193.606887
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:47.273175: step 2, loss = 6.034953(2172.4 examples/sec; 0.059  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.324267 time 193.658604
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:47.324896: step 2, loss = 5.925594(2479.9 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.341333 time 193.714681
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:47.380987: step 2, loss = 5.870676(2287.2 examples/sec; 0.056  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.358400 time 193.768626
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:47.434917: step 2, loss = 5.668247(2378.1 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.375467 time 193.820180
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:47.486489: step 2, loss = 6.059114(2487.3 examples/sec; 0.051  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.392533 time 193.875339
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:47.541633: step 2, loss = 5.604971(2325.7 examples/sec; 0.055  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.409600 time 193.928062
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:47.594353: step 2, loss = 5.281147(2432.8 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.426667 time 193.984910
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:47.651198: step 2, loss = 6.150073(2255.9 examples/sec; 0.057  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.443733 time 194.043631
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:47.709938: step 3, loss = 3.066480(2183.0 examples/sec; 0.059  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.460800 time 194.095798
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:47.762090: step 3, loss = 3.095622(2459.7 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.477867 time 194.151495
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:47.817787: step 3, loss = 2.886559(2302.7 examples/sec; 0.056  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.494933 time 194.204017
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:47.870325: step 3, loss = 3.005141(2441.2 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.512000 time 194.256508
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:47.922795: step 3, loss = 3.004624(2444.5 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.529067 time 194.310982
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:47.977274: step 3, loss = 2.763998(2354.1 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.546133 time 194.365111
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:48.031419: step 3, loss = 2.890819(2368.7 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.563200 time 194.419901
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:48.086216: step 3, loss = 3.048713(2340.7 examples/sec; 0.055  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.580267 time 194.473668
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:48.139970: step 4, loss = 2.435888(2386.3 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.597333 time 194.527437
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:48.193728: step 4, loss = 2.513685(2385.8 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.614400 time 194.580712
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:48.247005: step 4, loss = 2.414861(2407.3 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.631467 time 194.633530
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:48.299819: step 4, loss = 2.340760(2428.4 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.648533 time 194.685183
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:48.351479: step 4, loss = 2.431037(2482.8 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.665600 time 194.738177
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:48.404472: step 4, loss = 2.465065(2420.3 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.682667 time 194.793382
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:48.459686: step 4, loss = 2.508631(2322.7 examples/sec; 0.055  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.699733 time 194.850217
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:48.516510: step 4, loss = 2.459810(2256.9 examples/sec; 0.057  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.716800 time 194.903835
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:48.570123: step 5, loss = 2.376287(2392.0 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.733867 time 194.957816
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:48.624107: step 5, loss = 2.189340(2375.7 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.750933 time 195.019289
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:48.685580: step 5, loss = 2.316448(2085.9 examples/sec; 0.061  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.768000 time 195.076763
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:48.743053: step 5, loss = 2.302419(2231.4 examples/sec; 0.057  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.785067 time 195.128855
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:48.795145: step 5, loss = 2.183873(2462.1 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.802133 time 195.179392
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:48.845686: step 5, loss = 2.280846(2538.0 examples/sec; 0.050  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.819200 time 195.229834
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:48.896123: step 5, loss = 2.260201(2543.1 examples/sec; 0.050  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.836267 time 195.288104
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:48.954410: step 5, loss = 2.275289(2200.2 examples/sec; 0.058  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.853333 time 195.345301
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:49.011591: step 6, loss = 2.125533(2245.7 examples/sec; 0.057  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.870400 time 195.397903
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:49.064194: step 6, loss = 2.152201(2438.3 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.887467 time 195.453875
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:49.120165: step 6, loss = 2.154011(2291.2 examples/sec; 0.056  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.904533 time 195.505184
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:49.171489: step 6, loss = 2.170635(2499.1 examples/sec; 0.051  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.921600 time 195.561282
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:49.227572: step 6, loss = 2.130608(2286.7 examples/sec; 0.056  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.938667 time 195.613997
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:49.280289: step 6, loss = 2.125885(2433.0 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.955733 time 195.669959
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:49.336266: step 6, loss = 2.137925(2290.9 examples/sec; 0.056  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.972800 time 195.723377
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:49.389679: step 6, loss = 2.076171(2401.2 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 0.989867 time 195.779905
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:49.446195: step 7, loss = 2.166447(2270.1 examples/sec; 0.056  sec/batch)
+INFO:tensorflow:Epoch: 0
+INFO:tensorflow:epoch: 1.006933 time 195.833728
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:49.500022: step 7, loss = 2.191983(2382.8 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Master evaluating...
+INFO:tensorflow:Evaluating model...
+INFO:tensorflow:Done evaluating...
+INFO:tensorflow:IInfo: 1489921161.268581 1.006933 0.265783 126.104836
+INFO:tensorflow:Master done evaluating... Elapsed time: 4.171770
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.024000 time 200.060111
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:53.726401: step 7, loss = 2.069826(30.3 examples/sec; 4.226  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.041067 time 200.113632
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:53.779918: step 7, loss = 2.144508(2397.9 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.058133 time 200.166683
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:53.832972: step 7, loss = 2.095609(2417.4 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.075200 time 200.222356
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:53.888648: step 7, loss = 2.077477(2303.4 examples/sec; 0.056  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.092267 time 200.276192
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:53.942511: step 7, loss = 2.052319(2381.0 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.109333 time 200.330642
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:53.996929: step 7, loss = 2.060783(2356.9 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.126400 time 200.384912
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:54.051202: step 8, loss = 2.168278(2363.0 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.143467 time 200.438403
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:54.104718: step 8, loss = 1.983893(2396.8 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.160533 time 200.493387
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:54.159682: step 8, loss = 2.015876(2333.3 examples/sec; 0.055  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.177600 time 200.549860
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:54.216151: step 8, loss = 2.043355(2271.0 examples/sec; 0.056  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.194667 time 200.605982
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:54.272273: step 8, loss = 1.886623(2285.1 examples/sec; 0.056  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.211733 time 200.660459
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:54.326750: step 8, loss = 2.110193(2354.1 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.228800 time 200.714593
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:54.380884: step 8, loss = 2.069561(2369.0 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.245867 time 200.766603
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:54.432889: step 8, loss = 2.168182(2466.3 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.262933 time 200.819933
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:54.486224: step 9, loss = 2.096013(2404.5 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.280000 time 200.873638
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:54.539940: step 9, loss = 1.924052(2387.7 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.297067 time 200.927246
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:54.593545: step 9, loss = 2.117976(2392.7 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.314133 time 200.979087
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:54.645376: step 9, loss = 1.888870(2474.8 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.331200 time 201.031842
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:54.698146: step 9, loss = 1.929078(2430.5 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.348267 time 201.087579
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:54.753883: step 9, loss = 1.830122(2301.0 examples/sec; 0.056  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.365333 time 201.140501
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:54.806794: step 9, loss = 1.893972(2424.1 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.382400 time 201.193202
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:54.859550: step 9, loss = 1.848590(2431.2 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.399467 time 201.246851
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:54.913139: step 10, loss = 1.862569(2393.4 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.416533 time 201.307963
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:54.974266: step 10, loss = 1.823826(2097.7 examples/sec; 0.061  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.433600 time 201.357828
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:55.024117: step 10, loss = 1.847942(2573.2 examples/sec; 0.050  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.450667 time 201.410573
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:55.076868: step 10, loss = 2.012895(2431.3 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.467733 time 201.465455
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:55.131743: step 10, loss = 1.939858(2337.1 examples/sec; 0.055  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.484800 time 201.519417
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:55.185706: step 10, loss = 1.817913(2376.8 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.501867 time 201.571368
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:55.237656: step 10, loss = 1.844810(2468.9 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.518933 time 201.629791
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:55.296107: step 10, loss = 1.906914(2193.9 examples/sec; 0.058  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.536000 time 201.686317
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:55.352607: step 11, loss = 1.664798(2270.0 examples/sec; 0.056  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.553067 time 201.736529
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:55.402819: step 11, loss = 1.767683(2554.6 examples/sec; 0.050  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.570133 time 201.787527
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:55.453818: step 11, loss = 1.769133(2515.1 examples/sec; 0.051  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.587200 time 201.841451
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:55.507739: step 11, loss = 1.692258(2378.5 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.604267 time 201.896025
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:55.562321: step 11, loss = 1.968708(2349.6 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.621333 time 201.952430
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:55.618721: step 11, loss = 1.796212(2273.7 examples/sec; 0.056  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.638400 time 202.007361
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:55.673649: step 11, loss = 1.834079(2334.8 examples/sec; 0.055  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.655467 time 202.061515
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:55.727801: step 11, loss = 1.771822(2368.3 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.672533 time 202.116924
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:55.783219: step 12, loss = 1.802124(2314.0 examples/sec; 0.055  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.689600 time 202.167342
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:55.833640: step 12, loss = 1.682252(2544.0 examples/sec; 0.050  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.706667 time 202.220091
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:55.886383: step 12, loss = 1.735464(2431.7 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.723733 time 202.272937
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:55.939228: step 12, loss = 1.768666(2428.1 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.740800 time 202.325043
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:55.991339: step 12, loss = 1.675000(2461.3 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.757867 time 202.376776
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:56.043078: step 12, loss = 1.693778(2479.0 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.774933 time 202.430423
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:56.096717: step 12, loss = 1.680912(2391.1 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.792000 time 202.486687
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:56.153009: step 12, loss = 1.699070(2278.2 examples/sec; 0.056  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.809067 time 202.541303
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:56.207593: step 13, loss = 1.514055(2349.5 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.826133 time 202.594764
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:56.261053: step 13, loss = 1.717874(2399.0 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.843200 time 202.647915
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:56.314220: step 13, loss = 1.668758(2412.3 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.860267 time 202.701531
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:56.367823: step 13, loss = 1.676652(2393.0 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.877333 time 202.753059
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:56.419350: step 13, loss = 1.718685(2489.2 examples/sec; 0.051  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.894400 time 202.803299
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:56.469597: step 13, loss = 1.598718(2552.8 examples/sec; 0.050  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.911467 time 202.854344
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:56.520637: step 13, loss = 1.617030(2513.1 examples/sec; 0.051  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.928533 time 202.911710
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:56.578002: step 13, loss = 1.672708(2235.5 examples/sec; 0.057  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.945600 time 202.968037
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:56.634328: step 14, loss = 1.639223(2276.7 examples/sec; 0.056  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.962667 time 203.019117
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:56.685406: step 14, loss = 1.449335(2511.2 examples/sec; 0.051  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.979733 time 203.070927
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:56.737217: step 14, loss = 1.575737(2475.6 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 1.996800 time 203.121786
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:56.788073: step 14, loss = 1.704868(2522.1 examples/sec; 0.051  sec/batch)
+INFO:tensorflow:Epoch: 1
+INFO:tensorflow:epoch: 2.013867 time 203.169616
+INFO:tensorflow:Worker 0: 2017-03-19 10:59:56.835906: step 14, loss = 1.481781(2681.9 examples/sec; 0.048  sec/batch)
+INFO:tensorflow:Master evaluating...
+INFO:tensorflow:Evaluating model...
+INFO:tensorflow:Done evaluating...
+INFO:tensorflow:IInfo: 1489921164.432840 2.013867 0.514317 92.927480
+INFO:tensorflow:Master done evaluating... Elapsed time: 4.278264
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.030933 time 207.503959
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:01.170266: step 14, loss = 1.562765(29.5 examples/sec; 4.334  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.048000 time 207.558213
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:01.224504: step 14, loss = 1.617153(2364.6 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.065067 time 207.617930
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:01.284213: step 14, loss = 1.497626(2147.5 examples/sec; 0.060  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.082133 time 207.672610
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:01.338911: step 15, loss = 1.457539(2344.5 examples/sec; 0.055  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.099200 time 207.731009
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:01.397301: step 15, loss = 1.550807(2196.3 examples/sec; 0.058  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.116267 time 207.790106
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:01.456403: step 15, loss = 1.463503(2169.7 examples/sec; 0.059  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.133333 time 207.858933
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:01.525224: step 15, loss = 1.458256(1862.8 examples/sec; 0.069  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.150400 time 207.923984
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:01.590277: step 15, loss = 1.424478(1970.9 examples/sec; 0.065  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.167467 time 207.986437
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:01.652779: step 15, loss = 1.285722(2051.6 examples/sec; 0.062  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.184533 time 208.045778
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:01.712089: step 15, loss = 1.474326(2163.6 examples/sec; 0.059  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.201600 time 208.107708
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:01.774015: step 15, loss = 1.581272(2070.5 examples/sec; 0.062  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.218667 time 208.164290
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:01.830613: step 16, loss = 1.392781(2266.1 examples/sec; 0.056  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.235733 time 208.215102
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:01.881395: step 16, loss = 1.366630(2525.8 examples/sec; 0.051  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.252800 time 208.266258
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:01.932550: step 16, loss = 1.372887(2507.8 examples/sec; 0.051  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.269867 time 208.327774
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:01.994067: step 16, loss = 1.400009(2084.4 examples/sec; 0.061  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.286933 time 208.399293
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:02.065582: step 16, loss = 1.385937(1792.9 examples/sec; 0.071  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.304000 time 208.454237
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:02.120529: step 16, loss = 1.335283(2334.1 examples/sec; 0.055  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.321067 time 208.515648
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:02.181937: step 16, loss = 1.356811(2088.1 examples/sec; 0.061  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.338133 time 208.574250
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:02.240537: step 16, loss = 1.338280(2188.4 examples/sec; 0.058  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.355200 time 208.633083
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:02.299377: step 17, loss = 1.369683(2179.4 examples/sec; 0.059  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.372267 time 208.684804
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:02.351094: step 17, loss = 1.249030(2480.2 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.389333 time 208.739415
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:02.405706: step 17, loss = 1.369141(2348.3 examples/sec; 0.055  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.406400 time 208.793668
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:02.459974: step 17, loss = 1.324841(2363.3 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.423467 time 208.848643
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:02.514932: step 17, loss = 1.184699(2333.5 examples/sec; 0.055  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.440533 time 208.904567
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:02.570857: step 17, loss = 1.190476(2293.2 examples/sec; 0.056  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.457600 time 208.959375
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:02.625668: step 17, loss = 1.251979(2339.8 examples/sec; 0.055  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.474667 time 209.017709
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:02.683997: step 17, loss = 1.225901(2198.5 examples/sec; 0.058  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.491733 time 209.074167
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:02.740457: step 18, loss = 1.208846(2271.2 examples/sec; 0.056  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.508800 time 209.127879
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:02.794169: step 18, loss = 1.221733(2387.7 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.525867 time 209.180673
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:02.846966: step 18, loss = 1.270818(2429.3 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.542933 time 209.233076
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:02.899369: step 18, loss = 1.215178(2447.7 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.560000 time 209.279808
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:02.946097: step 18, loss = 1.189946(2745.5 examples/sec; 0.047  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.577067 time 209.327903
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:02.994192: step 18, loss = 1.277827(2667.2 examples/sec; 0.048  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.594133 time 209.381252
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:03.047540: step 18, loss = 1.254912(2404.1 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.611200 time 209.439645
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:03.105932: step 18, loss = 1.138362(2196.3 examples/sec; 0.058  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.628267 time 209.496501
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:03.162791: step 19, loss = 1.265100(2255.3 examples/sec; 0.057  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.645333 time 209.550037
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:03.216326: step 19, loss = 1.114431(2395.8 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.662400 time 209.604879
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:03.271187: step 19, loss = 1.163231(2337.7 examples/sec; 0.055  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.679467 time 209.659657
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:03.325969: step 19, loss = 1.119857(2341.2 examples/sec; 0.055  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.696533 time 209.712335
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:03.378627: step 19, loss = 1.091827(2435.7 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.713600 time 209.767495
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:03.433786: step 19, loss = 1.071348(2325.0 examples/sec; 0.055  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.730667 time 209.818483
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:03.484775: step 19, loss = 1.285929(2515.5 examples/sec; 0.051  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.747733 time 209.871726
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:03.538030: step 19, loss = 1.160527(2408.4 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.764800 time 209.928800
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:03.595108: step 20, loss = 0.935750(2246.6 examples/sec; 0.057  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.781867 time 209.981656
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:03.647961: step 20, loss = 1.048538(2426.7 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.798933 time 210.034698
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:03.700994: step 20, loss = 1.224356(2418.5 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.816000 time 210.088625
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:03.754960: step 20, loss = 1.003651(2376.8 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.833067 time 210.143445
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:03.809751: step 20, loss = 1.119816(2343.0 examples/sec; 0.055  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.850133 time 210.198207
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:03.864494: step 20, loss = 1.142401(2342.7 examples/sec; 0.055  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.867200 time 210.252274
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:03.918596: step 20, loss = 1.199892(2370.5 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.884267 time 210.305758
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:03.972045: step 20, loss = 1.075288(2399.6 examples/sec; 0.053  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.901333 time 210.358193
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:04.024502: step 21, loss = 0.965212(2444.9 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.918400 time 210.414177
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:04.080467: step 21, loss = 1.056862(2291.5 examples/sec; 0.056  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.935467 time 210.469256
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:04.135551: step 21, loss = 0.915856(2328.1 examples/sec; 0.055  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.952533 time 210.523484
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:04.189774: step 21, loss = 1.054290(2365.3 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.969600 time 210.577112
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:04.243407: step 21, loss = 1.092896(2391.3 examples/sec; 0.054  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 2.986667 time 210.628800
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:04.295102: step 21, loss = 1.049342(2481.6 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Epoch: 2
+INFO:tensorflow:epoch: 3.003733 time 210.680718
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:04.347017: step 21, loss = 0.925742(2470.7 examples/sec; 0.052  sec/batch)
+INFO:tensorflow:Master evaluating...
+INFO:tensorflow:Evaluating model...
+INFO:tensorflow:Done evaluating...
+INFO:tensorflow:IInfo: 1489921167.665945 3.003733 0.681533 60.844244
+INFO:tensorflow:Master done evaluating... Elapsed time: 4.259785
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.020800 time 214.998919
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:08.665204: step 21, loss = 0.992233(29.6 examples/sec; 4.318  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.037867 time 215.094393
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:08.760686: step 22, loss = 0.961772(1342.0 examples/sec; 0.095  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.054933 time 215.174069
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:08.840360: step 22, loss = 1.000272(1608.7 examples/sec; 0.080  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.072000 time 215.245347
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:08.911634: step 22, loss = 0.979815(1798.5 examples/sec; 0.071  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.089067 time 215.328910
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:08.995202: step 23, loss = 1.045726(1533.6 examples/sec; 0.083  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.106133 time 215.479432
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:09.145717: step 23, loss = 0.774313(851.0 examples/sec; 0.150  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.123200 time 215.556741
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:09.223029: step 24, loss = 0.922600(1657.9 examples/sec; 0.077  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.140267 time 215.668047
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:09.334330: step 24, loss = 0.739242(1151.1 examples/sec; 0.111  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.157333 time 215.757640
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:09.423930: step 25, loss = 0.849017(1430.2 examples/sec; 0.090  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.174400 time 215.911580
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:09.577874: step 25, loss = 0.969140(832.1 examples/sec; 0.154  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.191467 time 216.094768
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:09.761063: step 26, loss = 1.088849(699.1 examples/sec; 0.183  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.208533 time 216.368387
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:10.034670: step 26, loss = 0.928643(468.0 examples/sec; 0.273  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.225600 time 216.575301
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:10.241587: step 27, loss = 1.032406(618.9 examples/sec; 0.207  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.242667 time 216.800033
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:10.466320: step 27, loss = 0.871096(569.8 examples/sec; 0.225  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.259733 time 217.015901
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:10.682189: step 28, loss = 0.671331(593.2 examples/sec; 0.216  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.276800 time 217.232029
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:10.898313: step 28, loss = 0.980251(592.5 examples/sec; 0.216  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.293867 time 217.452714
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:11.119005: step 29, loss = 0.751981(580.3 examples/sec; 0.221  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.310933 time 217.664383
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:11.330670: step 29, loss = 0.729340(605.0 examples/sec; 0.212  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.328000 time 217.889324
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:11.555614: step 30, loss = 0.792116(569.3 examples/sec; 0.225  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.345067 time 218.096056
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:11.762343: step 30, loss = 0.718025(619.5 examples/sec; 0.207  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.362133 time 218.311771
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:11.978060: step 31, loss = 0.582082(593.7 examples/sec; 0.216  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.379200 time 218.528345
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:12.194631: step 31, loss = 0.574897(591.3 examples/sec; 0.216  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.396267 time 218.742851
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:12.409139: step 32, loss = 0.628577(597.0 examples/sec; 0.214  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.413333 time 218.961390
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:12.627677: step 32, loss = 0.570693(586.0 examples/sec; 0.218  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.430400 time 219.192880
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:12.859174: step 33, loss = 0.718967(553.2 examples/sec; 0.231  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.447467 time 219.392903
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:13.059190: step 33, loss = 0.548935(640.3 examples/sec; 0.200  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.464533 time 219.607428
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:13.273718: step 34, loss = 0.632617(596.9 examples/sec; 0.214  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.481600 time 219.824860
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:13.491162: step 34, loss = 0.559199(588.9 examples/sec; 0.217  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.498667 time 220.055593
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:13.721883: step 35, loss = 0.657661(555.0 examples/sec; 0.231  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.515733 time 220.257150
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:13.923436: step 35, loss = 0.527257(635.4 examples/sec; 0.201  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.532800 time 220.422014
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:14.088307: step 36, loss = 0.476112(776.8 examples/sec; 0.165  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.549867 time 220.689424
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:14.355711: step 36, loss = 0.610202(478.9 examples/sec; 0.267  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.566933 time 220.888443
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:14.554736: step 37, loss = 0.552995(643.5 examples/sec; 0.199  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.584000 time 221.175598
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:14.841884: step 37, loss = 0.583256(445.9 examples/sec; 0.287  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.601067 time 221.307552
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:14.973842: step 38, loss = 0.759070(970.8 examples/sec; 0.132  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.618133 time 221.606743
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:15.273030: step 38, loss = 0.543946(428.0 examples/sec; 0.299  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.635200 time 221.752553
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:15.418839: step 39, loss = 0.512263(878.5 examples/sec; 0.146  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.652267 time 222.038428
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:15.704722: step 39, loss = 0.475612(447.9 examples/sec; 0.286  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.669333 time 222.180181
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:15.846500: step 40, loss = 0.471062(903.5 examples/sec; 0.142  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.686400 time 222.470360
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:16.136655: step 40, loss = 0.506698(441.3 examples/sec; 0.290  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.703467 time 222.636747
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:16.303040: step 41, loss = 0.550723(769.8 examples/sec; 0.166  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.720533 time 222.902236
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:16.568584: step 41, loss = 0.520239(482.2 examples/sec; 0.265  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.737600 time 223.334484
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:17.000775: step 42, loss = 0.500241(296.2 examples/sec; 0.432  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.754667 time 223.765748
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:17.432037: step 43, loss = 0.485479(296.9 examples/sec; 0.431  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.771733 time 224.198034
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:17.864321: step 44, loss = 0.368026(296.2 examples/sec; 0.432  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.788800 time 224.373592
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:18.039883: step 45, loss = 0.469149(729.5 examples/sec; 0.175  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.805867 time 224.629463
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:18.295748: step 45, loss = 0.433365(500.5 examples/sec; 0.256  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.822933 time 225.114914
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:18.781203: step 46, loss = 0.379603(263.7 examples/sec; 0.485  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.840000 time 225.546646
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:19.212937: step 47, loss = 0.520793(296.5 examples/sec; 0.432  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.857067 time 225.731750
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:19.398057: step 48, loss = 0.280030(691.8 examples/sec; 0.185  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.874133 time 226.031384
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:19.697670: step 48, loss = 0.328545(427.4 examples/sec; 0.300  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.891200 time 226.463272
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:20.129558: step 49, loss = 0.421972(296.4 examples/sec; 0.432  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.908267 time 226.895138
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:20.561442: step 50, loss = 0.394692(296.4 examples/sec; 0.432  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.925333 time 227.093970
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:20.760262: step 51, loss = 0.346181(644.1 examples/sec; 0.199  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.942400 time 227.326782
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:20.993067: step 51, loss = 0.369423(550.1 examples/sec; 0.233  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.959467 time 227.758548
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:21.424833: step 52, loss = 0.326821(296.5 examples/sec; 0.432  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.976533 time 228.190057
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:21.856358: step 53, loss = 0.441231(296.7 examples/sec; 0.431  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 3.993600 time 228.621949
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:22.288235: step 54, loss = 0.478618(296.5 examples/sec; 0.432  sec/batch)
+INFO:tensorflow:Epoch: 3
+INFO:tensorflow:epoch: 4.010667 time 228.768052
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:22.434343: step 55, loss = 0.433343(876.7 examples/sec; 0.146  sec/batch)
+INFO:tensorflow:Master evaluating...
+INFO:tensorflow:Evaluating model...
+INFO:tensorflow:Done evaluating...
+INFO:tensorflow:IInfo: 1489921181.597308 4.010667 0.879200 22.975831
+INFO:tensorflow:Master done evaluating... Elapsed time: 4.160578
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.027733 time 233.095400
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:26.761697: step 55, loss = 0.353647(29.6 examples/sec; 4.327  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.044800 time 233.293488
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:26.959778: step 56, loss = 0.392593(646.6 examples/sec; 0.198  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.061867 time 233.496545
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:27.162834: step 57, loss = 0.301821(630.7 examples/sec; 0.203  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.078933 time 233.703658
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:27.369950: step 58, loss = 0.253377(618.3 examples/sec; 0.207  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.096000 time 234.000704
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:27.666991: step 59, loss = 0.489194(431.1 examples/sec; 0.297  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.113067 time 234.415286
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:28.081571: step 60, loss = 0.408103(308.8 examples/sec; 0.414  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.130133 time 234.877290
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:28.543585: step 61, loss = 0.341031(277.1 examples/sec; 0.462  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.147200 time 235.302218
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:28.968505: step 62, loss = 0.376033(301.3 examples/sec; 0.425  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.164267 time 235.745231
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:29.411516: step 63, loss = 0.442084(289.0 examples/sec; 0.443  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.181333 time 236.183611
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:29.849897: step 64, loss = 0.336343(292.1 examples/sec; 0.438  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.198400 time 236.638051
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:30.304338: step 65, loss = 0.364410(281.7 examples/sec; 0.454  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.215467 time 237.034141
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:30.700432: step 66, loss = 0.362327(323.2 examples/sec; 0.396  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.232533 time 237.449860
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:31.116166: step 67, loss = 0.276592(308.0 examples/sec; 0.416  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.249600 time 237.904226
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:31.570534: step 68, loss = 0.445194(281.8 examples/sec; 0.454  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.266667 time 238.340230
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:32.006557: step 69, loss = 0.351485(293.6 examples/sec; 0.436  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.283733 time 238.741067
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:32.407361: step 70, loss = 0.355389(319.5 examples/sec; 0.401  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.300800 time 239.224694
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:32.890982: step 71, loss = 0.374094(264.7 examples/sec; 0.484  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.317867 time 239.628290
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:33.294598: step 72, loss = 0.182885(317.2 examples/sec; 0.404  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.334933 time 240.076941
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:33.743242: step 73, loss = 0.257425(285.4 examples/sec; 0.449  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.352000 time 240.492168
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:34.158473: step 74, loss = 0.328830(308.4 examples/sec; 0.415  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.369067 time 240.949955
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:34.616240: step 75, loss = 0.337026(279.7 examples/sec; 0.458  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.386133 time 241.353486
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:35.019775: step 76, loss = 0.295650(317.3 examples/sec; 0.403  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.403200 time 241.822514
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:35.488805: step 77, loss = 0.384292(273.0 examples/sec; 0.469  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.420267 time 242.230251
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:35.896540: step 78, loss = 0.378333(314.0 examples/sec; 0.408  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.437333 time 242.644766
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:36.311051: step 79, loss = 0.204236(308.9 examples/sec; 0.414  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.454400 time 243.101699
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:36.767986: step 80, loss = 0.220071(280.2 examples/sec; 0.457  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.471467 time 243.523817
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:37.190105: step 81, loss = 0.205490(303.3 examples/sec; 0.422  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.488533 time 243.976845
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:37.643128: step 82, loss = 0.315726(282.6 examples/sec; 0.453  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.505600 time 244.377303
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:38.043589: step 83, loss = 0.242477(319.7 examples/sec; 0.400  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.522667 time 244.842567
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:38.508856: step 84, loss = 0.260446(275.2 examples/sec; 0.465  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.539733 time 245.290414
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:38.956699: step 85, loss = 0.197257(285.9 examples/sec; 0.448  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.556800 time 245.703625
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:39.369950: step 86, loss = 0.302611(309.8 examples/sec; 0.413  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.573867 time 246.126958
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:39.793261: step 87, loss = 0.223610(302.5 examples/sec; 0.423  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.590933 time 246.564401
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:40.230689: step 88, loss = 0.160635(292.7 examples/sec; 0.437  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.608000 time 246.990962
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:40.657248: step 89, loss = 0.219504(300.2 examples/sec; 0.426  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.625067 time 247.403910
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:41.070209: step 90, loss = 0.172360(310.0 examples/sec; 0.413  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.642133 time 247.836219
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:41.502528: step 91, loss = 0.203984(296.2 examples/sec; 0.432  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.659200 time 248.315024
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:41.981311: step 92, loss = 0.376247(267.4 examples/sec; 0.479  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.676267 time 248.712805
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:42.379091: step 93, loss = 0.214486(321.9 examples/sec; 0.398  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.693333 time 249.143874
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:42.810160: step 94, loss = 0.215985(297.0 examples/sec; 0.431  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.710400 time 249.577476
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:43.243771: step 95, loss = 0.350064(295.3 examples/sec; 0.434  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.727467 time 250.041273
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:43.707561: step 96, loss = 0.203573(276.1 examples/sec; 0.464  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.744533 time 250.476386
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:44.142685: step 97, loss = 0.228394(294.2 examples/sec; 0.435  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.761600 time 250.896433
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:44.562719: step 98, loss = 0.381177(304.8 examples/sec; 0.420  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.778667 time 251.335076
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:45.001363: step 99, loss = 0.167172(291.9 examples/sec; 0.439  sec/batch)
+INFO:tensorflow:global_step/sec: 1.13668
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.795733 time 251.737960
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:45.404248: step 100, loss = 0.338446(317.8 examples/sec; 0.403  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.812800 time 252.185154
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:45.851439: step 101, loss = 0.204635(286.3 examples/sec; 0.447  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.829867 time 252.602687
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:46.268985: step 102, loss = 0.251000(306.6 examples/sec; 0.417  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.846933 time 253.025075
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:46.691365: step 103, loss = 0.387228(303.1 examples/sec; 0.422  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.864000 time 253.455914
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:47.122203: step 104, loss = 0.258707(297.2 examples/sec; 0.431  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.881067 time 253.892718
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:47.559004: step 105, loss = 0.234893(293.1 examples/sec; 0.437  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.898133 time 254.343941
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:48.010233: step 106, loss = 0.197787(283.7 examples/sec; 0.451  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.915200 time 254.767183
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:48.433478: step 107, loss = 0.247527(302.5 examples/sec; 0.423  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.932267 time 255.224792
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:48.891102: step 108, loss = 0.226435(279.8 examples/sec; 0.458  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.949333 time 255.614546
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:49.280834: step 109, loss = 0.180588(328.5 examples/sec; 0.390  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.966400 time 256.073125
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:49.739410: step 110, loss = 0.259605(279.2 examples/sec; 0.458  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 4.983467 time 256.490554
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:50.156859: step 111, loss = 0.281435(306.7 examples/sec; 0.417  sec/batch)
+INFO:tensorflow:Epoch: 4
+INFO:tensorflow:epoch: 5.000533 time 256.914018
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:50.580310: step 112, loss = 0.190089(302.4 examples/sec; 0.423  sec/batch)
+INFO:tensorflow:Master evaluating...
+INFO:tensorflow:Evaluating model...
+INFO:tensorflow:Done evaluating...
+INFO:tensorflow:IInfo: 1489921205.478907 5.000533 0.930183 13.551604
+INFO:tensorflow:Master done evaluating... Elapsed time: 4.484767
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.017600 time 261.461251
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:55.127534: step 113, loss = 0.279389(28.1 examples/sec; 4.547  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.034667 time 261.639299
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:55.305583: step 114, loss = 0.310611(719.3 examples/sec; 0.178  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.051733 time 261.844932
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:55.511218: step 115, loss = 0.375407(622.8 examples/sec; 0.206  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.068800 time 262.040028
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:55.706320: step 116, loss = 0.137609(656.4 examples/sec; 0.195  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.085867 time 262.405276
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:56.071569: step 117, loss = 0.176858(350.5 examples/sec; 0.365  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.102933 time 262.810792
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:56.477080: step 118, loss = 0.292918(315.8 examples/sec; 0.405  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.120000 time 263.266374
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:56.932661: step 119, loss = 0.210685(281.0 examples/sec; 0.455  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.137067 time 263.676023
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:57.342311: step 120, loss = 0.383141(312.5 examples/sec; 0.410  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.154133 time 264.130156
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:57.796443: step 121, loss = 0.176479(281.9 examples/sec; 0.454  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.171200 time 264.576194
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:58.242514: step 122, loss = 0.197481(287.0 examples/sec; 0.446  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.188267 time 264.985502
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:58.651790: step 123, loss = 0.293378(312.8 examples/sec; 0.409  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.205333 time 265.426218
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:59.092507: step 124, loss = 0.152487(290.5 examples/sec; 0.441  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.222400 time 265.818045
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:59.484340: step 125, loss = 0.160298(326.8 examples/sec; 0.392  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.239467 time 266.291732
+INFO:tensorflow:Worker 0: 2017-03-19 11:00:59.958032: step 126, loss = 0.245018(270.3 examples/sec; 0.474  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.256533 time 266.696082
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:00.362373: step 127, loss = 0.238425(316.7 examples/sec; 0.404  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.273600 time 267.139671
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:00.805960: step 128, loss = 0.181579(288.7 examples/sec; 0.443  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.290667 time 267.553823
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:01.220113: step 129, loss = 0.213437(309.1 examples/sec; 0.414  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.307733 time 268.012980
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:01.679268: step 130, loss = 0.135026(278.8 examples/sec; 0.459  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.324800 time 268.473793
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:02.140082: step 131, loss = 0.171054(277.8 examples/sec; 0.461  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.341867 time 268.842422
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:02.508707: step 132, loss = 0.138461(347.3 examples/sec; 0.369  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.358933 time 269.314040
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:02.980326: step 133, loss = 0.178301(271.5 examples/sec; 0.472  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.376000 time 269.732444
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:03.398729: step 134, loss = 0.201478(306.0 examples/sec; 0.418  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.393067 time 270.188845
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:03.855129: step 135, loss = 0.194334(280.5 examples/sec; 0.456  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.410133 time 270.609917
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:04.276203: step 136, loss = 0.241432(304.1 examples/sec; 0.421  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.427200 time 271.025063
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:04.691356: step 137, loss = 0.167343(308.4 examples/sec; 0.415  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.444267 time 271.480393
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:05.146680: step 138, loss = 0.157677(281.2 examples/sec; 0.455  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.461333 time 271.888368
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:05.554655: step 139, loss = 0.270429(313.8 examples/sec; 0.408  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.478400 time 272.362478
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:06.028766: step 140, loss = 0.243521(270.0 examples/sec; 0.474  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.495467 time 272.742021
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:06.408312: step 141, loss = 0.166287(337.3 examples/sec; 0.379  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.512533 time 273.210060
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:06.876347: step 142, loss = 0.185092(273.5 examples/sec; 0.468  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.529600 time 273.650874
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:07.317157: step 143, loss = 0.317863(290.4 examples/sec; 0.441  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.546667 time 274.080670
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:07.746987: step 144, loss = 0.170653(297.9 examples/sec; 0.430  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.563733 time 274.540227
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:08.206532: step 145, loss = 0.137642(278.6 examples/sec; 0.459  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.580800 time 274.897391
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:08.563685: step 146, loss = 0.125614(358.5 examples/sec; 0.357  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.597867 time 275.380016
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:09.046304: step 147, loss = 0.254661(265.3 examples/sec; 0.483  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.614933 time 275.777569
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:09.443861: step 148, loss = 0.179849(322.1 examples/sec; 0.397  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.632000 time 276.252621
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:09.918910: step 149, loss = 0.206084(269.5 examples/sec; 0.475  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.649067 time 276.661982
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:10.328266: step 150, loss = 0.289270(312.8 examples/sec; 0.409  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.666133 time 277.099782
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:10.766063: step 151, loss = 0.136771(292.4 examples/sec; 0.438  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.683200 time 277.542624
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:11.208911: step 152, loss = 0.167679(289.1 examples/sec; 0.443  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.700267 time 277.948170
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:11.614455: step 153, loss = 0.103836(315.7 examples/sec; 0.405  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.717333 time 278.410486
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:12.076773: step 154, loss = 0.106074(276.9 examples/sec; 0.462  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.734400 time 278.856111
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:12.522395: step 155, loss = 0.173197(287.3 examples/sec; 0.446  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.751467 time 279.275049
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:12.941336: step 156, loss = 0.116242(305.6 examples/sec; 0.419  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.768533 time 279.693550
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:13.359839: step 157, loss = 0.145484(305.9 examples/sec; 0.418  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.785600 time 280.087373
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:13.753657: step 158, loss = 0.228055(325.1 examples/sec; 0.394  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.802667 time 280.579060
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:14.245348: step 159, loss = 0.198070(260.4 examples/sec; 0.492  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.819733 time 280.968193
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:14.634496: step 160, loss = 0.112695(329.0 examples/sec; 0.389  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.836800 time 281.440628
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:15.106916: step 161, loss = 0.240462(271.0 examples/sec; 0.472  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.853867 time 281.824510
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:15.490796: step 162, loss = 0.129289(333.6 examples/sec; 0.384  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.870933 time 282.272459
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:15.938747: step 163, loss = 0.172881(285.8 examples/sec; 0.448  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.888000 time 282.720446
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:16.386730: step 164, loss = 0.221165(285.8 examples/sec; 0.448  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.905067 time 283.141990
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:16.808284: step 165, loss = 0.248074(303.7 examples/sec; 0.421  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.922133 time 283.613770
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:17.280056: step 166, loss = 0.229804(271.4 examples/sec; 0.472  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.939200 time 283.997007
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:17.663295: step 167, loss = 0.197359(334.1 examples/sec; 0.383  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.956267 time 284.445967
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:18.112253: step 168, loss = 0.135539(285.2 examples/sec; 0.449  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.973333 time 284.872288
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:18.538592: step 169, loss = 0.135132(300.3 examples/sec; 0.426  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 5.990400 time 285.302840
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:18.969162: step 170, loss = 0.219699(297.4 examples/sec; 0.430  sec/batch)
+INFO:tensorflow:Epoch: 5
+INFO:tensorflow:epoch: 6.007467 time 285.755816
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:19.422105: step 171, loss = 0.172435(282.7 examples/sec; 0.453  sec/batch)
+INFO:tensorflow:Master evaluating...
+INFO:tensorflow:Evaluating model...
+INFO:tensorflow:Done evaluating...
+INFO:tensorflow:IInfo: 1489921229.836359 6.007467 0.946167 10.637121
+INFO:tensorflow:Master done evaluating... Elapsed time: 4.438536
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.024533 time 290.256538
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:23.922825: step 172, loss = 0.196753(28.4 examples/sec; 4.501  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.041600 time 290.465648
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:24.131936: step 173, loss = 0.291476(612.4 examples/sec; 0.209  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.058667 time 290.682576
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:24.348895: step 174, loss = 0.112694(590.3 examples/sec; 0.217  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.075733 time 290.887079
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:24.553374: step 175, loss = 0.199846(626.4 examples/sec; 0.204  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.092800 time 291.200107
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:24.866392: step 176, loss = 0.194254(409.1 examples/sec; 0.313  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.109867 time 291.638839
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:25.305146: step 177, loss = 0.103199(291.8 examples/sec; 0.439  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.126933 time 292.069444
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:25.735729: step 178, loss = 0.142001(297.3 examples/sec; 0.430  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.144000 time 292.482546
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:26.148833: step 179, loss = 0.144984(309.9 examples/sec; 0.413  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.161067 time 292.928670
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:26.594955: step 180, loss = 0.152042(287.0 examples/sec; 0.446  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.178133 time 293.364052
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:27.030338: step 181, loss = 0.153457(294.1 examples/sec; 0.435  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.195200 time 293.780602
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:27.446925: step 182, loss = 0.161963(307.3 examples/sec; 0.416  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.212267 time 294.234296
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:27.900578: step 183, loss = 0.156756(282.2 examples/sec; 0.454  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.229333 time 294.658984
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:28.325272: step 184, loss = 0.324834(301.5 examples/sec; 0.425  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.246400 time 295.078574
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:28.744867: step 185, loss = 0.166577(305.1 examples/sec; 0.419  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.263467 time 295.501205
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:29.167489: step 186, loss = 0.165840(302.9 examples/sec; 0.423  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.280533 time 295.927422
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:29.593708: step 187, loss = 0.097467(300.4 examples/sec; 0.426  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.297600 time 296.375454
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:30.041742: step 188, loss = 0.145963(285.8 examples/sec; 0.448  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.314667 time 296.820570
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:30.486860: step 189, loss = 0.182505(287.6 examples/sec; 0.445  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.331733 time 297.250177
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:30.916466: step 190, loss = 0.179069(298.0 examples/sec; 0.429  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.348800 time 297.662940
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:31.329225: step 191, loss = 0.151448(310.2 examples/sec; 0.413  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.365867 time 298.077028
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:31.743312: step 192, loss = 0.198977(309.2 examples/sec; 0.414  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.382933 time 298.657666
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:32.323952: step 193, loss = 0.091102(220.5 examples/sec; 0.581  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.400000 time 298.944387
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:32.610672: step 194, loss = 0.123044(446.6 examples/sec; 0.287  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.417067 time 299.378465
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:33.044765: step 195, loss = 0.177647(294.9 examples/sec; 0.434  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.434133 time 299.815945
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:33.482231: step 196, loss = 0.136199(292.7 examples/sec; 0.437  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.451200 time 300.265908
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:33.932259: step 197, loss = 0.305541(284.5 examples/sec; 0.450  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.468267 time 300.679947
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:34.346245: step 198, loss = 0.084672(309.3 examples/sec; 0.414  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.485333 time 301.131993
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:34.798282: step 199, loss = 0.214631(283.2 examples/sec; 0.452  sec/batch)
+INFO:tensorflow:global_step/sec: 2.00816
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.502400 time 301.559888
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:35.226178: step 200, loss = 0.162438(299.2 examples/sec; 0.428  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.519467 time 302.004983
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:35.671273: step 201, loss = 0.146450(287.6 examples/sec; 0.445  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.536533 time 302.424818
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:36.091104: step 202, loss = 0.230707(305.0 examples/sec; 0.420  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.553600 time 302.845531
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:36.511820: step 203, loss = 0.161445(304.3 examples/sec; 0.421  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.570667 time 303.290531
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:36.956826: step 204, loss = 0.236427(287.7 examples/sec; 0.445  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.587733 time 303.746089
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:37.412380: step 205, loss = 0.113680(281.0 examples/sec; 0.455  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.604800 time 304.141708
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:37.808049: step 206, loss = 0.165932(323.6 examples/sec; 0.396  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.621867 time 304.570755
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:38.237044: step 207, loss = 0.230047(298.5 examples/sec; 0.429  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.638933 time 305.024589
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:38.690875: step 208, loss = 0.086944(282.1 examples/sec; 0.454  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.656000 time 305.457037
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:39.123323: step 209, loss = 0.141637(296.1 examples/sec; 0.432  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.673067 time 305.862677
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:39.528964: step 210, loss = 0.135590(315.6 examples/sec; 0.406  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.690133 time 306.326476
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:39.992763: step 211, loss = 0.098316(276.0 examples/sec; 0.464  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.707200 time 306.748221
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:40.414605: step 212, loss = 0.134443(303.5 examples/sec; 0.422  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.724267 time 307.158903
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:40.825186: step 213, loss = 0.238506(311.8 examples/sec; 0.410  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.741333 time 307.625738
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:41.292033: step 214, loss = 0.204464(274.2 examples/sec; 0.467  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.758400 time 308.038731
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:41.705044: step 215, loss = 0.178271(310.0 examples/sec; 0.413  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.775467 time 308.491933
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:42.158230: step 216, loss = 0.237163(282.5 examples/sec; 0.453  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.792533 time 308.909343
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:42.575629: step 217, loss = 0.178355(306.7 examples/sec; 0.417  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.809600 time 309.347105
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:43.013390: step 218, loss = 0.164837(292.5 examples/sec; 0.438  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.826667 time 309.796745
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:43.463031: step 219, loss = 0.162164(284.7 examples/sec; 0.450  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.843733 time 310.225419
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:43.891707: step 220, loss = 0.172003(298.7 examples/sec; 0.429  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.860800 time 310.628560
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:44.294849: step 221, loss = 0.172816(317.6 examples/sec; 0.403  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.877867 time 311.085902
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:44.752194: step 222, loss = 0.075057(279.9 examples/sec; 0.457  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.894933 time 311.511318
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:45.177602: step 223, loss = 0.183023(301.0 examples/sec; 0.425  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.912000 time 311.948686
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:45.614977: step 224, loss = 0.134234(292.7 examples/sec; 0.437  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.929067 time 312.350827
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:46.017112: step 225, loss = 0.113943(318.4 examples/sec; 0.402  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.946133 time 312.801509
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:46.467812: step 226, loss = 0.154836(284.1 examples/sec; 0.451  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.963200 time 313.234177
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:46.900467: step 227, loss = 0.093666(295.9 examples/sec; 0.433  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.980267 time 313.651477
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:47.317766: step 228, loss = 0.121092(306.8 examples/sec; 0.417  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 6.997333 time 314.094649
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:47.760941: step 229, loss = 0.098210(288.9 examples/sec; 0.443  sec/batch)
+INFO:tensorflow:Epoch: 6
+INFO:tensorflow:epoch: 7.014400 time 314.499663
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:48.165954: step 230, loss = 0.233263(316.1 examples/sec; 0.405  sec/batch)
+INFO:tensorflow:Master evaluating...
+INFO:tensorflow:Evaluating model...
+INFO:tensorflow:Done evaluating...
+INFO:tensorflow:IInfo: 1489921254.141020 7.014400 0.954650 8.773232
+INFO:tensorflow:Master done evaluating... Elapsed time: 4.435237
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.031467 time 318.994783
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:52.661067: step 231, loss = 0.132540(28.5 examples/sec; 4.495  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.048533 time 319.198670
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:52.864956: step 232, loss = 0.144150(628.1 examples/sec; 0.204  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.065600 time 319.403330
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:53.069617: step 233, loss = 0.158517(625.7 examples/sec; 0.205  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.082667 time 319.606614
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:53.272901: step 234, loss = 0.099364(630.0 examples/sec; 0.203  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.099733 time 319.943813
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:53.610099: step 235, loss = 0.182465(379.7 examples/sec; 0.337  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.116800 time 320.337320
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:54.003604: step 236, loss = 0.128040(325.4 examples/sec; 0.393  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.133867 time 320.806630
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:54.472919: step 237, loss = 0.179316(272.8 examples/sec; 0.469  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.150933 time 321.221773
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:54.888059: step 238, loss = 0.221290(308.4 examples/sec; 0.415  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.168000 time 321.699998
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:55.366311: step 239, loss = 0.183438(267.7 examples/sec; 0.478  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.185067 time 322.119830
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:55.786115: step 240, loss = 0.212495(305.0 examples/sec; 0.420  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.202133 time 322.532577
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:56.198917: step 241, loss = 0.249883(310.2 examples/sec; 0.413  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.219200 time 322.960145
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:56.626428: step 242, loss = 0.261705(299.5 examples/sec; 0.427  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.236267 time 323.432433
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:57.098719: step 243, loss = 0.096344(271.1 examples/sec; 0.472  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.253333 time 323.842891
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:57.509175: step 244, loss = 0.114247(311.9 examples/sec; 0.410  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.270400 time 324.235846
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:57.902156: step 245, loss = 0.064568(325.8 examples/sec; 0.393  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.287467 time 324.669375
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:58.335659: step 246, loss = 0.121419(295.3 examples/sec; 0.433  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.304533 time 325.133523
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:58.799826: step 247, loss = 0.202454(275.8 examples/sec; 0.464  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.321600 time 325.554897
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:59.221182: step 248, loss = 0.105265(303.9 examples/sec; 0.421  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.338667 time 325.988309
+INFO:tensorflow:Worker 0: 2017-03-19 11:01:59.654613: step 249, loss = 0.122220(295.4 examples/sec; 0.433  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.355733 time 326.413658
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:00.079955: step 250, loss = 0.103608(301.0 examples/sec; 0.425  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.372800 time 326.870585
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:00.536874: step 251, loss = 0.118179(280.2 examples/sec; 0.457  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.389867 time 327.274136
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:00.940423: step 252, loss = 0.139500(317.3 examples/sec; 0.403  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.406933 time 327.744290
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:01.410597: step 253, loss = 0.092062(272.3 examples/sec; 0.470  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.424000 time 328.150443
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:01.816746: step 254, loss = 0.159162(315.2 examples/sec; 0.406  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.441067 time 328.551078
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:02.217366: step 255, loss = 0.146783(319.6 examples/sec; 0.401  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.458133 time 329.000961
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:02.667248: step 256, loss = 0.109855(284.6 examples/sec; 0.450  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.475200 time 329.440496
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:03.106803: step 257, loss = 0.144367(291.3 examples/sec; 0.439  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.492267 time 329.887074
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:03.553361: step 258, loss = 0.107710(286.7 examples/sec; 0.446  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.509333 time 330.297515
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:03.963803: step 259, loss = 0.178441(311.9 examples/sec; 0.410  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.526400 time 330.742195
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:04.408501: step 260, loss = 0.148484(287.9 examples/sec; 0.445  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.543467 time 331.172752
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:04.839039: step 261, loss = 0.123153(297.4 examples/sec; 0.430  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.560533 time 331.594012
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:05.260302: step 262, loss = 0.144579(303.9 examples/sec; 0.421  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.577600 time 332.042325
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:05.708611: step 263, loss = 0.214814(285.6 examples/sec; 0.448  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.594667 time 332.469116
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:06.135402: step 264, loss = 0.220893(300.0 examples/sec; 0.427  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.611733 time 332.895878
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:06.562162: step 265, loss = 0.137606(300.0 examples/sec; 0.427  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.628800 time 333.331526
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:06.997820: step 266, loss = 0.123568(293.9 examples/sec; 0.436  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.645867 time 333.778570
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:07.444860: step 267, loss = 0.205837(286.4 examples/sec; 0.447  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.662933 time 334.211213
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:07.877500: step 268, loss = 0.157713(295.9 examples/sec; 0.433  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.680000 time 334.628051
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:08.294336: step 269, loss = 0.191426(307.2 examples/sec; 0.417  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.697067 time 335.079501
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:08.745788: step 270, loss = 0.180663(283.6 examples/sec; 0.451  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.714133 time 335.493769
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:09.160091: step 271, loss = 0.175106(309.0 examples/sec; 0.414  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.731200 time 335.912282
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:09.578586: step 272, loss = 0.162983(306.0 examples/sec; 0.418  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.748267 time 336.364069
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:10.030355: step 273, loss = 0.183425(283.4 examples/sec; 0.452  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.765333 time 336.793214
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:10.459515: step 274, loss = 0.158229(298.3 examples/sec; 0.429  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.782400 time 337.242302
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:10.908590: step 275, loss = 0.226184(285.1 examples/sec; 0.449  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.799467 time 337.629730
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:11.296013: step 276, loss = 0.150104(330.5 examples/sec; 0.387  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.816533 time 338.073965
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:11.740269: step 277, loss = 0.099833(288.2 examples/sec; 0.444  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.833600 time 338.505690
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:12.171984: step 278, loss = 0.047996(296.6 examples/sec; 0.432  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.850667 time 338.950372
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:12.616657: step 279, loss = 0.191435(287.9 examples/sec; 0.445  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.867733 time 339.371436
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:13.037721: step 280, loss = 0.100469(304.1 examples/sec; 0.421  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.884800 time 339.847922
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:13.514209: step 281, loss = 0.079638(268.7 examples/sec; 0.476  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.901867 time 340.252920
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:13.919208: step 282, loss = 0.118307(316.1 examples/sec; 0.405  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.918933 time 340.665859
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:14.332142: step 283, loss = 0.094419(310.1 examples/sec; 0.413  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.936000 time 341.128825
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:14.795109: step 284, loss = 0.155987(276.5 examples/sec; 0.463  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.953067 time 341.534982
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:15.201268: step 285, loss = 0.118982(315.2 examples/sec; 0.406  sec/batch)
+INFO:tensorflow:Epoch: 7
+INFO:tensorflow:epoch: 7.970133 time 342.033489
+INFO:tensorflow:Worker 0: 2017-03-19 11:02:15.699771: step 286, loss = 0.222143(256.8 examples/sec; 0.498  sec/batch)
+INFO:tensorflow:Epoch: 7

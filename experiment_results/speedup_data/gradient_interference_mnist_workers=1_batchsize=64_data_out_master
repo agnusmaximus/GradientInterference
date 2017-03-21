@@ -1,0 +1,71 @@
+major: 3 minor: 0 memoryClockRate (GHz) 0.797
+pciBusID 0000:00:03.0
+Total memory: 3.94GiB
+Free memory: 3.91GiB
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:906] DMA: 0
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:916] 0:   Y
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:975] Creating TensorFlow device (/gpu:0) -> (device: 0, name: GRID K520, pci bus id: 0000:00:03.0)
+INFO:tensorflow:Evaluating...
+INFO:tensorflow:Evaluating model...
+INFO:tensorflow:Saving checkpoints for 0 into /tmp/imagenet_train/model.ckpt.
+INFO:tensorflow:Done evaluating...
+INFO:tensorflow:IInfo: 1490068029.891432 0.000000 0.100217 463.807805
+INFO:tensorflow:global_step/sec: 19.6847
+INFO:tensorflow:global_step/sec: 67.3285
+INFO:tensorflow:global_step/sec: 67.3274
+INFO:tensorflow:global_step/sec: 67.2854
+INFO:tensorflow:global_step/sec: 67.4161
+INFO:tensorflow:global_step/sec: 67.3821
+INFO:tensorflow:global_step/sec: 67.4398
+INFO:tensorflow:global_step/sec: 67.4035
+INFO:tensorflow:global_step/sec: 67.3617
+INFO:tensorflow:Evaluating...
+INFO:tensorflow:Evaluating model...
+INFO:tensorflow:Done evaluating...
+INFO:tensorflow:IInfo: 1490068044.046452 1.000533 0.972967 5.246347
+INFO:tensorflow:global_step/sec: 19.5626
+INFO:tensorflow:global_step/sec: 67.3878
+INFO:tensorflow:global_step/sec: 67.3151
+INFO:tensorflow:global_step/sec: 67.4269
+INFO:tensorflow:global_step/sec: 67.4238
+INFO:tensorflow:global_step/sec: 67.4804
+INFO:tensorflow:global_step/sec: 67.1911
+INFO:tensorflow:global_step/sec: 67.4737
+INFO:tensorflow:global_step/sec: 67.5165
+INFO:tensorflow:Evaluating...
+INFO:tensorflow:Evaluating model...
+INFO:tensorflow:Done evaluating...
+INFO:tensorflow:IInfo: 1490068058.035325 2.000000 0.981467 3.485135
+INFO:tensorflow:global_step/sec: 19.5692
+INFO:tensorflow:global_step/sec: 67.3308
+INFO:tensorflow:global_step/sec: 67.2333
+INFO:tensorflow:global_step/sec: 67.2511
+INFO:tensorflow:global_step/sec: 67.1825
+INFO:tensorflow:global_step/sec: 67.2814
+INFO:tensorflow:global_step/sec: 67.2713
+INFO:tensorflow:global_step/sec: 67.2166
+INFO:tensorflow:global_step/sec: 67.1494
+INFO:tensorflow:global_step/sec: 63.3989
+INFO:tensorflow:Evaluating...
+INFO:tensorflow:Evaluating model...
+INFO:tensorflow:Done evaluating...
+INFO:tensorflow:IInfo: 1490068072.074934 3.000533 0.985233 2.806973
+INFO:tensorflow:global_step/sec: 19.913
+INFO:tensorflow:global_step/sec: 67.374
+INFO:tensorflow:global_step/sec: 67.5272
+INFO:tensorflow:global_step/sec: 67.5092
+INFO:tensorflow:global_step/sec: 67.3994
+INFO:tensorflow:global_step/sec: 67.4137
+INFO:tensorflow:global_step/sec: 67.5367
+INFO:tensorflow:global_step/sec: 67.5169
+INFO:tensorflow:global_step/sec: 67.4477
+INFO:tensorflow:Evaluating...
+INFO:tensorflow:Evaluating model...
+INFO:tensorflow:Done evaluating...
+INFO:tensorflow:IInfo: 1490068086.050951 4.000000 0.987067 2.418072
+INFO:tensorflow:global_step/sec: 19.586
+INFO:tensorflow:global_step/sec: 67.3378
+INFO:tensorflow:global_step/sec: 67.2957
+INFO:tensorflow:global_step/sec: 67.2519
+INFO:tensorflow:global_step/sec: 67.2969
+INFO:tensorflow:global_step/sec: 67.0952
