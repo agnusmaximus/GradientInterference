@@ -274,8 +274,7 @@ def train(target, cluster_spec):
 
     worker_id = FLAGS.task_id
     work_per_worker = [0] * num_workers
-    #n_total_examples = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
-    n_total_examples = 100
+    n_total_examples = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
     for i in range(n_total_examples):
       work_per_worker[i % num_workers] += 1
 
