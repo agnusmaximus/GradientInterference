@@ -325,6 +325,11 @@ def train(target, cluster_spec):
   def distributed_compute_R(sess):
 
     worker_id = FLAGS.task_id
+    work_per_worker = [0] * num_workers
+    n_total_examples = 100
+    #n_total_examples = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
+    for i in range(n_total_examples):
+      work_per_worker[i % num_workers] += 1
 
     # We block the work distribution so that when the workers pass this checkpoint,
     # all its work is in its queue.
@@ -332,8 +337,7 @@ def train(target, cluster_spec):
     if worker_id == 0:
       mon_sess.run([block_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
       tf.logging.info("Master distributing examples for computing R...")
-      #for i in range(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN):
-      for i in range(100):
+      for i in range(n_total_examples):
         img_work, label_work = sess.run(variable_batchsize_inputs[1], feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
         worker = i % num_workers
         tf.logging.info("Assigning example %d to worker %d for computing R..." % (i, worker))
@@ -351,14 +355,14 @@ def train(target, cluster_spec):
     n_labels_in_queue, n_images_in_queue = -1, -1
     sum_of_norms, norm_of_sums = None, None
     n_examples_computed = 0
-    while n_labels_in_queue != 0:
+    while n_examples_computed != work_per_worker[FLAGS.task_id]:
       fd = {images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])}
       n_labels_in_queue, n_images_in_queue = sess.run([length_of_images_queue[worker_id],
                                                        length_of_labels_queue[worker_id]], feed_dict=fd)
       tf.logging.info("%d %d" % (n_labels_in_queue, n_images_in_queue))
       assert(n_labels_in_queue == n_images_in_queue)
       if n_labels_in_queue == 0:
-        break
+        continue
 
       fd = {images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])}
       work_image, work_label = sess.run([dequeue_work_images[worker_id],
@@ -371,6 +375,8 @@ def train(target, cluster_spec):
       gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
       tf.logging.info("Worker computing r on examples...")
       sys.stdout.flush()
+
+      n_examples_computed += 1
 
       if sum_of_norms == None:
         sum_of_norms = np.linalg.norm(gradient)**2
@@ -473,17 +479,18 @@ def train(target, cluster_spec):
         evaluate_times.append(t_evaluate_end-t_evaluate_start)
         mon_sess.run([unblock_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
 
-      if FLAGS.should_compute_R and FLAGS.task_id == 0 and (new_epoch_track == cur_epoch_track+1 or cur_iteration == 0):
+      if  (new_epoch_track == cur_epoch_track+1 or cur_iteration == 0):
+        if FLAGS.should_compute_R and FLAGS.task_id == 0:
 
-        t_compute_r_start = time.time()
-        tf.logging.info("Master computing R...")
-        R = distributed_compute_R(mon_sess)
-        tf.logging.info("R: %f %f" % (t_compute_r_start-sum(evaluate_times)-sum(compute_R_times), R))
-        t_compute_r_end = time.time()
-        tf.logging.info("Master done computing R... Elapsed time: %f" % (t_compute_r_end-t_compute_r_start))
-        compute_R_times.append(t_compute_r_end-t_compute_r_start)
-      if FLAGS.should_compute_R and FLAGS.task_id != 0:
-        distributed_compute_R(mon_sess)
+          t_compute_r_start = time.time()
+          tf.logging.info("Master computing R...")
+          R = distributed_compute_R(mon_sess)
+          tf.logging.info("R: %f %f" % (t_compute_r_start-sum(evaluate_times)-sum(compute_R_times), R))
+          t_compute_r_end = time.time()
+          tf.logging.info("Master done computing R... Elapsed time: %f" % (t_compute_r_end-t_compute_r_start))
+          compute_R_times.append(t_compute_r_end-t_compute_r_start)
+        if FLAGS.should_compute_R and FLAGS.task_id != 0:
+          distributed_compute_R(mon_sess)
 
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
       tf.logging.info("Epoch: %d" % int(cur_epoch_track))
