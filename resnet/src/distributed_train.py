@@ -241,6 +241,7 @@ def train(target, cluster_spec):
 
     # Create an optimizer that performs gradient descent.
     opt = tf.train.GradientDescentOptimizer(FLAGS.initial_learning_rate)
+    sync_op = opt.sync_op
 
     """opt = tf.train.SyncReplicasOptimizer(
       opt,
@@ -399,6 +400,7 @@ def train(target, cluster_spec):
         n_gradient_sums, n_norm_sums = sess.run([gradients_sums_size, sum_of_norms_size], feed_dict=fd)
         tf.logging.info("Accumulated %d gradient sums, %d norm sums (out of %d workers)" % (n_gradient_sums, n_norm_sums, num_workers))
         sys.stdout.flush()
+        sess.run([sync_op], feed_dict=fd)
       tf.logging.info("Master successfully received num workers components for R...")
       sys.stdout.flush()
 
