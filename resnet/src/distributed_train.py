@@ -55,7 +55,8 @@ tf.app.flags.DEFINE_string('worker_hosts', '',
                            """Comma-separated list of hostname:port for the """
                            """worker jobs. e.g. """
                            """'machine1:2222,machine2:1111,machine2:2222'""")
-
+tf.app.flags.DEFINE_integer('batch_size', 128,
+                            """Number of images to process in a batch.""")
 tf.app.flags.DEFINE_string('train_dir', '/tmp/resnet_train',
                            """Directory where to write event logs """
                            """and checkpoint.""")
