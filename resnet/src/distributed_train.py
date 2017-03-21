@@ -350,8 +350,8 @@ def train(target, cluster_spec):
       n_labels_in_queue, n_images_in_queue = sess.run([length_of_images_queue[worker_id],
                                                        length_of_labels_queue[worker_id]], feed_dict=fd)
       tf.logging.info("%d %d" % (n_labels_in_queue, n_images_in_queue))
-      assert(n_labels_in_queue == n_images_in_queue)
-      if n_labels_in_queue == 0:
+
+      if n_labels_in_queue == 0 or n_images_in_queue == 0:
         continue
 
       fd = {images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])}
