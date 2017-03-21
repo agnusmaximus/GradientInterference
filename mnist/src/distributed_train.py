@@ -358,7 +358,7 @@ def train(target, dataset, cluster_spec):
 
       fd[step_placeholder] = cur_step
       sess.run([update_r_computed_step], feed_dict=fd)
-      return cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN * total_sum_of_norms / np.linalg.norm(total_sum_of_gradients) ** 2
+      return dataset.num_examples * total_sum_of_norms / np.linalg.norm(total_sum_of_gradients) ** 2
 
     # Other workers need to wait for the master to finish
     received_step = 0
@@ -423,7 +423,7 @@ def train(target, dataset, cluster_spec):
         evaluate_times.append(t_evaluate_end-t_evaluate_start)
         mon_sess.run([unblock_workers_op])
 
-      num_steps_per_epoch = int(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / (num_workers * FLAGS.batch_size))
+      num_steps_per_epoch = int(dataset.num_examples / (num_workers * FLAGS.batch_size))
 
       # We use step since it's synchronized across workers
       # Step != 0 is a hack to make sure R isn't computed twice in the beginning
