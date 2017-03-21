@@ -29,6 +29,9 @@ import mnist_data
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
 
+tf.app.flags.DEFINE_string('train_dir', '/tmp/imagenet_train',
+                           """Directory where to write event logs """
+                           """and checkpoint.""")
 tf.app.flags.DEFINE_integer('batch_size', 128, 'Batch size.')
 tf.app.flags.DEFINE_float('initial_learning_rate', 0.1,
                           'Initial learning rate.')
@@ -36,7 +39,8 @@ tf.app.flags.DEFINE_float('learning_rate_decay_factor', 1,
                           'Learning rate decay factor.')
 tf.app.flags.DEFINE_integer('evaluate_batchsize', 1000,
                            """Batchsize for evaluation""")
-
+tf.app.flags.DEFINE_float('num_epochs_per_decay', 350.0,
+                          'Epochs after which learning rate decays.')
 
 np.set_printoptions(threshold=np.nan)
 
@@ -73,12 +77,15 @@ def main(unused_args):
 
     FLAGS = tf.app.flags.FLAGS
 
+    global_step = tf.Variable(0, name="global_step", trainable=False)
+
+
     # Calculate the learning rate schedule.
     num_batches_per_epoch = (dataset.num_examples / FLAGS.batch_size)
 
     # Decay steps need to be divided by the number of replicas to aggregate.
     # This was the old decay schedule. Don't want this since it decays too fast with a fixed learning rate.
-    decay_steps = int(num_batches_per_epoch * FLAGS.num_epochs_per_decay / num_replicas_to_aggregate)
+    decay_steps = int(num_batches_per_epoch * FLAGS.num_epochs_per_decay)
 
     # Decay the learning rate exponentially based on the number of steps.
     lr = tf.train.exponential_decay(FLAGS.initial_learning_rate,
@@ -102,7 +109,7 @@ def main(unused_args):
     opt = tf.train.GradientDescentOptimizer(lr)
 
     grads = opt.compute_gradients(total_loss)
-    train_op = opt.apply_gradients(grads)
+    train_op = opt.apply_gradients(grads, global_step=global_step)
 
     checkpoint_save_secs = 60 * 5
     with tf.train.MonitoredTrainingSession(
@@ -111,6 +118,7 @@ def main(unused_args):
         n_examples_processed = 0
         cur_iteration = 0
         evaluate_times = []
+        cur_epoch_track = 0
         while not mon_sess.should_stop():
             new_epoch_float = n_examples_processed / float(dataset.num_examples)
             new_epoch_track = int(new_epoch_float)
