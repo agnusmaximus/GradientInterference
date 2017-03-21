@@ -108,53 +108,6 @@ RMSPROP_EPSILON = 1.0              # Epsilon term for RMSProp.
 
 EVAL_BATCHSIZE=2000
 
-def compute_R_distributed(sess, model, inputs_dq_for_batchsize, images_pl, labels_pl, individual_gradients, batchsize):
-  tf.logging.info("YAYAYAY")
-  sys.stdout.flush()
-  num_examples = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
-  tf.logging.info("YAYAYAY")
-  sys.stdout.flush()
-  num_iter = int(num_examples / batchsize)
-  tf.logging.info("YAYAYAY")
-  sys.stdout.flush()
-
-  sum_of_norms, norm_of_sums = None, None
-  tf.logging.info("YAYAYAY")
-  sys.stdout.flush()
-
-  for i in range(num_iter):
-    tf.logging.info("computing r %d of %d" % (i, num_iter))
-    sys.stdout.flush()
-
-    t1 = time.time()
-    images_real, labels_real = sess.run(inputs_dq_for_batchsize, feed_dict={images_pl:np.zeros([1, 32, 32, 3]), labels_pl: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
-    sys.stdout.flush()
-    feed_dict = {images_pl:images_real, labels_pl:labels_real}
-    sys.stdout.flush()
-    gradients_real = sess.run(individual_gradients, feed_dict=feed_dict)
-    t2= time.time()
-    tf.logging.info("Time per iter: %f" % (t2-t1))
-    sys.stdout.flush()
-
-    assert(len(gradients_real) == batchsize)
-    for gradients in gradients_real:
-      gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
-      sys.stdout.flush()
-
-      if sum_of_norms == None:
-        sum_of_norms = np.linalg.norm(gradient)**2
-      else:
-        sum_of_norms += np.linalg.norm(gradient)**2
-
-      if norm_of_sums == None:
-        norm_of_sums = gradient
-      else:
-        norm_of_sums += gradient
-
-
-  ratio_R = num_iter * FLAGS.batch_size * sum_of_norms / np.linalg.norm(norm_of_sums)**2
-  return ratio_R
-
 def model_evaluate(sess, model, images_pl, labels_pl, inputs_dq, batchsize):
   tf.logging.info("Evaluating model...")
   num_iter = int(math.ceil(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / batchsize))
@@ -284,6 +237,8 @@ def train(target, cluster_spec):
       gradient_sums_queue = data_flow_ops.FIFOQueue(-1, tf.float32, name="gradient_sums_queue", shared_name="gradient_sums_queue")
       sum_of_norms_queue = data_flow_ops.FIFOQueue(-1, tf.float32, name="gradient_norms_queue", shared_name="gradient_norms_queue")
 
+      R_computed_step = tf.Variable(0, name="R_computed_step", trainable=False)
+
     gradient_sum_placeholder = tf.placeholder(tf.float32, shape=(None))
     gradient_sums_enqueue = gradient_sums_queue.enqueue(gradient_sum_placeholder)
     gradient_sums_dequeue = gradient_sums_queue.dequeue()
@@ -294,6 +249,9 @@ def train(target, cluster_spec):
 
     gradients_sums_size = gradient_sums_queue.size()
     sum_of_norms_size = sum_of_norms_queue.size()
+
+    step_placeholder = tf.placeholder(tf.int64, shape=(None))
+    update_r_computed_step = R_computed_step.assign(step_placeholder)
 
     # Enqueue operations for adding work to the R queue
     enqueue_image_ops_for_r = []
@@ -312,7 +270,7 @@ def train(target, cluster_spec):
       dequeue_work_images.append(R_images_work_queue[i].dequeue())
       dequeue_label_images.append(R_labels_work_queue[i].dequeue())
 
-  def distributed_compute_R(sess):
+  def distributed_compute_R(sess, cur_step):
 
     worker_id = FLAGS.task_id
     work_per_worker = [0] * num_workers
@@ -338,7 +296,6 @@ def train(target, cluster_spec):
       mon_sess.run([unblock_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
       tf.logging.info("Master done distributing examples for computing R...")
       sys.stdout.flush()
-
 
     # For every worker, we pop from its queue and compute R on them
     n_labels_in_queue, n_images_in_queue = -1, -1
@@ -406,7 +363,17 @@ def train(target, cluster_spec):
         gnorm, gsum = sess.run([sum_of_norms_dequeue, gradient_sums_dequeue], feed_dict=fd)
         total_sum_of_norms += gnorm
         total_sum_of_gradients += gsum
+
+      fd[step_placeholder] = cur_step
+      sess.run([update_r_computed_step], feed_dict=fd)
       return cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN * total_sum_of_norms / np.linalg.norm(total_sum_of_gradients) ** 2
+
+    # Other workers need to wait for the master to finish
+    received_step = 0
+    while received_step < cur_step:
+      tf.logging.info("Received step: %d vs Cur step: %d" % (received_step, cur_step))
+      sys.stdout.flush()
+      received_step = sess.run([R_computed_step])[0]
 
   sync_replicas_hook = opt.make_session_run_hook(is_chief)
 
@@ -479,13 +446,13 @@ def train(target, cluster_spec):
 
           t_compute_r_start = time.time()
           tf.logging.info("Master computing R...")
-          R = distributed_compute_R(mon_sess)
+          R = distributed_compute_R(mon_sess, step)
           tf.logging.info("R: %f %f" % (t_compute_r_start-sum(evaluate_times)-sum(compute_R_times), R))
           t_compute_r_end = time.time()
           tf.logging.info("Master done computing R... Elapsed time: %f" % (t_compute_r_end-t_compute_r_start))
           compute_R_times.append(t_compute_r_end-t_compute_r_start)
         if FLAGS.should_compute_R and FLAGS.task_id != 0:
-          distributed_compute_R(mon_sess)
+          distributed_compute_R(mon_sess, step)
 
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
       tf.logging.info("Epoch: %d" % int(cur_epoch_track))
