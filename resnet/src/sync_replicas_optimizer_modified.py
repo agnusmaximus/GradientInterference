@@ -30,7 +30,7 @@ from tensorflow.python.training import optimizer
 from tensorflow.python.training import queue_runner
 from tensorflow.python.training import session_manager
 from tensorflow.python.training import session_run_hook
-
+import tensorflow as tf
 
 # Please note that the gradients from replicas are averaged instead of summed
 # (as in the old sync_replicas_optimizer) so you need to increase the learning
@@ -283,8 +283,10 @@ class SyncReplicasOptimizerModified(optimizer.Optimizer):
 
       # sync_op will be assigned to the same device as the global step.
       with ops.device(global_step.device), ops.name_scope(""):
-        update_op = self._opt.apply_gradients(aggregated_grads_and_vars,
-                                              global_step)
+        print_accum_sizes = tf.Print(global_step, [x[0].num_accumulated() for x in self._accumulator_list], message="Num accumulated")
+        with ops.control_dependencies([print_accum_sizes]):
+            update_op = self._opt.apply_gradients(aggregated_grads_and_vars,
+                                                  global_step)
 
       # Create token queue.
       with ops.device(global_step.device), ops.name_scope(""):
@@ -323,6 +325,7 @@ class SyncReplicasOptimizerModified(optimizer.Optimizer):
             sync_op = self._variable_averages.apply(
                 self._variables_to_average)
 
+        self.sync_op = sync_op
         self._chief_queue_runner = queue_runner.QueueRunner(dummy_queue,
                                                             [sync_op])
       for accum, dev in self._accumulator_list:
