@@ -322,7 +322,8 @@ def train(target, cluster_spec):
     if worker_id == 0:
       mon_sess.run([block_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
       tf.logging.info("Master distributing examples for computing R...")
-      for i in range(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / 100):
+      #for i in range(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN):
+      for i in range(100):
         img_work, label_work = sess.run(variable_batchsize_inputs[1], feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
         worker = i % num_workers
         tf.logging.info("Assigning example %d to worker %d for computing R..." % (i, worker))
@@ -446,7 +447,9 @@ def train(target, cluster_spec):
       new_epoch_track = int(new_epoch_float)
 
       # Block workers if necessary if master is evaluating
+      tf.logging.info("Blocking...")
       mon_sess.run([workers_block_if_necessary_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
+      tf.logging.info("Unblocked...")
 
       if FLAGS.should_evaluate and FLAGS.task_id == 0 and (new_epoch_track == cur_epoch_track+1 or cur_iteration == 0):
         mon_sess.run([block_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
