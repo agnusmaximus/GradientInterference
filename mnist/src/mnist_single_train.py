@@ -65,9 +65,7 @@ def model_evaluate(sess, dataset, images, labels, batch_size, val_acc, val_loss)
   acc /= float(num_examples)
   return acc, loss
 
-tf.logging.info("BYE")
-dataset = mnist_data.load_mnist(worker_id=0, n_workers=1).train
-tf.logging.info("HI")
+dataset = mnist_data.load_mnist().train
 
 FLAGS = tf.app.flags.FLAGS
 
