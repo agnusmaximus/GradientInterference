@@ -250,7 +250,7 @@ def train(target, cluster_spec):
     gradients_sums_size = gradient_sums_queue.size()
     sum_of_norms_size = sum_of_norms_queue.size()
 
-    step_placeholder = tf.placeholder(tf.int64, shape=(None))
+    step_placeholder = tf.placeholder(tf.int32, shape=(None))
     update_r_computed_step = R_computed_step.assign(step_placeholder)
 
     # Enqueue operations for adding work to the R queue
