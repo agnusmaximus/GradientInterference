@@ -254,11 +254,11 @@ def train(target, cluster_spec):
       total_num_replicas=num_workers,
     )
 
-    sync_op = opt.sync_op
-
     # Compute gradients with respect to the loss.
     grads = opt.compute_gradients(model.cost)
     apply_gradients_op = opt.apply_gradients(grads, global_step=global_step)
+
+    sync_op = opt.sync_op
 
     with tf.control_dependencies([apply_gradients_op]):
         train_op = tf.identity(model.cost, name='train_op')
