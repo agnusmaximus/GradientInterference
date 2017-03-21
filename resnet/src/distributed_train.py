@@ -31,8 +31,6 @@ from tensorflow.python.training import input as tf_input
 import cifar_input
 import resnet_model
 
-from sync_replicas_optimizer_modified import SyncReplicasOptimizerModified
-
 IMAGE_SIZE = 32
 
 np.set_printoptions(threshold=np.nan)
@@ -242,13 +240,7 @@ def train(target, cluster_spec):
     # Create an optimizer that performs gradient descent.
     opt = tf.train.GradientDescentOptimizer(FLAGS.initial_learning_rate)
 
-    """opt = tf.train.SyncReplicasOptimizer(
-      opt,
-      replicas_to_aggregate=num_replicas_to_aggregate,
-      total_num_replicas=num_workers,
-    )"""
-
-    opt = SyncReplicasOptimizerModified(
+    opt = tf.train.SyncReplicasOptimizer(
       opt,
       replicas_to_aggregate=num_replicas_to_aggregate,
       total_num_replicas=num_workers,
@@ -257,8 +249,6 @@ def train(target, cluster_spec):
     # Compute gradients with respect to the loss.
     grads = opt.compute_gradients(model.cost)
     apply_gradients_op = opt.apply_gradients(grads, global_step=global_step)
-
-    sync_op = opt.sync_op
 
     with tf.control_dependencies([apply_gradients_op]):
         train_op = tf.identity(model.cost, name='train_op')
@@ -407,7 +397,6 @@ def train(target, cluster_spec):
         n_gradient_sums, n_norm_sums = sess.run([gradients_sums_size, sum_of_norms_size], feed_dict=fd)
         tf.logging.info("Accumulated %d gradient sums, %d norm sums (out of %d workers)" % (n_gradient_sums, n_norm_sums, num_workers))
         sys.stdout.flush()
-        sess.run([sync_op], feed_dict=fd)
       tf.logging.info("Master successfully received num workers components for R...")
       sys.stdout.flush()
 
@@ -485,6 +474,7 @@ def train(target, cluster_spec):
       num_steps_per_epoch = int(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / (num_workers * FLAGS.batch_size))
 
       # We use step since it's synchronized across workers
+      # Step != 0 is a hack to make sure R isn't computed twice in the beginning
       if (step % num_steps_per_epoch == 0 and step != 0) or step == -1:
         if FLAGS.should_compute_R and FLAGS.task_id == 0:
 
