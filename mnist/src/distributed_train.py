@@ -215,7 +215,7 @@ def train(target, dataset, cluster_spec):
                                                   lambda x : tf.constant(0),
                                                   [tf.constant(0)])
 
-    work_image_placeholder = tf.placeholder(tf.float32, shape=(1, IMAGE_SIZE, IMAGE_SIZE, NUM_CHANNELS))
+    work_image_placeholder = tf.placeholder(tf.float32, shape=(1, mnist.IMAGE_SIZE, mnist.IMAGE_SIZE, mnist.NUM_CHANNELS))
     work_label_placeholder = tf.placeholder(tf.int64, shape=(None,))
 
     # Queue for distributing computation of R
