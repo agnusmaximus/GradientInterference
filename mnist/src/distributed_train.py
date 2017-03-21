@@ -98,31 +98,6 @@ RMSPROP_DECAY = 0.9                # Decay term for RMSProp.
 RMSPROP_MOMENTUM = 0.9             # Momentum in RMSProp.
 RMSPROP_EPSILON = 1.0              # Epsilon term for RMSProp.
 
-def compute_R(sess, dataset, images, labels, grads):
-  num_examples = dataset.num_examples
-  sum_of_norms, norm_of_sums = None, None
-  for i in range(num_examples):
-    tf.logging.info("%d of %d" % (i, num_examples))
-    sys.stdout.flush()
-    feed_dict = mnist.fill_feed_dict(dataset, images, labels, 1)
-    gradients = sess.run(grads, feed_dict=feed_dict)
-    gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
-
-    if sum_of_norms == None:
-      sum_of_norms = np.linalg.norm(gradient)**2
-    else:
-      sum_of_norms += np.linalg.norm(gradient)**2
-
-    if norm_of_sums == None:
-      norm_of_sums = gradient
-    else:
-      norm_of_sums += gradient
-
-  # Compute R
-  ratio_R = num_examples * sum_of_norms / np.linalg.norm(norm_of_sums)**2
-  return ratio_R
-
-
 def model_evaluate(sess, dataset, images, labels, batch_size, val_acc, val_loss):
   tf.logging.info("Evaluating model...")
   num_examples = dataset.num_examples
@@ -240,6 +215,158 @@ def train(target, dataset, cluster_spec):
                                                   lambda x : tf.constant(0),
                                                   [tf.constant(0)])
 
+    work_image_placeholder = tf.placeholder(tf.float32, shape=(1, IMAGE_SIZE, IMAGE_SIZE, NUM_CHANNELS))
+    work_label_placeholder = tf.placeholder(tf.int64, shape=(None,))
+
+    # Queue for distributing computation of R
+    with ops.device(global_step.device):
+      R_images_work_queue = []
+      R_labels_work_queue = []
+      for i in range(num_workers):
+        name_images = "r_images_work_queue_%d" % i
+        name_labels = "r_labels_work_queue_%d" % i
+        R_images_work_queue.append(data_flow_ops.FIFOQueue(-1, tf.float32, name=name_images, shared_name=name_images))
+        R_labels_work_queue.append(data_flow_ops.FIFOQueue(-1, tf.int64, name=name_labels, shared_name=name_labels))
+
+      gradient_sums_queue = data_flow_ops.FIFOQueue(-1, tf.float32, name="gradient_sums_queue", shared_name="gradient_sums_queue")
+      sum_of_norms_queue = data_flow_ops.FIFOQueue(-1, tf.float32, name="gradient_norms_queue", shared_name="gradient_norms_queue")
+
+      R_computed_step = tf.Variable(0, name="R_computed_step", trainable=False)
+
+    gradient_sum_placeholder = tf.placeholder(tf.float32, shape=(None))
+    gradient_sums_enqueue = gradient_sums_queue.enqueue(gradient_sum_placeholder)
+    gradient_sums_dequeue = gradient_sums_queue.dequeue()
+
+    sum_of_norms_placeholder = tf.placeholder(tf.float32, shape=())
+    sum_of_norms_enqueue = sum_of_norms_queue.enqueue(sum_of_norms_placeholder)
+    sum_of_norms_dequeue = sum_of_norms_queue.dequeue()
+
+    gradients_sums_size = gradient_sums_queue.size()
+    sum_of_norms_size = sum_of_norms_queue.size()
+
+    step_placeholder = tf.placeholder(tf.int32, shape=(None))
+    update_r_computed_step = R_computed_step.assign(step_placeholder)
+
+    # Enqueue operations for adding work to the R queue
+    enqueue_image_ops_for_r = []
+    enqueue_label_ops_for_r = []
+    for i in range(num_workers):
+      enqueue_image_ops_for_r.append(R_images_work_queue[i].enqueue(work_image_placeholder))
+      enqueue_label_ops_for_r.append(R_labels_work_queue[i].enqueue(work_label_placeholder))
+
+    length_of_images_queue = []
+    length_of_labels_queue = []
+    dequeue_work_images = []
+    dequeue_label_images = []
+    for i in range(num_workers):
+      length_of_images_queue.append(R_images_work_queue[i].size())
+      length_of_labels_queue.append(R_labels_work_queue[i].size())
+      dequeue_work_images.append(R_images_work_queue[i].dequeue())
+      dequeue_label_images.append(R_labels_work_queue[i].dequeue())
+
+  def distributed_compute_R(sess, cur_step):
+
+    worker_id = FLAGS.task_id
+    work_per_worker = [0] * num_workers
+    n_total_examples = dataset.num_examples
+    for i in range(n_total_examples):
+      work_per_worker[i % num_workers] += 1
+
+    # We block the work distribution so that when the workers pass this checkpoint,
+    # all its work is in its queue.
+    # Assign examples to workers
+    if worker_id == 0:
+      mon_sess.run([block_workers_op])
+      tf.logging.info("Master distributing examples for computing R...")
+      for i in range(n_total_examples):
+        fd = mnist.fill_feed_dict(dataset, images, labels, 1)
+        img_work, label_work = sess.run([images, labels], feed_dict=fd)
+        worker = i % num_workers
+        tf.logging.info("Assigning example %d to worker %d for computing R..." % (i, worker))
+        sys.stdout.flush()
+        feed_dict={}
+        feed_dict[work_image_placeholder] = img_work
+        feed_dict[work_label_placeholder] = label_work
+        sess.run([enqueue_image_ops_for_r[worker], enqueue_label_ops_for_r[worker]], feed_dict=feed_dict)
+      mon_sess.run([unblock_workers_op])
+      tf.logging.info("Master done distributing examples for computing R...")
+      sys.stdout.flush()
+
+    # For every worker, we pop from its queue and compute R on them
+    n_labels_in_queue, n_images_in_queue = -1, -1
+    sum_of_norms, norm_of_sums = None, None
+    n_examples_computed = 0
+    while n_examples_computed != work_per_worker[FLAGS.task_id]:
+      n_labels_in_queue, n_images_in_queue = sess.run([length_of_images_queue[worker_id],
+                                                       length_of_labels_queue[worker_id]])
+      tf.logging.info("%d %d" % (n_labels_in_queue, n_images_in_queue))
+
+      if n_labels_in_queue == 0 or n_images_in_queue == 0:
+        continue
+
+      work_image, work_label = sess.run([dequeue_work_images[worker_id],
+                                         dequeue_label_images[worker_id]])
+      sys.stdout.flush()
+      feed_dict = {images : work_image, labels : work_label}
+      gradients = sess.run([x[0] for x in grads], feed_dict=feed_dict)
+      sys.stdout.flush()
+      gradient = np.concatenate(np.array([x.flatten() for x in gradients]))
+      tf.logging.info("Worker computing r on examples...")
+      sys.stdout.flush()
+
+      n_examples_computed += 1
+
+      if sum_of_norms == None:
+        sum_of_norms = np.linalg.norm(gradient)**2
+      else:
+        sum_of_norms += np.linalg.norm(gradient)**2
+
+      if norm_of_sums == None:
+        norm_of_sums = gradient
+      else:
+        norm_of_sums += gradient
+
+    # Worker has computed at least one example -- submit components of R
+    if sum_of_norms != None:
+      fd = {sum_of_norms_placeholder : sum_of_norms,
+            gradient_sum_placeholder : norm_of_sums}
+
+      tf.logging.info("Worker submitting sum of norms and norm of sums to queue...")
+      sys.stdout.flush()
+      sess.run([gradient_sums_enqueue, sum_of_norms_enqueue], feed_dict=fd)
+
+    # Master waits until there are at least num_worker values in sum of gradients queue
+    if worker_id == 0:
+      tf.logging.info("Master waiting for num workers R components to be submitted...")
+      sys.stdout.flush()
+      n_gradient_sums, n_norm_sums = 0, 0
+      while n_gradient_sums != num_workers and n_norm_sums != num_workers:
+        fd = {images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])}
+        n_gradient_sums, n_norm_sums = sess.run([gradients_sums_size, sum_of_norms_size], feed_dict=fd)
+        tf.logging.info("Accumulated %d gradient sums, %d norm sums (out of %d workers)" % (n_gradient_sums, n_norm_sums, num_workers))
+        sys.stdout.flush()
+      tf.logging.info("Master successfully received num workers components for R...")
+      sys.stdout.flush()
+
+      # Dequeue all components
+      fd = {images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])}
+      total_sum_of_norms, total_sum_of_gradients = sess.run([sum_of_norms_dequeue, gradient_sums_dequeue], feed_dict=fd)
+      for i in range(num_workers-1):
+        gnorm, gsum = sess.run([sum_of_norms_dequeue, gradient_sums_dequeue], feed_dict=fd)
+        total_sum_of_norms += gnorm
+        total_sum_of_gradients += gsum
+
+      fd[step_placeholder] = cur_step
+      sess.run([update_r_computed_step], feed_dict=fd)
+      return cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN * total_sum_of_norms / np.linalg.norm(total_sum_of_gradients) ** 2
+
+    # Other workers need to wait for the master to finish
+    received_step = 0
+    while received_step < cur_step:
+      tf.logging.info("Received step: %d vs Cur step: %d" % (received_step, cur_step))
+      sys.stdout.flush()
+      received_step = sess.run([R_computed_step])[0]
+
   sync_replicas_hook = opt.make_session_run_hook(is_chief)
 
   # specified interval. Note that the summary_op and train_op never run
@@ -253,6 +380,7 @@ def train(target, dataset, cluster_spec):
   cur_epoch_track = 0
   compute_R_train_error_time = 0
   loss_value = -1
+  step = -1
 
   checkpoint_save_secs = 60*5
 
@@ -305,6 +433,22 @@ def train(target, dataset, cluster_spec):
         tf.logging.info("Master done computing R... Elapsed time: %f" % (t_compute_r_end-t_compute_r_start))
         compute_R_times.append(t_compute_r_end-t_compute_r_start)
         mon_sess.run([unblock_workers_op])
+
+      num_steps_per_epoch = int(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / (num_workers * FLAGS.batch_size))
+
+      # We use step since it's synchronized across workers
+      # Step != 0 is a hack to make sure R isn't computed twice in the beginning
+      if (step % num_steps_per_epoch == 0 and step != 0) or step == -1:
+        if FLAGS.should_compute_R and FLAGS.task_id == 0:
+          t_compute_r_start = time.time()
+          tf.logging.info("Master computing R...")
+          R = distributed_compute_R(mon_sess, step)
+          tf.logging.info("R: %f %f %f" % (t_compute_r_start-sum(evaluate_times)-sum(compute_R_times), R, new_epoch_float))
+          t_compute_r_end = time.time()
+          tf.logging.info("Master done computing R... Elapsed time: %f" % (t_compute_r_end-t_compute_r_start))
+          compute_R_times.append(t_compute_r_end-t_compute_r_start)
+        if FLAGS.should_compute_R and FLAGS.task_id != 0:
+          distributed_compute_R(mon_sess, step)
 
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
 
