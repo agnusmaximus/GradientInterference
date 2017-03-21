@@ -423,17 +423,6 @@ def train(target, dataset, cluster_spec):
         evaluate_times.append(t_evaluate_end-t_evaluate_start)
         mon_sess.run([unblock_workers_op])
 
-      if FLAGS.should_compute_R and FLAGS.task_id == 0 and (new_epoch_track == cur_epoch_track+1 or cur_iteration == 0):
-        mon_sess.run([block_workers_op])
-        t_compute_r_start = time.time()
-        tf.logging.info("Master computing R...")
-        t_compute_r_end = time.time()
-        R = compute_R(mon_sess, dataset, images, labels, [x[0] for x in grads])
-        tf.logging.info("R: %f %f" % (t_compute_r_start-sum(evaluate_times)-sum(compute_R_times), R))
-        tf.logging.info("Master done computing R... Elapsed time: %f" % (t_compute_r_end-t_compute_r_start))
-        compute_R_times.append(t_compute_r_end-t_compute_r_start)
-        mon_sess.run([unblock_workers_op])
-
       num_steps_per_epoch = int(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / (num_workers * FLAGS.batch_size))
 
       # We use step since it's synchronized across workers
