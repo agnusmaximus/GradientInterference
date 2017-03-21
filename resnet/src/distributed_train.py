@@ -31,6 +31,8 @@ from tensorflow.python.training import input as tf_input
 import cifar_input
 import resnet_model
 
+from sync_replicas_optimizer_modified import SyncReplicasOptimizerModified
+
 IMAGE_SIZE = 32
 
 np.set_printoptions(threshold=np.nan)
@@ -240,7 +242,13 @@ def train(target, cluster_spec):
     # Create an optimizer that performs gradient descent.
     opt = tf.train.GradientDescentOptimizer(FLAGS.initial_learning_rate)
 
-    opt = tf.train.SyncReplicasOptimizer(
+    """opt = tf.train.SyncReplicasOptimizer(
+      opt,
+      replicas_to_aggregate=num_replicas_to_aggregate,
+      total_num_replicas=num_workers,
+    )"""
+
+    opt = SyncReplicasOptimizerModified(
       opt,
       replicas_to_aggregate=num_replicas_to_aggregate,
       total_num_replicas=num_workers,
