@@ -342,8 +342,7 @@ def train(target, dataset, cluster_spec):
       sys.stdout.flush()
       n_gradient_sums, n_norm_sums = 0, 0
       while n_gradient_sums != num_workers and n_norm_sums != num_workers:
-        fd = {images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])}
-        n_gradient_sums, n_norm_sums = sess.run([gradients_sums_size, sum_of_norms_size], feed_dict=fd)
+        n_gradient_sums, n_norm_sums = sess.run([gradients_sums_size, sum_of_norms_size])
         tf.logging.info("Accumulated %d gradient sums, %d norm sums (out of %d workers)" % (n_gradient_sums, n_norm_sums, num_workers))
         sys.stdout.flush()
       tf.logging.info("Master successfully received num workers components for R...")
