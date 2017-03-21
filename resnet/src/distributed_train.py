@@ -322,7 +322,7 @@ def train(target, cluster_spec):
     if worker_id == 0:
       mon_sess.run([block_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
       tf.logging.info("Master distributing examples for computing R...")
-      for i in range(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN):
+      for i in range(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / 100):
         img_work, label_work = sess.run(variable_batchsize_inputs[1], feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
         worker = i % num_workers
         tf.logging.info("Assigning example %d to worker %d for computing R..." % (i, worker))
@@ -476,7 +476,9 @@ def train(target, cluster_spec):
 
       # Dequeue variable batchsize inputs
       images_real, labels_real = mon_sess.run(variable_batchsize_inputs[FLAGS.batch_size], feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
+      tf.logging.info("Train op...")
       loss_value, step = mon_sess.run([train_op, global_step], run_metadata=run_metadata, options=run_options, feed_dict={images:images_real,labels:labels_real})
+      tf.logging.info("Done train op...")
       n_examples_processed += FLAGS.batch_size * num_workers
 
       # This uses the queuerunner which does not support variable batch sizes
