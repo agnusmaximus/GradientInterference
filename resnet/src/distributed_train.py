@@ -437,7 +437,7 @@ def train(target, cluster_spec):
 
       tf.logging.info("YOLO %d %f %d %d" % (n_examples_processed, new_epoch_float, cur_epoch_track, step))
 
-      num_steps_per_epoch = int(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / (num_workers * FLAGS.batch_size))
+      num_steps_per_epoch = int(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / (num_workers * FLAGS.batch_size)) * 3
 
       # We use step since it's synchronized across workers
       # Step != 0 is a hack to make sure R isn't computed twice in the beginning
