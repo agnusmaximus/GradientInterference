@@ -349,8 +349,7 @@ def train(target, dataset, cluster_spec):
       sys.stdout.flush()
 
       # Dequeue all components
-      fd = {images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])}
-      total_sum_of_norms, total_sum_of_gradients = sess.run([sum_of_norms_dequeue, gradient_sums_dequeue], feed_dict=fd)
+      total_sum_of_norms, total_sum_of_gradients = sess.run([sum_of_norms_dequeue, gradient_sums_dequeue])
       for i in range(num_workers-1):
         gnorm, gsum = sess.run([sum_of_norms_dequeue, gradient_sums_dequeue], feed_dict=fd)
         total_sum_of_norms += gnorm
