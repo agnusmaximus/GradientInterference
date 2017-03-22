@@ -355,6 +355,7 @@ def train(target, dataset, cluster_spec):
         total_sum_of_norms += gnorm
         total_sum_of_gradients += gsum
 
+      fd = {}
       fd[step_placeholder] = cur_step
       sess.run([update_r_computed_step], feed_dict=fd)
       return dataset.num_examples * total_sum_of_norms / np.linalg.norm(total_sum_of_gradients) ** 2
