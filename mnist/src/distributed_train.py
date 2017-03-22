@@ -268,7 +268,7 @@ def train(target, dataset, cluster_spec):
 
     worker_id = FLAGS.task_id
     work_per_worker = [0] * num_workers
-    n_total_examples = 100
+    n_total_examples = dataset.num_examples
 
     for i in range(n_total_examples):
       work_per_worker[i % num_workers] += 1
