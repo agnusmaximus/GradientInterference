@@ -201,6 +201,7 @@ def train(target, cluster_spec):
 
     # Compute gradients with respect to the loss.
     grads = opt.compute_gradients(model.cost)
+    tf.logging.info("YO NUM LAYERS: ", len(grads))
     apply_gradients_op = opt.apply_gradients(grads, global_step=global_step)
 
     with tf.control_dependencies([apply_gradients_op]):
