@@ -228,7 +228,7 @@ def train(target, dataset, cluster_spec):
 
     # Compute gradients with respect to the loss.
     grads_d, grads_g = opt.compute_gradients(d_loss), opt.compute_gradients(g_loss)
-    apply_gradients_g = opt_adam.apply_gradients(grads_g, global_step=global_step_g)
+    apply_gradients_g = opt.apply_gradients(grads_g, global_step=global_step_g)
     apply_gradients_d = opt.apply_gradients(grads_d, global_step=global_step_d)
 
     with tf.control_dependencies([apply_gradients_g]):
