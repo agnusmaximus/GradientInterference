@@ -56,7 +56,6 @@ tf.app.flags.DEFINE_integer('rpc_port', 1235,
                            """Port for timeout communication""")
 
 tf.app.flags.DEFINE_integer('max_steps', 1000000, 'Number of batches to run.')
-tf.app.flags.DEFINE_integer('batch_size', 128, 'Batch size.')
 tf.app.flags.DEFINE_string('subset', 'train', 'Either "train" or "validation".')
 tf.app.flags.DEFINE_boolean('log_device_placement', False,
                             'Whether to log device placement.')
