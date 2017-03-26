@@ -307,6 +307,8 @@ def train(target, dataset, cluster_spec):
     while not mon_sess.should_stop():
 
       default_batch_z = np.random.uniform(-1, 1, [FLAGS.batch_size, dcgan.z_dim]).astype(np.float32)
+      default_images = np.zeros((FLAGS.batch_size, mnist_data.IMAGE_SIZE, mnist_data.IMAGE_SIZE, 1))
+      default_labels = np.zeros((FLAGS.batch_size, mnist_data.NUM_LABELS))
       default_fd = {dcgan.z : default_batch_z}
 
       cur_iteration += 1
