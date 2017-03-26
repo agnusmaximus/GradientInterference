@@ -30,7 +30,6 @@ import tensorflow as tf
 
 from tensorflow.contrib.learn.python.learn.datasets import base
 from tensorflow.python.framework import dtypes
-from mnist import *
 import time
 
 import numpy
