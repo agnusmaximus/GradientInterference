@@ -220,10 +220,10 @@ def train(target, dataset, cluster_spec):
 
     def evaluation(logits, labels):
        indices = tf.cast(tf.argmax(labels, axis=1), tf.int32)
-       pred = tf.nn.softmax(logits)
+       pred = tf.reshape(tf.nn.softmax(logits), ())
        tf.logging.info("aSDFASF")
        tf.logging.info(pred.shape)
-       pred = tf.one_hot(tf.cast(tf.round(tf.reshape(pred, ())), tf.int32), 10, on_value=1, off_value=0, dtype=tf.int32)
+       pred = tf.one_hot(tf.cast(tf.round(pred), tf.int32), 10)
        tf.logging.info(pred.shape)
        correct = tf.nn.in_top_k(pred, indices, 1)
        return tf.reduce_sum(tf.cast(correct, tf.int32))
