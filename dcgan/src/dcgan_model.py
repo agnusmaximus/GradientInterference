@@ -348,6 +348,9 @@ class DCGAN(object):
 
         h3 = linear(h2, 1, 'd_h3_lin')
 
+        tf.logging.info("YOOOO")
+        tf.logging.info(tf.nn_sigmoid(h3).shape)
+
         return tf.nn.sigmoid(h3), h3
 
   def generator(self, z, y=None):
