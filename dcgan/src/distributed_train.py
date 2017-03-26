@@ -221,10 +221,7 @@ def train(target, dataset, cluster_spec):
     def evaluation(logits, labels):
        indices = tf.cast(tf.argmax(labels, axis=1), tf.int32)
        pred = tf.reshape(tf.nn.softmax(logits), [-1])
-       tf.logging.info("aSDFASF")
-       tf.logging.info(pred.shape)
        pred = tf.one_hot(tf.cast(tf.round(pred), tf.int32), 10)
-       tf.logging.info(pred.shape)
        correct = tf.nn.in_top_k(pred, indices, 1)
        return tf.reduce_sum(tf.cast(correct, tf.int32))
 
@@ -235,8 +232,9 @@ def train(target, dataset, cluster_spec):
     tf.logging.info("Generator variables %s" % str(list([str(x) for x in dcgan.g_vars])))
 
     # Create an optimizer that performs gradient descent.
-    opt = tf.train.GradientDescentOptimizer(FLAGS.initial_learning_rate)
-    opt_adam = tf.train.AdamOptimizer(FLAGS.initial_learning_rate)
+    #opt = tf.train.GradientDescentOptimizer(FLAGS.initial_learning_rate)
+    #opt_adam = tf.train.AdamOptimizer(FLAGS.initial_learning_rate)
+    opt = tf.train.AdamOptimizer(FLAGS.initial_learning_rate)
 
     # Use V2 optimizer
     opt = tf.train.SyncReplicasOptimizer(
