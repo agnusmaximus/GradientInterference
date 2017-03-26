@@ -162,7 +162,7 @@ def extract_labels(filename, num_images):
     labels = numpy.frombuffer(buf, dtype=numpy.uint8).astype(numpy.int64)
   return labels
 
-def one_hot(labels):
+def one_hot_f(labels):
   one_hotted = []
   for v in labels:
     labels = np.zeros(NUM_LABELS)
@@ -219,7 +219,7 @@ def read_data_sets(train_dir,
   train_images = train_images
   train_labels = train_labels
 
-  validation_labels, train_labels = one_hot(validation_labels), one_hot(train_labels)
+  validation_labels, train_labels = one_hot_f(validation_labels), one_hot_f(train_labels)
 
   train = DataSet(train_images, train_labels, dtype=dtype, reshape=reshape)
   validation = DataSet(validation_images,
