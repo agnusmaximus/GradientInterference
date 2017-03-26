@@ -187,8 +187,8 @@ def train(target, dataset, cluster_spec):
     d_loss, d_vars = dcgan.d_loss, dcgan.d_vars
     g_loss, g_vars = dcgan.g_loss, dcgan.g_vars
 
-    tf.logging.info("Discriminator variables %s" % str(dcgan.d_vars))
-    tf.logging.info("Generator variables %s" % str(dcgan.g_vars))
+    tf.logging.info("Discriminator variables %s" % str(list(dcgan.d_vars)))
+    tf.logging.info("Generator variables %s" % str(list(dcgan.g_vars)))
 
     # Create an optimizer that performs gradient descent.
     opt = tf.train.GradientDescentOptimizer(FLAGS.initial_learning_rate)
