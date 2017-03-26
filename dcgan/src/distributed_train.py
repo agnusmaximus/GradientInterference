@@ -385,7 +385,7 @@ def train(target, dataset, cluster_spec):
         mon_sess.run([unblock_workers_op], feed_dict=default_fd)
 
         # Also run the sampler
-        sample_z = np.random.uniform(-1, 1, size=(self.sample_num , self.z_dim))
+        sample_z = np.random.uniform(-1, 1, size=(dcgan.sample_num , dcgan.z_dim))
         sample_images, sample_labels = dataset.next_batch(FLAGS.batch_size)
         fd = {dcgan.z : sample_z,
               dcgan.y : sample_labels,
