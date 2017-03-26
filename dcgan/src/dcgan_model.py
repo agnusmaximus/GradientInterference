@@ -388,7 +388,7 @@ class DCGAN(object):
         s_w2, s_w4 = int(s_w/2), int(s_w/4)
 
         # yb = tf.expand_dims(tf.expand_dims(y, 1),2)
-        yb = tf.reshape(y, [-1e, 1, 1, self.y_dim])
+        yb = tf.reshape(y, [-1, 1, 1, self.y_dim])
         z = concat([z, y], 1)
 
         h0 = tf.nn.relu(
