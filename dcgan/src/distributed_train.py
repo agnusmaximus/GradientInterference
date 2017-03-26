@@ -141,7 +141,6 @@ def model_evaluate(sess, dataset, dcgan, batch_size, d_loss, g_loss, val_acc):
       dcgan.y : labels_real,
       dcgan.inputs : images_real,
     }
-    tf.logging.info("running sess..")
     sys.stdout.flush()
     d_loss_v, g_loss_v, acc_partial = sess.run([d_loss, g_loss, val_acc], feed_dict=feed_dict)
     tf.logging.info("%d of %d" % (i, n_iters))
@@ -226,6 +225,7 @@ def train(target, dataset, cluster_spec):
        return tf.reduce_sum(tf.cast(correct, tf.int32))
 
     val_acc = tf.reduce_sum(evaluation(dcgan.D_logits, dcgan.y)) / tf.constant(FLAGS.evaluate_batchsize)
+    val_acc = tf.Print(global_step_g, [global_step_g], message="YOYOYO")
 
     tf.logging.info("Discriminator variables %s" % str(list([str(x) for x in dcgan.d_vars])))
     tf.logging.info("Generator variables %s" % str(list([str(x) for x in dcgan.g_vars])))
