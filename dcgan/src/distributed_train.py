@@ -129,8 +129,9 @@ def model_evaluate(sess, dataset, dcgan, batch_size, d_loss, g_loss):
   n_iters = dataset.num_examples / batch_size
   assert(dataset.num_examples % batch_size == 0)
   d_loss_total, g_loss_total = 0, 0
-  n_correct = 0
   for i in range(n_iters):
+    tf.logging.info("%d of %d" % (i, n_iters))
+    sys.stdout.flush()
     images_real, labels_real = dataset.next_batch(FLAGS.batch_size)
     batch_z = np.random.uniform(-1, 1, [batch_size, dcgan.z_dim]).astype(np.float32)
     feed_dict = {
