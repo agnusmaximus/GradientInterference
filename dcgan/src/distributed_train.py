@@ -352,7 +352,7 @@ def train(target, dataset, cluster_spec):
         mon_sess.run([block_workers_op], feed_dict=default_fd)
         t_evaluate_start = time.time()
         tf.logging.info("Master evaluating...")
-        d_loss_value, g_loss_value = model_evaluate(mon_sess, dcgan, FLAGS.evaluate_batchsize, d_loss, g_loss)
+        d_loss_value, g_loss_value = model_evaluate(mon_sess, dataset, dcgan, FLAGS.evaluate_batchsize, d_loss, g_loss)
         tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times)-sum(compute_R_times), new_epoch_float, d_loss_value, g_loss_value))
         t_evaluate_end = time.time()
         tf.logging.info("Master done evaluating... Elapsed time: %f" % (t_evaluate_end-t_evaluate_start))
