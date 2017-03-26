@@ -141,6 +141,8 @@ def model_evaluate(sess, dataset, dcgan, batch_size, d_loss, g_loss, val_acc):
       dcgan.y : labels_real,
       dcgan.inputs : images_real,
     }
+    tf.logging.info("running sess..")
+    sys.stdout.flush()
     d_loss_v, g_loss_v, acc_partial = sess.run([d_loss, g_loss, val_acc], feed_dict=feed_dict)
     tf.logging.info("%d of %d" % (i, n_iters))
     sys.stdout.flush()
