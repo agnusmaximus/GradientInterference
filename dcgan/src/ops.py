@@ -47,8 +47,8 @@ def conv_cond_concat(x, y):
   x_shapes = x.get_shape()
   y_shapes = y.get_shape()
   tf.logging.info(x.shape)
-  shape = tf.TensorShape([None, int(x_shapes[1]), int(x_shapes[2]), int(y_shapes[3])])
-  ones_v = tf.fill(shape, 1)
+  #shape = tf.TensorShape([None, int(x_shapes[1]), int(x_shapes[2]), int(y_shapes[3])])
+  ones_v = tf.fill(tf.shape(x), 1)
   #return concat([
     #x, y*tf.ones([x_shapes[0], x_shapes[1], x_shapes[2], y_shapes[3]])], 3)
   return concat([
