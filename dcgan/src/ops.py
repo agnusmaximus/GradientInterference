@@ -81,6 +81,7 @@ def deconv2d(input_, output_shape,
     try:
       unknown_dim = tf.shape(input_)[0]
       output_shape_tensor = tf.pack([unknown_dim] + output_shape[1:])
+      tf.logging.info("YOOO")
       tf.logging.info(output_shape_tensor)
       deconv = tf.nn.conv2d_transpose(input_, w, output_shape=output_shape_tensor,
                 strides=[1, d_h, d_w, 1])
