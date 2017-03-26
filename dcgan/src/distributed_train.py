@@ -124,10 +124,26 @@ RMSPROP_DECAY = 0.9                # Decay term for RMSProp.
 RMSPROP_MOMENTUM = 0.9             # Momentum in RMSProp.
 RMSPROP_EPSILON = 1.0              # Epsilon term for RMSProp.
 
-def model_evaluate(sess, dataset, images, labels, batch_size, val_acc, val_loss):
+def model_evaluate(sess, dataset, dcgan, batch_size, d_loss, g_loss):
   tf.logging.info("Evaluating model...")
-  # Incomplete.
-  return 0, 0
+  n_iters = dataset.num_examples / batch_size
+  assert(dataset.num_examples % batch_size == 0)
+  d_loss_total, g_loss_total = 0, 0
+  n_correct = 0
+  for i in range(n_iters):
+    images_real, labels_real = dataset.next_batch(FLAGS.batch_size)
+    batch_z = np.random.uniform(-1, 1, [batch_size, dcgan.z_dim]).astype(np.float32)
+    feed_dict = {
+      dcgan.z : batch_z,
+      dcgan.y : labels_real,
+      dcgan.inputs : images_real,
+    }
+    acc_partial, d_loss, g_loss = sess.run([val_acc, d_loss, g_loss], fd=feed_dict)
+
+    d_loss_total += d_loss
+    g_loss_total += g_loss
+
+  return d_loss_total, g_loss_total
 
 def train(target, dataset, cluster_spec):
 
@@ -335,8 +351,8 @@ def train(target, dataset, cluster_spec):
         mon_sess.run([block_workers_op], feed_dict=default_fd)
         t_evaluate_start = time.time()
         tf.logging.info("Master evaluating...")
-        acc, loss = model_evaluate(mon_sess, dataset, images, labels, FLAGS.evaluate_batchsize, val_acc, total_loss)
-        tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times)-sum(compute_R_times), new_epoch_float, acc, loss))
+        d_loss_value, g_loss_value = model_evaluate(mon_sess, dcgan, FLAGS.evaluate_batchsize, val_acc, d_loss, g_loss)
+        tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times)-sum(compute_R_times), new_epoch_float, d_loss_value, g_loss_value))
         t_evaluate_end = time.time()
         tf.logging.info("Master done evaluating... Elapsed time: %f" % (t_evaluate_end-t_evaluate_start))
         evaluate_times.append(t_evaluate_end-t_evaluate_start)
