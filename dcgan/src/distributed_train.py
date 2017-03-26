@@ -126,7 +126,7 @@ RMSPROP_EPSILON = 1.0              # Epsilon term for RMSProp.
 
 def model_evaluate(sess, dataset, dcgan, batch_size, d_loss, g_loss):
   tf.logging.info("Evaluating model...")
-  n_iters = dataset.num_examples / batch_size
+  n_iters = int(math.ceil(dataset.num_examples / batch_size))
   assert(dataset.num_examples % batch_size == 0)
   d_loss_total, g_loss_total = 0, 0
   tf.logging.info("Starting")
