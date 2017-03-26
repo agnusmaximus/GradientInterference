@@ -100,6 +100,9 @@ class DCGAN(object):
       self.D, self.D_logits = \
           self.discriminator(inputs, self.y, reuse=False)
 
+      tf.logging.info("ASFDASDFASDFASDF")
+      tf.logging.info(self.D_logits.shape)
+
       self.sampler = self.sampler(self.z, self.y)
       self.D_, self.D_logits_ = \
           self.discriminator(self.G, self.y, reuse=True)
