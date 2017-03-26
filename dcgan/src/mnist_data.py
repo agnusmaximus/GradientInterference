@@ -165,10 +165,10 @@ def extract_labels(filename, num_images):
 def one_hot_f(labels):
   one_hotted = []
   for v in labels:
-    labels = np.zeros(NUM_LABELS)
+    labels = numpy.zeros(NUM_LABELS)
     labels[v-1] = 1
     one_hotted.append(labels)
-  return np.array(one_hotted)
+  return numpy.array(one_hotted)
 
 def read_data_sets(train_dir,
                    fake_data=False,
