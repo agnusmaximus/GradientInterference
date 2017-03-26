@@ -183,7 +183,7 @@ def train(target, dataset, cluster_spec):
 
     # Create a variable to count the number of train() calls. This equals the
     # number of updates applied to the variables. The PS holds the global step.
-    #global_step = tf.Variable(0, name="global_step", trainable=False)
+    global_step = tf.Variable(0, name="global_step", trainable=False)
     global_step_g = tf.Variable(0, name="global_step_g", trainable=False)
     global_step_d = tf.Variable(0, name="global_step_d", trainable=False)
 
@@ -327,8 +327,7 @@ def train(target, dataset, cluster_spec):
 
   with tf.train.MonitoredTrainingSession(
       master=target, is_chief=is_chief,
-      #hooks=[sync_replicas_hook],
-      hooks=[],
+      hooks=[sync_replicas_hook],
       checkpoint_dir=FLAGS.train_dir,
       save_checkpoint_secs=checkpoint_save_secs) as mon_sess:
     while not mon_sess.should_stop():
