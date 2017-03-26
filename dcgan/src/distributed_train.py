@@ -35,7 +35,7 @@ FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_boolean('should_evaluate', False, 'Whether Chief should do evaluation per epoch.')
 tf.app.flags.DEFINE_boolean('should_compute_R', False, 'Whether Chief should do compute R per epoch.')
-tf.app.flags.DEFINE_integer('evaluate_batchsize', 1000,
+tf.app.flags.DEFINE_integer('evaluate_batchsize', 64,
                            """Batchsize for evaluation""")
 
 tf.app.flags.DEFINE_boolean('should_summarize', False, 'Whether Chief should write summaries.')
