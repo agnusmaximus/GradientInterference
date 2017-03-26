@@ -39,6 +39,14 @@ from scipy.ndimage.filters import gaussian_filter
 #SOURCE_URL = 'http://yann.lecun.com/exdb/mnist/'
 SOURCE_URL = 'https://s3.amazonaws.com/lasagne/recipes/datasets/mnist/'
 
+# The MNIST images are always 28x28 pixels.
+NUM_LABELS = 10
+IMAGE_SIZE = 28
+IMAGE_PIXELS = IMAGE_SIZE * IMAGE_SIZE
+NUM_CHANNELS = 1
+PIXEL_DEPTH = 255
+SEED = 66478  # Set to None for random seed.
+
 class DataSet(object):
 
   def __init__(self,
