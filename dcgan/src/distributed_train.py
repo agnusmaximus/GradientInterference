@@ -370,6 +370,8 @@ def train(target, dataset, cluster_spec):
               dcgan.y : labels_real}
       loss_value_g, step_g = mon_sess.run([train_op_g, global_step], run_metadata=run_metadata, options=run_options, feed_dict=fd_g)
 
+      tf.logging.info("d_loss: %f, g_loss: %f" % (loss_value_d, loss_value_g))
+
       n_examples_processed += FLAGS.batch_size * num_workers
 
       # This uses the queuerunner which does not support variable batch sizes
