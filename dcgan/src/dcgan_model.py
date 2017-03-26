@@ -76,7 +76,7 @@ class DCGAN(object):
 
   def build_model(self):
     if self.y_dim:
-      self.y= tf.placeholder(tf.float32, [-1, self.y_dim], name='y')
+      self.y= tf.placeholder(tf.float32, [None, self.y_dim], name='y')
 
     if self.is_crop:
       image_dims = [self.output_height, self.output_width, self.c_dim]
