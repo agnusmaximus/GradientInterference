@@ -27,6 +27,7 @@ from tensorflow.python.client import timeline
 from tensorflow.python.ops import data_flow_ops
 
 from dcgan_model import DCGAN
+from utils import *
 
 np.set_printoptions(threshold=np.nan)
 tf.logging.set_verbosity(tf.logging.INFO)
