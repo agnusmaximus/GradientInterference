@@ -305,6 +305,10 @@ def train(target, dataset, cluster_spec):
       checkpoint_dir=FLAGS.train_dir,
       save_checkpoint_secs=checkpoint_save_secs) as mon_sess:
     while not mon_sess.should_stop():
+
+      default_batch_z = np.random.uniform(-1, 1, [FLAGS.batch_size, dcgan.z_dim]).astype(np.float32)
+      default_fd = {dcgan.z : default_batch_z}
+
       cur_iteration += 1
       sys.stdout.flush()
 
@@ -322,10 +326,10 @@ def train(target, dataset, cluster_spec):
       new_epoch_track = int(new_epoch_float)
 
       # Block workers if necessary if master is computing R or evaluating
-      mon_sess.run([workers_block_if_necessary_op])
+      mon_sess.run([workers_block_if_necessary_op], feed_dict=default_fd)
 
       if FLAGS.should_evaluate and FLAGS.task_id == 0 and (new_epoch_track == cur_epoch_track+1 or cur_iteration == 0):
-        mon_sess.run([block_workers_op])
+        mon_sess.run([block_workers_op], feed_dict=default_fd)
         t_evaluate_start = time.time()
         tf.logging.info("Master evaluating...")
         acc, loss = model_evaluate(mon_sess, dataset, images, labels, FLAGS.evaluate_batchsize, val_acc, total_loss)
@@ -333,7 +337,7 @@ def train(target, dataset, cluster_spec):
         t_evaluate_end = time.time()
         tf.logging.info("Master done evaluating... Elapsed time: %f" % (t_evaluate_end-t_evaluate_start))
         evaluate_times.append(t_evaluate_end-t_evaluate_start)
-        mon_sess.run([unblock_workers_op])
+        mon_sess.run([unblock_workers_op], feed_dict=default_fd)
 
       num_steps_per_epoch = int(dataset.num_examples / (num_workers * FLAGS.batch_size))
 
