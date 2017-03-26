@@ -212,7 +212,7 @@ def train(target, dataset, cluster_spec):
       train_op_d = tf.identity(d_loss, name='train_op_d')
 
     # Queue for broadcasting R
-    with ops.device(global_step.device):
+    with ops.device(global_step_g.device):
       block_workers_queue = data_flow_ops.FIFOQueue(1,
                                                     tf.int64,
                                                     shapes=(),
@@ -230,7 +230,7 @@ def train(target, dataset, cluster_spec):
     work_label_placeholder = tf.placeholder(tf.int64, shape=(None,))
 
     # Queue for distributing computation of R
-    with ops.device(global_step.device):
+    with ops.device(global_step_g.device):
       R_images_work_queue = []
       R_labels_work_queue = []
       for i in range(num_workers):
@@ -423,4 +423,4 @@ def train(target, dataset, cluster_spec):
   if is_chief:
     saver.save(sess,
                os.path.join(FLAGS.train_dir, 'model.ckpt'),
-               global_step=global_step)
+               global_step=global_step_g)
