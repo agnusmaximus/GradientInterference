@@ -386,11 +386,11 @@ def train(target, dataset, cluster_spec):
 
         # Also run the sampler
         sample_z = np.random.uniform(-1, 1, size=(dcgan.sample_num , dcgan.z_dim))
-        sample_images, sample_labels = dataset.next_batch(FLAGS.batch_size)
+        sample_images, sample_labels = dataset.next_batch(dcgan.sample_num)
         fd = {dcgan.z : sample_z,
               dcgan.y : sample_labels,
               dcgan.inputs : sample_images}
-        samples = mon_sess.run([dcgan.sample], feed_dict=fd)
+        samples = mon_sess.run([dcgan.sampler], feed_dict=fd)
         save_images(samples, [8, 8],
                     FLAGS.train_dir + '/train_%d.png' % new_epoch_track)
 
