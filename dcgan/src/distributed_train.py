@@ -218,11 +218,9 @@ def train(target, dataset, cluster_spec):
     g_loss, g_vars = dcgan.g_loss, dcgan.g_vars
 
     def evaluation(logits, labels):
-       tf.logging.info("ASFASF")
-       tf.logging.info(labels.shape)
-       tf.logging.info(logits.shape)
+       indices = tf.cast(tf.argmax(labels, axis=1), tf.int32)
        pred = tf.nn.softmax(logits)
-       correct = tf.nn.in_top_k(pred, labels, 1)
+       correct = tf.nn.in_top_k(pred, indices, 1)
        return tf.reduce_sum(tf.cast(correct, tf.int32))
 
     val_acc = tf.reduce_sum(evaluation(dcgan.D_logits, dcgan.y)) / tf.constant(FLAGS.evaluate_batchsize)
