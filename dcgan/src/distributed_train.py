@@ -356,8 +356,7 @@ def train(target, dataset, cluster_spec):
       tf.logging.info("Epoch: %d" % int(cur_epoch_track))
 
       # Distributed training
-      batch_z = np.random.uniform(-1, 1, [config.batch_size, self.z_dim])
-                         .astype(np.float32)
+      batch_z = np.random.uniform(-1, 1, [config.batch_size, self.z_dim]).astype(np.float32)
 
       # Train the discriminator
       images_real, labels_real = data_set.next_batch(batch_size)
