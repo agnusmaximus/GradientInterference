@@ -139,7 +139,7 @@ def model_evaluate(sess, dataset, dcgan, batch_size, d_loss, g_loss):
       dcgan.y : labels_real,
       dcgan.inputs : images_real,
     }
-    acc_partial, d_loss, g_loss = sess.run([val_acc, d_loss, g_loss], fd=feed_dict)
+    d_loss, g_loss = sess.run([d_loss, g_loss], fd=feed_dict)
 
     d_loss_total += d_loss
     g_loss_total += g_loss
