@@ -391,7 +391,7 @@ def train(target, dataset, cluster_spec):
         fd = {dcgan.z : sample_z,
               dcgan.y : sample_labels,
               dcgan.inputs : sample_images}
-        samples = mon_sess.run([dcgan.sampler], feed_dict=fd)
+        samples = mon_sess.run([dcgan.sampler], feed_dict=fd)[0]
         tf.logging.info("YO: ")
         tf.logging.info(samples.shape)
         save_images(np.array(samples), [8, 8],
