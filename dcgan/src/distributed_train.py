@@ -357,10 +357,9 @@ def train(target, dataset, cluster_spec):
 
       # Distributed training
       batch_z = np.random.uniform(-1, 1, [FLAGS.batch_size, dcgan.z_dim]).astype(np.float32)
-      tf.logging.info(batch_z)
 
       # Train the discriminator
-      images_real, labels_real = dataset.next_batch(batch_size)
+      images_real, labels_real = dataset.next_batch(FLAGS.batch_size)
       fd_d = {dcgan.inputs : images_real,
               dcgan.z : batch_z,
               dcgan.y : labels_real}
