@@ -135,22 +135,18 @@ def model_evaluate(sess, dataset, dcgan, batch_size, d_loss, g_loss):
     tf.logging.info("%d of %d" % (i, n_iters))
     sys.stdout.flush()
     images_real, labels_real = dataset.next_batch(batch_size)
-    tf.logging.info("%d of %d" % (i, n_iters))
-    sys.stdout.flush()
     batch_z = np.random.uniform(-1, 1, [batch_size, dcgan.z_dim]).astype(np.float32)
-    tf.logging.info("%d of %d" % (i, n_iters))
-    sys.stdout.flush()
     feed_dict = {
       dcgan.z : batch_z,
       dcgan.y : labels_real,
       dcgan.inputs : images_real,
     }
-    d_loss, g_loss = sess.run([d_loss, g_loss], fd=feed_dict)
+    d_loss_v, g_loss_v = sess.run([d_loss, g_loss], fd=feed_dict)
     tf.logging.info("%d of %d" % (i, n_iters))
     sys.stdout.flush()
 
-    d_loss_total += d_loss
-    g_loss_total += g_loss
+    d_loss_total += d_loss_v
+    g_loss_total += g_loss_v
     tf.logging.info("%d of %d" % (i, n_iters))
     sys.stdout.flush()
 
