@@ -226,8 +226,9 @@ def train(target, dataset, cluster_spec):
        correct = tf.nn.in_top_k(pred, indices, 1)
        return tf.reduce_sum(tf.cast(correct, tf.int32))
 
-    val_acc = tf.reduce_sum(evaluation(dcgan.D_logits, dcgan.y)) / tf.constant(FLAGS.evaluate_batchsize)
+    #val_acc = tf.reduce_sum(evaluation(dcgan.D_logits, dcgan.y)) / tf.constant(FLAGS.evaluate_batchsize)
     #val_acc = tf.Print(global_step_g, [global_step_g], message="YOYOYO")
+    val_acc = tf.Print(dcgan.D_logits, [dcgan.D_logits], message="YOOYOYO")
 
     tf.logging.info("Discriminator variables %s" % str(list([str(x) for x in dcgan.d_vars])))
     tf.logging.info("Generator variables %s" % str(list([str(x) for x in dcgan.g_vars])))
