@@ -159,8 +159,7 @@ def train(target, dataset, cluster_spec):
 
     # Create a variable to count the number of train() calls. This equals the
     # number of updates applied to the variables. The PS holds the global step.
-    global_step_g = tf.Variable(0, name="global_step_g", trainable=False)
-    global_step_d = tf.Variable(0, name="global_step_d", trainable=False)
+    global_step = tf.Variable(0, name="global_step", trainable=False)
 
     # Create the dcgan
     # The first argument is session, which is only used for training.
@@ -202,8 +201,8 @@ def train(target, dataset, cluster_spec):
 
     # Compute gradients with respect to the loss.
     grads_d, grads_g = opt.compute_gradients(d_loss), opt.compute_gradients(g_loss)
-    apply_gradients_g = opt.apply_gradients(grads_d, global_step=global_step_g)
-    apply_gradients_d = opt.apply_gradients(grads_d, global_step=global_step_d)
+    apply_gradients_g = opt.apply_gradients(grads_d, global_step=global_step)
+    apply_gradients_d = opt.apply_gradients(grads_d, global_step=global_step)
 
     with tf.control_dependencies([apply_gradients_g]):
       train_op_g = tf.identity(g_loss, name='train_op_g')
@@ -212,7 +211,7 @@ def train(target, dataset, cluster_spec):
       train_op_d = tf.identity(d_loss, name='train_op_d')
 
     # Queue for broadcasting R
-    with ops.device(global_step_g.device):
+    with ops.device(global_step.device):
       block_workers_queue = data_flow_ops.FIFOQueue(1,
                                                     tf.int64,
                                                     shapes=(),
@@ -230,7 +229,7 @@ def train(target, dataset, cluster_spec):
     work_label_placeholder = tf.placeholder(tf.int64, shape=(None,))
 
     # Queue for distributing computation of R
-    with ops.device(global_step_g.device):
+    with ops.device(global_step.device):
       R_images_work_queue = []
       R_labels_work_queue = []
       for i in range(num_workers):
@@ -362,12 +361,12 @@ def train(target, dataset, cluster_spec):
       fd_d = {dcgan.inputs : images_real,
               dcgan.z : batch_z,
               dcgan.y : labels_real}
-      loss_value_d, step_d = mon_sess.run([train_op_d, global_step_d], run_metadata=run_metadata, options=run_options, feed_dict=fd_d)
+      loss_value_d, step_d = mon_sess.run([train_op_d, global_step], run_metadata=run_metadata, options=run_options, feed_dict=fd_d)
 
       # Train the generator
       fd_g = {dcgan.z : batch_z,
               dcgan.y : labels_real}
-      loss_value_g, step_g = mon_sess.run([train_op_g, global_step_g], run_metadata=run_metadata, options=run_options, feed_dict=fd_g)
+      loss_value_g, step_g = mon_sess.run([train_op_g, global_step], run_metadata=run_metadata, options=run_options, feed_dict=fd_g)
 
       n_examples_processed += FLAGS.batch_size * num_workers
 
@@ -423,4 +422,4 @@ def train(target, dataset, cluster_spec):
   if is_chief:
     saver.save(sess,
                os.path.join(FLAGS.train_dir, 'model.ckpt'),
-               global_step=global_step_g)
+               global_step=global_step)
