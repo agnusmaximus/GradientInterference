@@ -88,7 +88,10 @@ def deconv2d(input_, output_shape,
                 strides=[1, d_h, d_w, 1])
 
     biases = tf.get_variable('biases', [output_shape[-1]], initializer=tf.constant_initializer(0.0))
-    deconv = tf.reshape(tf.nn.bias_add(deconv, biases), deconv.get_shape())
+    biases_added = tf.nn.bias_add(deconv, biases)
+    deconv = tf.reshape(biases_added, tf.shape(deconv))
+    #deconv = tf.reshape(tf.nn.bias_add(deconv, biases), deconv.get_shape())
+
 
     if with_w:
       return deconv, w, biases
