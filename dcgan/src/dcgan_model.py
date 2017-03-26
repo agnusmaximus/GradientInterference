@@ -100,9 +100,6 @@ class DCGAN(object):
       self.D, self.D_logits = \
           self.discriminator(inputs, self.y, reuse=False)
 
-      tf.logging.info("ASFDASDFASDFASDF")
-      tf.logging.info(self.D_logits.shape)
-
       self.sampler = self.sampler(self.z, self.y)
       self.D_, self.D_logits_ = \
           self.discriminator(self.G, self.y, reuse=True)
@@ -342,7 +339,6 @@ class DCGAN(object):
 
         h1 = lrelu(self.d_bn1(conv2d(h0, self.df_dim + self.y_dim, name='d_h1_conv')))
         rest_dim = int(np.prod(h1.shape[1:]))
-        tf.logging.info([-1, rest_dim])
         h1 = tf.reshape(h1, [-1, rest_dim])
         h1 = concat([h1, y], 1)
 
@@ -350,10 +346,6 @@ class DCGAN(object):
         h2 = concat([h2, y], 1)
 
         h3 = linear(h2, 1, 'd_h3_lin')
-
-        tf.logging.info("YOOOO")
-        tf.logging.info(tf.nn.sigmoid(h3).shape)
-        tf.logging.info(h3.shape)
 
         return tf.nn.sigmoid(h3), h3
 

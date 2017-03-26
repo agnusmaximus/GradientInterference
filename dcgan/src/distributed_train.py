@@ -223,6 +223,8 @@ def train(target, dataset, cluster_spec):
        pred = tf.nn.softmax(logits)
        tf.logging.info("aSDFASF")
        tf.logging.info(pred.shape)
+       pred = tf.one_hot(pred, 10, on_value=1, off_value=0, dtype=tf.int32)
+       tf.logging.info(pred.shape)
        correct = tf.nn.in_top_k(pred, indices, 1)
        return tf.reduce_sum(tf.cast(correct, tf.int32))
 
