@@ -350,6 +350,7 @@ class DCGAN(object):
 
         tf.logging.info("YOOOO")
         tf.logging.info(tf.nn.sigmoid(h3).shape)
+        tf.logging.info(h3.shape)
 
         return tf.nn.sigmoid(h3), h3
 
