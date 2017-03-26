@@ -384,6 +384,16 @@ def train(target, dataset, cluster_spec):
         evaluate_times.append(t_evaluate_end-t_evaluate_start)
         mon_sess.run([unblock_workers_op], feed_dict=default_fd)
 
+        # Also run the sampler
+        sample_z = np.random.uniform(-1, 1, size=(self.sample_num , self.z_dim))
+        sample_images, sample_labels = dataset.next_batch(FLAGS.batch_size)
+        fd = {dcgan.z : sample_z,
+              dcgan.y : sample_labels,
+              dcgan.inputs : sample_images}
+        samples = mon_sess.run([dcgan.sample], feed_dict=fd)
+        save_images(samples, [8, 8],
+                    FLAGS.train_dir + '/train_%d.png' % new_epoch_track)
+
       num_steps_per_epoch = int(dataset.num_examples / (num_workers * FLAGS.batch_size))
 
       # We use step since it's synchronized across workers
