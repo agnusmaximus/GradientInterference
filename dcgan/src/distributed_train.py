@@ -124,11 +124,11 @@ RMSPROP_DECAY = 0.9                # Decay term for RMSProp.
 RMSPROP_MOMENTUM = 0.9             # Momentum in RMSProp.
 RMSPROP_EPSILON = 1.0              # Epsilon term for RMSProp.
 
-def model_evaluate(sess, dataset, dcgan, batch_size, d_loss, g_loss):
+def model_evaluate(sess, dataset, dcgan, batch_size, d_loss, g_loss, val_acc):
   tf.logging.info("Evaluating model...")
   n_iters = int(math.ceil(dataset.num_examples / batch_size))
   #assert(dataset.num_examples % batch_size == 0)
-  d_loss_total, g_loss_total = 0, 0
+  d_loss_total, g_loss_total, acc = 0, 0, 0
   tf.logging.info("Starting")
   sys.stdout.flush()
   for i in range(n_iters):
@@ -141,16 +141,20 @@ def model_evaluate(sess, dataset, dcgan, batch_size, d_loss, g_loss):
       dcgan.y : labels_real,
       dcgan.inputs : images_real,
     }
-    d_loss_v, g_loss_v = sess.run([d_loss, g_loss], feed_dict=feed_dict)
+    d_loss_v, g_loss_v, acc_partial = sess.run([d_loss, g_loss, val_acc], feed_dict=feed_dict)
     tf.logging.info("%d of %d" % (i, n_iters))
     sys.stdout.flush()
 
     d_loss_total += d_loss_v
     g_loss_total += g_loss_v
+    acc += acc_partial * batch_size
+
     tf.logging.info("%d of %d" % (i, n_iters))
     sys.stdout.flush()
 
-  return d_loss_total, g_loss_total
+  acc /= float(dataset.num_examples)
+
+  return d_loss_total, g_loss_total, acc
 
 def train(target, dataset, cluster_spec):
 
@@ -212,6 +216,8 @@ def train(target, dataset, cluster_spec):
 
     d_loss, d_vars = dcgan.d_loss, dcgan.d_vars
     g_loss, g_vars = dcgan.g_loss, dcgan.g_vars
+
+    val_acc = tf.reduce_sum(mnist.evaluation(dcgan.logits, dcgan.y)) / tf.constant(FLAGS.evaluate_batchsize)
 
     tf.logging.info("Discriminator variables %s" % str(list([str(x) for x in dcgan.d_vars])))
     tf.logging.info("Generator variables %s" % str(list([str(x) for x in dcgan.g_vars])))
@@ -361,8 +367,8 @@ def train(target, dataset, cluster_spec):
         mon_sess.run([block_workers_op], feed_dict=default_fd)
         t_evaluate_start = time.time()
         tf.logging.info("Master evaluating...")
-        d_loss_value, g_loss_value = model_evaluate(mon_sess, dataset, dcgan, FLAGS.evaluate_batchsize, d_loss, g_loss)
-        tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times)-sum(compute_R_times), new_epoch_float, d_loss_value, g_loss_value))
+        d_loss_value, g_loss_value, accuracy = model_evaluate(mon_sess, dataset, dcgan, FLAGS.evaluate_batchsize, d_loss, g_loss, val_acc)
+        tf.logging.info("IInfo: %f %f %f %f %f" % (t_evaluate_start-sum(evaluate_times)-sum(compute_R_times), new_epoch_float, d_loss_value, g_loss_value, accuracy))
         t_evaluate_end = time.time()
         tf.logging.info("Master done evaluating... Elapsed time: %f" % (t_evaluate_end-t_evaluate_start))
         evaluate_times.append(t_evaluate_end-t_evaluate_start)
