@@ -338,7 +338,7 @@ class DCGAN(object):
         h0 = conv_cond_concat(h0, yb)
 
         h1 = lrelu(self.d_bn1(conv2d(h0, self.df_dim + self.y_dim, name='d_h1_conv')))
-        rest_dim = np.prod(h1.shape[1:])
+        rest_dim = int(np.prod(h1.shape[1:]))
         tf.logging.info([-1, rest_dim])
         h1 = tf.reshape(h1, [-1, rest_dim])
         h1 = concat([h1, y], 1)
