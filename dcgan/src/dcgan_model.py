@@ -7,7 +7,7 @@ import tensorflow as tf
 import numpy as np
 from six.moves import xrange
 
-from tensorflow.python.framework.ops import *
+from ops import *
 from utils import *
 
 def conv_out_size_same(size, stride):
