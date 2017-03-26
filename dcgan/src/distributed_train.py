@@ -134,7 +134,7 @@ def model_evaluate(sess, dataset, dcgan, batch_size, d_loss, g_loss):
   for i in range(n_iters):
     tf.logging.info("%d of %d" % (i, n_iters))
     sys.stdout.flush()
-    images_real, labels_real = dataset.next_batch(FLAGS.batch_size)
+    images_real, labels_real = dataset.next_batch(batch_size)
     tf.logging.info("%d of %d" % (i, n_iters))
     sys.stdout.flush()
     batch_z = np.random.uniform(-1, 1, [batch_size, dcgan.z_dim]).astype(np.float32)
