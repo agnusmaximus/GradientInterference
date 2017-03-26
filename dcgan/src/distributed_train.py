@@ -327,7 +327,8 @@ def train(target, dataset, cluster_spec):
 
   with tf.train.MonitoredTrainingSession(
       master=target, is_chief=is_chief,
-      hooks=[sync_replicas_hook],
+      #hooks=[sync_replicas_hook],
+      hooks=[],
       checkpoint_dir=FLAGS.train_dir,
       save_checkpoint_secs=checkpoint_save_secs) as mon_sess:
     while not mon_sess.should_stop():
