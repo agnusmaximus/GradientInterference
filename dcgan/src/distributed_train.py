@@ -367,7 +367,8 @@ def train(target, dataset, cluster_spec):
 
       # Train the generator
       fd_g = {dcgan.z : batch_z,
-              dcgan.y : labels_real}
+              dcgan.y : labels_real,
+              dcgan.inputs : images_real}
       loss_value_g, step_g = mon_sess.run([train_op_g, global_step], run_metadata=run_metadata, options=run_options, feed_dict=fd_g)
 
       tf.logging.info("d_loss: %f, g_loss: %f" % (loss_value_d, loss_value_g))
