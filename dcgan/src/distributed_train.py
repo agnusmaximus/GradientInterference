@@ -129,6 +129,8 @@ def model_evaluate(sess, dataset, dcgan, batch_size, d_loss, g_loss):
   n_iters = dataset.num_examples / batch_size
   assert(dataset.num_examples % batch_size == 0)
   d_loss_total, g_loss_total = 0, 0
+  tf.logging.info("Starting")
+  sys.stdout.flush()
   for i in range(n_iters):
     tf.logging.info("%d of %d" % (i, n_iters))
     sys.stdout.flush()
