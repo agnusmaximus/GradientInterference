@@ -393,7 +393,7 @@ def train(target, dataset, cluster_spec):
               dcgan.inputs : sample_images}
         samples = mon_sess.run([dcgan.sampler], feed_dict=fd)
         save_images(samples, [8, 8],
-                    FLAGS.train_dir + '/train_%d.png' % new_epoch_track)
+                    FLAGS.train_dir + ('/train_%d.png' % new_epoch_track))
 
       num_steps_per_epoch = int(dataset.num_examples / (num_workers * FLAGS.batch_size))
 
