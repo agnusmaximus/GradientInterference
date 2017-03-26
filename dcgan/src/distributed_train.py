@@ -17,6 +17,7 @@ import signal
 import sys
 import os
 import math
+import mnist_data
 
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import variables
