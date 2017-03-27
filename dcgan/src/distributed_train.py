@@ -249,7 +249,6 @@ def train(target, dataset, cluster_spec):
 
     # Compute gradients with respect to the loss.
     grads_d, grads_g = opt_d.compute_gradients(d_loss, var_list=dcgan.d_vars), opt_g.compute_gradients(g_loss, var_list=dcgan.g_vars)
-    #grads_d, grads_g = opt.compute_gradients(d_loss), opt.compute_gradients(g_loss)
     apply_gradients_g = opt_g.apply_gradients(grads_g, global_step=global_step_g)
     apply_gradients_d = opt_d.apply_gradients(grads_d, global_step=global_step_d)
 
@@ -403,7 +402,6 @@ def train(target, dataset, cluster_spec):
         samples = mon_sess.run([dcgan.sampler], feed_dict=sample_fd)[0]
         save_images(np.array(samples), [8, 8],
                     '%s/train_%d.png' % (FLAGS.train_dir, cur_iteration))
-
 
       num_steps_per_epoch = int(dataset.num_examples / (num_workers * FLAGS.batch_size))
 
