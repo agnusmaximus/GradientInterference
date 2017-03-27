@@ -390,7 +390,7 @@ def train(target, dataset, cluster_spec):
         evaluate_times.append(t_evaluate_end-t_evaluate_start)
         mon_sess.run([unblock_workers_op], feed_dict=default_fd)
 
-      if cur_iteration % 100 == 0:
+      if cur_iteration % 100 == 0 and FLAGS.task_id == 0:
         # Also run the sampler
         samples = mon_sess.run([dcgan.sampler], feed_dict=sample_fd)[0]
         save_images(np.array(samples), [8, 8],
