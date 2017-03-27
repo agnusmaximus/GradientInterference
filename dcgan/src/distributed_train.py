@@ -242,8 +242,8 @@ def train(target, dataset, cluster_spec):
       total_num_replicas=num_workers)
 
     # Compute gradients with respect to the loss.
-    #grads_d, grads_g = opt.compute_gradients(d_loss, var_list=dcgan.d_vars), opt.compute_gradients(g_loss, var_list=dcgan.g_vars)
-    grads_d, grads_g = opt.compute_gradients(d_loss), opt.compute_gradients(g_loss)
+    grads_d, grads_g = opt.compute_gradients(d_loss, var_list=dcgan.d_vars), opt.compute_gradients(g_loss, var_list=dcgan.g_vars)
+    #grads_d, grads_g = opt.compute_gradients(d_loss), opt.compute_gradients(g_loss)
     apply_gradients_g = opt.apply_gradients(grads_g, global_step=global_step_g)
     apply_gradients_d = opt.apply_gradients(grads_d, global_step=global_step_d)
 
@@ -432,14 +432,14 @@ def train(target, dataset, cluster_spec):
 
       tf.logging.info("Training...")
 
-      #loss_value_d, loss_value_g, _, step_d = mon_sess.run([train_op_d, train_op_g, train_op_g, global_step_d], run_metadata=run_metadata, options=run_options, feed_dict=fd_d)
-      loss_value_d, step_d = mon_sess.run([train_op_d, global_step_d], run_metadata=run_metadata, options=run_options, feed_dict=fd_d)
+      loss_value_d, loss_value_g, _, step_d = mon_sess.run([train_op_d, train_op_g, train_op_g, global_step_d], run_metadata=run_metadata, options=run_options, feed_dict=fd_d)
+      #loss_value_d, step_d = mon_sess.run([train_op_d, global_step_d], run_metadata=run_metadata, options=run_options, feed_dict=fd_d)
 
       # Train the generator
       fd_g = {dcgan.z : batch_z,
               dcgan.y : labels_real,
               dcgan.inputs : images_real}
-      loss_value_g, step_g = mon_sess.run([train_op_g, global_step_g], run_metadata=run_metadata, options=run_options, feed_dict=fd_g)
+      #loss_value_g, step_g = mon_sess.run([train_op_g, global_step_g], run_metadata=run_metadata, options=run_options, feed_dict=fd_g)
       #loss_value_g, step_g = 0, 0
 
       tf.logging.info("Step %d, d_loss: %f, g_loss: %f" % (step_d, loss_value_d, loss_value_g))
