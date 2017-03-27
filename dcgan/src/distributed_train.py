@@ -342,7 +342,11 @@ def train(target, dataset, cluster_spec):
 
   tf.logging.info("Starting training session...")
 
-  dcgan.train(FLAGS)
+  run_config = tf.ConfigProto()
+  run_config.gpu_options.allow_growth=True
+
+  with tf.Session(config=run_config) as sess:
+    dcgan.train(FLAGS)
 
   return
 
