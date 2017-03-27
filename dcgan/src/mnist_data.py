@@ -167,7 +167,7 @@ def one_hot_f(labels):
   one_hotted = []
   for v in labels:
     labels = numpy.zeros(NUM_LABELS)
-    labels[v-1] = 1
+    labels[v] = 1
     one_hotted.append(labels)
   return numpy.array(one_hotted)
 
