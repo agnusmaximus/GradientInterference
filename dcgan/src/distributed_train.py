@@ -160,6 +160,14 @@ def model_evaluate(sess, dataset, dcgan, batch_size, d_loss, g_loss, val_acc):
 
 def train(target, dataset, cluster_spec):
 
+  run_config = tf.ConfigProto()
+  run_config.gpu_options.allow_growth=True
+
+  with tf.Session(config=run_config) as sess:
+    dcgan.train(FLAGS)
+
+  return
+
   """Train Inception on a dataset for a number of steps."""
   # Number of workers and parameter servers are infered from the workers and ps
   # hosts string.
@@ -341,14 +349,6 @@ def train(target, dataset, cluster_spec):
   compute_R_times, evaluate_times = [0], [0]
 
   tf.logging.info("Starting training session...")
-
-  run_config = tf.ConfigProto()
-  run_config.gpu_options.allow_growth=True
-
-  with tf.Session(config=run_config) as sess:
-    dcgan.train(FLAGS)
-
-  return
 
   with tf.train.MonitoredTrainingSession(
       master=target, is_chief=is_chief,
