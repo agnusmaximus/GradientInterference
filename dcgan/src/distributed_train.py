@@ -348,6 +348,13 @@ def train(target, dataset, cluster_spec):
       hooks=[sync_replicas_hook],
       checkpoint_dir=FLAGS.train_dir,
       save_checkpoint_secs=checkpoint_save_secs) as mon_sess:
+
+    sample_z = np.random.uniform(-1, 1, size=(dcgan.sample_num , dcgan.z_dim))
+    sample_images, sample_labels = dataset.next_batch(dcgan.sample_num)
+    sample_fd = {dcgan.z : sample_z,
+          dcgan.y : sample_labels,
+          dcgan.inputs : sample_images}
+
     while not mon_sess.should_stop():
 
       default_batch_z = np.random.uniform(-1, 1, [FLAGS.batch_size, dcgan.z_dim]).astype(np.float32)
@@ -386,12 +393,7 @@ def train(target, dataset, cluster_spec):
         mon_sess.run([unblock_workers_op], feed_dict=default_fd)
 
         # Also run the sampler
-        sample_z = np.random.uniform(-1, 1, size=(dcgan.sample_num , dcgan.z_dim))
-        sample_images, sample_labels = dataset.next_batch(dcgan.sample_num)
-        fd = {dcgan.z : sample_z,
-              dcgan.y : sample_labels,
-              dcgan.inputs : sample_images}
-        samples = mon_sess.run([dcgan.sampler], feed_dict=fd)[0]
+        samples = mon_sess.run([dcgan.sampler], feed_dict=sample_fd)[0]
         save_images(np.array(samples), [8, 8],
                     '%s/train_%d.png' % (FLAGS.train_dir, new_epoch_track))
 
