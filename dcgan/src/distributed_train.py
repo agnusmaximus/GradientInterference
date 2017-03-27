@@ -160,32 +160,6 @@ def model_evaluate(sess, dataset, dcgan, batch_size, d_loss, g_loss, val_acc):
 
 def train(target, dataset, cluster_spec):
 
-
-  dcgan = DCGAN(
-      None,
-      input_width=FLAGS.input_width,
-      input_height=FLAGS.input_height,
-      output_width=FLAGS.output_width,
-      output_height=FLAGS.output_height,
-      batch_size=FLAGS.batch_size,
-      sample_num=FLAGS.batch_size,
-      y_dim=10,
-      c_dim=1,
-      dataset_name=FLAGS.dataset,
-      input_fname_pattern=FLAGS.input_fname_pattern,
-      is_crop=FLAGS.is_crop,
-      checkpoint_dir=FLAGS.checkpoint_dir,
-      sample_dir=FLAGS.sample_dir)
-
-
-  run_config = tf.ConfigProto()
-  run_config.gpu_options.allow_growth=True
-
-  with tf.Session(config=run_config) as sess:
-    dcgan.train(FLAGS)
-
-  return
-
   """Train Inception on a dataset for a number of steps."""
   # Number of workers and parameter servers are infered from the workers and ps
   # hosts string.

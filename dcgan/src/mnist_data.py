@@ -149,7 +149,7 @@ def extract_data(filename, num_images):
     data = numpy.frombuffer(buf, dtype=numpy.uint8).astype(numpy.float32)
 
     # For gan, don't normalize
-    #data = (data - (PIXEL_DEPTH / 2.0)) / PIXEL_DEPTH
+    data = data / PIXEL_DEPTH
     data = data.reshape(num_images, IMAGE_SIZE, IMAGE_SIZE, 1)
 
     return data
