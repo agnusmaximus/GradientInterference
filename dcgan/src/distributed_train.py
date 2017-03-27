@@ -424,6 +424,9 @@ def train(target, dataset, cluster_spec):
       fd_d = {dcgan.inputs : images_real,
               dcgan.z : batch_z,
               dcgan.y : labels_real}
+
+      tf.logging.info("Training...")
+
       loss_value_d, loss_value_g, _, step_d = mon_sess.run([train_op_d, train_op_g, train_op_g, global_step_d], run_metadata=run_metadata, options=run_options, feed_dict=fd_d)
 
       # Train the generator
