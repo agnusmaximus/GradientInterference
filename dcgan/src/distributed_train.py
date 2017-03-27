@@ -355,7 +355,7 @@ def train(target, dataset, cluster_spec):
                  dcgan.inputs : sample_images}
 
     if FLAGS.task_id != 0:
-      sleep(10000000)
+      time.sleep(10000000)
 
     while not mon_sess.should_stop():
 
