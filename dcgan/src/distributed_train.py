@@ -350,8 +350,8 @@ def train(target, dataset, cluster_spec):
     sample_z = np.random.uniform(-1, 1, size=(dcgan.sample_num , dcgan.z_dim))
     sample_images, sample_labels = dataset.next_batch(dcgan.sample_num)
     sample_fd = {dcgan.z : sample_z,
-          dcgan.y : sample_labels,
-          dcgan.inputs : sample_images}
+                 dcgan.y : sample_labels,
+                 dcgan.inputs : sample_images}
 
     while not mon_sess.should_stop():
 
