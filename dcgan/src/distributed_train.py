@@ -233,9 +233,7 @@ def train(target, dataset, cluster_spec):
     tf.logging.info("Generator variables %s" % str(list([str(x) for x in dcgan.g_vars])))
 
     # Create an optimizer that performs gradient descent.
-    #opt = tf.train.GradientDescentOptimizer(FLAGS.initial_learning_rate)
-    #opt_adam = tf.train.AdamOptimizer(FLAGS.initial_learning_rate)
-    opt = tf.train.AdamOptimizer(FLAGS.initial_learning_rate)
+    opt = tf.train.AdamOptimizer(FLAGS.initial_learning_rate, beta1=FLAGS.beta1)
 
     # Use V2 optimizer
     opt = tf.train.SyncReplicasOptimizer(
@@ -244,7 +242,7 @@ def train(target, dataset, cluster_spec):
       total_num_replicas=num_workers)
 
     # Compute gradients with respect to the loss.
-    grads_d, grads_g = opt.compute_gradients(d_loss), opt.compute_gradients(g_loss)
+    grads_d, grads_g = opt.compute_gradients(d_loss, var_list=dcgan.d_vars), opt.compute_gradients(g_loss, var_list=dcgan.g_vars)
     apply_gradients_g = opt.apply_gradients(grads_g, global_step=global_step_g)
     apply_gradients_d = opt.apply_gradients(grads_d, global_step=global_step_d)
 
@@ -390,12 +388,13 @@ def train(target, dataset, cluster_spec):
         t_evaluate_end = time.time()
         tf.logging.info("Master done evaluating... Elapsed time: %f" % (t_evaluate_end-t_evaluate_start))
         evaluate_times.append(t_evaluate_end-t_evaluate_start)
-        mon_sess.run([unblock_workers_op], feed_dict=default_fd)
 
         # Also run the sampler
         samples = mon_sess.run([dcgan.sampler], feed_dict=sample_fd)[0]
         save_images(np.array(samples), [8, 8],
                     '%s/train_%d.png' % (FLAGS.train_dir, new_epoch_track))
+
+        mon_sess.run([unblock_workers_op], feed_dict=default_fd)
 
       num_steps_per_epoch = int(dataset.num_examples / (num_workers * FLAGS.batch_size))
 
