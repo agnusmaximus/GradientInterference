@@ -354,9 +354,6 @@ def train(target, dataset, cluster_spec):
                  dcgan.y : sample_labels,
                  dcgan.inputs : sample_images}
 
-    if FLAGS.task_id != 0:
-      time.sleep(10000000)
-
     while not mon_sess.should_stop():
 
       default_batch_z = np.random.uniform(-1, 1, [FLAGS.batch_size, dcgan.z_dim]).astype(np.float32)
