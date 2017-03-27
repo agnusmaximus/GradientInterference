@@ -233,19 +233,25 @@ def train(target, dataset, cluster_spec):
     tf.logging.info("Generator variables %s" % str(list([str(x) for x in dcgan.g_vars])))
 
     # Create an optimizer that performs gradient descent.
-    opt = tf.train.AdamOptimizer(FLAGS.initial_learning_rate, beta1=FLAGS.beta1)
+    opt_g = tf.train.AdamOptimizer(FLAGS.initial_learning_rate, beta1=FLAGS.beta1)
+    opt_d = tf.train.AdamOptimizer(FLAGS.initial_learning_rate, beta1=FLAGS.beta1)
 
     # Use V2 optimizer
-    opt = tf.train.SyncReplicasOptimizer(
-      opt,
+    opt_g = tf.train.SyncReplicasOptimizer(
+      opt_g,
+      replicas_to_aggregate=num_replicas_to_aggregate,
+      total_num_replicas=num_workers)
+    opt_d = tf.train.SyncReplicasOptimizer(
+      opt_d,
       replicas_to_aggregate=num_replicas_to_aggregate,
       total_num_replicas=num_workers)
 
+
     # Compute gradients with respect to the loss.
-    grads_d, grads_g = opt.compute_gradients(d_loss, var_list=dcgan.d_vars), opt.compute_gradients(g_loss, var_list=dcgan.g_vars)
+    grads_d, grads_g = opt_d.compute_gradients(d_loss, var_list=dcgan.d_vars), opt_g.compute_gradients(g_loss, var_list=dcgan.g_vars)
     #grads_d, grads_g = opt.compute_gradients(d_loss), opt.compute_gradients(g_loss)
-    apply_gradients_g = opt.apply_gradients(grads_g, global_step=global_step_g)
-    apply_gradients_d = opt.apply_gradients(grads_d, global_step=global_step_d)
+    apply_gradients_g = opt_g.apply_gradients(grads_g, global_step=global_step_g)
+    apply_gradients_d = opt_d.apply_gradients(grads_d, global_step=global_step_d)
 
     with tf.control_dependencies([apply_gradients_g]):
       train_op_g = tf.identity(g_loss, name='train_op_g')
@@ -321,7 +327,8 @@ def train(target, dataset, cluster_spec):
     # Incomplete.
     return 0
 
-  sync_replicas_hook = opt.make_session_run_hook(is_chief)
+  sync_replicas_hook_g = opt_g.make_session_run_hook(is_chief)
+  sync_replicas_hook_d = opt_d.make_session_run_hook(is_chief)
 
   # specified interval. Note that the summary_op and train_op never run
   # simultaneously in order to prevent running out of GPU memory.
@@ -344,7 +351,7 @@ def train(target, dataset, cluster_spec):
 
   with tf.train.MonitoredTrainingSession(
       master=target, is_chief=is_chief,
-      hooks=[sync_replicas_hook],
+      hooks=[sync_replicas_hook_g, sync_replicas_hook_d],
       checkpoint_dir=FLAGS.train_dir,
       save_checkpoint_secs=checkpoint_save_secs) as mon_sess:
 
