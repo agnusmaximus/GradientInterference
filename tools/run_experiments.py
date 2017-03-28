@@ -70,6 +70,10 @@ def run_tf_and_download_files(limit, cfg, evaluator_file_name="out_evaluator", m
     cluster_string = cluster_specs["cluster_string"]
 
     while not done(cluster_string, limit, cfg):
+        # Check if things are broken
+        satisfied = tf_ec2_run("tools/tf_ec2.py check_running_instances_satisfy_configuration", cfg)
+        if not satisfed:
+            return False
         time.sleep(60)
 
     tf_ec2_run(kill_args.split(), cfg)
@@ -84,6 +88,8 @@ def run_tf_and_download_files(limit, cfg, evaluator_file_name="out_evaluator", m
 
     download_ps_file_args = "tools/tf_ec2.py download_file %s %s %s" % (cluster_string, ps_file_name, outdir)
     tf_ec2_run(download_ps_file_args.split(), cfg)
+
+    return True
 
 def extract_results_names_from_file_names(file_names):
     def extract_cfg_name(n):
@@ -106,8 +112,10 @@ def run_experiments():
     speedup_cfgs = filter_cfgs(speedup_outdir, speedup_cfgs)
     print(list([x["name"] for x in speedup_cfgs]))
     for cfg in speedup_cfgs:
-        shutdown_and_launch(cfg)
-        run_tf_and_download_files(3, cfg, done=check_if_reached_epochs, outdir=speedup_outdir)
+        succeeded = False
+        while not succeeded:
+            shutdown_and_launch(cfg)
+            succeeded = run_tf_and_download_files(3, cfg, done=check_if_reached_epochs, outdir=speedup_outdir)
 
     print("Running experiments for accuracy")
     accuracy_outdir = "experiment_results/accuracy_data/"
@@ -116,8 +124,11 @@ def run_experiments():
     accuracy_cfgs = filter_cfgs(accuracy_outdir, accuracy_cfgs)
     print(list(x["name"] for x in accuracy_cfgs))
     for cfg in accuracy_cfgs:
-        shutdown_and_launch(cfg)
-        run_tf_and_download_files(.95, cfg, done=check_if_reached_accuracy, outdir=accuracy_outdir)
+        cfg["spot_price"] = str(int(cfg["spot_price"])*2)
+        succeeded = False
+        while not succeeded:
+            shutdown_and_launch(cfg)
+            succeeded = run_tf_and_download_files(.70, cfg, done=check_if_reached_accuracy, outdir=accuracy_outdir)
 
     print("Running experiments for ratio...")
     R_outdir = "experiment_results/ratio_data/"
@@ -126,8 +137,10 @@ def run_experiments():
     R_cfgs = filter_cfgs(R_outdir, R_cfgs)
     print(list(x["name"] for x in R_cfgs))
     for cfg in R_cfgs:
-        shutdown_and_launch(cfg)
-        run_tf_and_download_files(100, cfg, done=check_if_reached_epochs_for_ratio, outdir=R_outdir)
+        succeeded = False
+        while not succeeded:
+            shutdown_and_launch(cfg)
+            succeeded = run_tf_and_download_files(100, cfg, done=check_if_reached_epochs_for_ratio, outdir=R_outdir)
 
 if __name__ == "__main__":
     run_experiments()
