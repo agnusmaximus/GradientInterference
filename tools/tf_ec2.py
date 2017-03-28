@@ -1139,7 +1139,7 @@ def tf_ec2_run(argv, configuration):
         "run_command" : run_command,
         "download_outdir" : download_outdir,
         "download_file" : download_file,
-        "check_running_instances_satisfy_config" : check_running_instances_satisfy_configuration,
+        "check_running_instances_satisfy_configuration" : check_running_instances_satisfy_configuration,
     }
     help_map = {
         "launch" : "Launch instances",
@@ -1152,8 +1152,8 @@ def tf_ec2_run(argv, configuration):
         "kill_python" : "Kills python running inception on instances indicated by instance id string separated by ',' (no spaces).",
         "run_command" : "Runs given command on instances selcted by instance id string, separated by ','.",
         "download_outdir" : "Downloads base_out_dir as specified in the configuration. Used for pulling checkpoint files and saved models.",
-        "download_file" : "Downloads base_out_dir/filepath as specified in the configuration."
-        "check_running_instances_satisfy_config" : "Check if running instances satisfy given configuration"
+        "download_file" : "Downloads base_out_dir/filepath as specified in the configuration.",
+        "check_running_instances_satisfy_configuration" : "Check if running instances satisfy given configuration"
     }
 
     if len(argv) < 2:
