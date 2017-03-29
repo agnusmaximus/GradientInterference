@@ -1,6 +1,3 @@
-# This code is taken and modified from the inception_distribute_train.py file of
-# google's tensorflow inception model. The original source is here - https://github.com/tensorflow/models/tree/master/inception.
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -201,7 +198,6 @@ def train(target, cluster_spec):
 
     # Compute gradients with respect to the loss.
     grads = opt.compute_gradients(model.cost)
-    tf.logging.info("YO NUM LAYERS: %d" % len(grads))
     apply_gradients_op = opt.apply_gradients(grads, global_step=global_step)
 
     with tf.control_dependencies([apply_gradients_op]):
@@ -314,7 +310,6 @@ def train(target, cluster_spec):
       fd = {images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])}
       work_image, work_label = sess.run([dequeue_work_images[worker_id],
                                          dequeue_label_images[worker_id]], feed_dict=fd)
-      tf.logging.info("YO " + str(work_image.shape) + " " + str(work_label.shape))
       sys.stdout.flush()
       feed_dict = {images : work_image, labels : work_label}
       gradients = sess.run([x[0] for x in grads], feed_dict=feed_dict)
@@ -435,8 +430,6 @@ def train(target, cluster_spec):
         tf.logging.info("Master done evaluating... Elapsed time: %f" % (t_evaluate_end-t_evaluate_start))
         evaluate_times.append(t_evaluate_end-t_evaluate_start)
         mon_sess.run([unblock_workers_op],feed_dict={images:np.zeros([1, 32, 32, 3]), labels: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
-
-      tf.logging.info("YOLO %d %f %d %d" % (n_examples_processed, new_epoch_float, cur_epoch_track, step))
 
       num_steps_per_epoch = int(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / (num_workers * FLAGS.batch_size)) * 3
 
