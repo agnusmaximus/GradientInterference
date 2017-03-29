@@ -469,7 +469,7 @@ def main(_):
         tf.logging.info("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))
         sys.stdout.flush()
 
-        if FLAGS.should_evaluate:
+        if FLAGS.should_evaluate and FLAGS.task_id == 0:
             session.run([block_workers_op])
             t_evaluate_start = time.time()
             eval_train_perplexity = run_epoch(session, m_eval_train)
