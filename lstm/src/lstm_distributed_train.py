@@ -446,13 +446,14 @@ def main(_):
     checkpoint_save_secs = 60*2
     evaluate_times, compute_R_times = [0], [0]
 
-    tf.logging.info("Starting to train...")
 
     with tf.train.MonitoredTrainingSession(
             master=server.target, is_chief=is_chief,
             hooks=[sync_replicas_hook_train],
             checkpoint_dir=FLAGS.train_dir,
             save_checkpoint_secs=checkpoint_save_secs) as session:
+      tf.logging.info("Starting to train...")
+      sys.stdout.flush()
       for i in range(config.max_max_epoch):
 
         session.run([workers_block_if_necessary_op])
@@ -462,9 +463,11 @@ def main(_):
         m.assign_lr(session, config.learning_rate * lr_decay)
 
         tf.logging.info("Epoch: %d Learning rate: %.3f" % (i + 1, session.run(m.lr)))
+        sys.stdout.flush()
         train_perplexity = run_epoch(session, m, eval_op=m.train_op,
                                      verbose=True)
         tf.logging.info("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))
+        sys.stdout.flush()
 
         if FLAGS.should_evaluate:
             session.run([block_workers_op])
@@ -474,6 +477,7 @@ def main(_):
             # The second to last number that is printed is 0 (which is usually accuracy in mnist and resnet).
             # This is because there is no accuracy in ptb.
             tf.logging.info("IInfo: %f %d %f %f" % (t_evaluate_start-sum(evaluate_times)-sum(compute_R_times), i + 1, 0, eval_train_perplexity))
+            sys.stdout.flush()
             evaluate_times.append(t_evaluate_end-t_evaluate_start)
             session.run([unblock_workers_op])
 
