@@ -1,3 +1,4 @@
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -56,10 +57,6 @@ $ tar xvf simple-examples.tgz
 To run:
 $ python ptb_word_lm.py --data_path=simple-examples/data/
 """
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import inspect
 import time
 
@@ -67,6 +64,9 @@ import numpy as np
 import tensorflow as tf
 
 import reader
+
+np.set_printoptions(threshold=np.nan)
+tf.logging.set_verbosity(tf.logging.INFO)
 
 flags = tf.flags
 logging = tf.logging
@@ -81,10 +81,14 @@ flags.DEFINE_string("data_path", None,
                     "Where the training/test data is stored.")
 flags.DEFINE_string("save_path", None,
                     "Model output directory.")
+flags.DEFINE_bool("should_Evaluate", False,
+                  "Evaluate on training data after epochs")
 flags.DEFINE_bool("use_fp16", False,
                   "Train using 16-bit floats instead of 32bit floats")
 flags.DEFINE_integer(
     'task_id', 0, 'Task ID of the worker/replica running the training.')
+flags.DEFINE_integer(
+    'batch_size', 0, 'Batch size')
 flags.DEFINE_string('ps_hosts', '',
                     """Comma-separated list of hostname:port for the """
                     """parameter server jobs. e.g. """
@@ -93,7 +97,9 @@ flags.DEFINE_string('worker_hosts', '',
                     """Comma-separated list of hostname:port for the """
                     """worker jobs. e.g. """
                     """'machine1:2222,machine2:1111,machine2:2222'""")
-tf.app.flags.DEFINE_string('train_dir', '/tmp/resnet_train',
+flags.DEFINE_string('job_name', '',
+                    "worker or ps")
+flags.DEFINE_string('train_dir', '/tmp/lstm_train',
                            """Directory where to write event logs """
                            """and checkpoint.""")
 
@@ -203,10 +209,11 @@ class PTBModel(object):
         num_replicas_to_aggregate = num_workers
 
     optimizer = tf.train.SyncReplicasOptimizer(
-        opt,
+        optimizer,
         replicas_to_aggregate=num_replicas_to_aggregate,
         total_num_replicas=num_workers,
     )
+    self.opt = optimizer
 
     self._train_op = optimizer.apply_gradients(
         zip(grads, tvars),
@@ -255,7 +262,7 @@ class DistributedConfig(object):
   max_max_epoch = 1000000000
   keep_prob = 0.5
   lr_decay = 1
-  batch_size = 20
+  batch_size = FLAGS.batch_size
   vocab_size = 10000
 
 class SmallConfig(object):
@@ -350,7 +357,7 @@ def run_epoch(session, model, eval_op=None, verbose=False):
     iters += model.input.num_steps
 
     if verbose and step % (model.input.epoch_size // 10) == 10:
-      print("%.3f perplexity: %.3f speed: %.0f wps" %
+      tf.logging.info("%.3f perplexity: %.3f speed: %.0f wps" %
             (step * 1.0 / model.input.epoch_size, np.exp(costs / iters),
              iters * model.input.batch_size / (time.time() - start_time)))
 
@@ -374,10 +381,22 @@ def get_config():
 
 def main(_):
 
+  assert FLAGS.job_name in ['ps', 'worker'], 'job_name must be ps or worker'
+
   ps_hosts = FLAGS.ps_hosts.split(',')
   worker_hosts = FLAGS.worker_hosts.split(',')
   cluster_spec = tf.train.ClusterSpec({'ps': ps_hosts,
                                        'worker': worker_hosts})
+  server = tf.train.Server(
+      {'ps': ps_hosts,
+       'worker': worker_hosts},
+      job_name=FLAGS.job_name,
+      task_index=FLAGS.task_id)
+
+  if FLAGS.job_name == 'ps':
+    # `ps` jobs wait for incoming connections from the workers.
+    server.join()
+    return
 
   if not FLAGS.data_path:
     raise ValueError("Must set --data_path to PTB data directory")
@@ -397,10 +416,9 @@ def main(_):
               cluster=cluster_spec)):
     initializer = tf.random_uniform_initializer(-config.init_scale,
                                                 config.init_scale)
-    global_step = tf.Variable(0, name="global_step", trainable=False)
     with tf.name_scope("Train"):
         train_input = PTBInput(config=config, data=train_data, name="TrainInput")
-        with tf.variable_scope("Model", reuse=True, initializer=initializer):
+        with tf.variable_scope("Model", reuse=None, initializer=initializer):
             m = PTBModel(is_training=True, config=config, input_=train_input)
 
     with tf.name_scope("EvalTrain"):
@@ -408,26 +426,59 @@ def main(_):
       with tf.variable_scope("Model", reuse=True, initializer=initializer):
         m_eval_train = PTBModel(is_training=False, config=config, input_=eval_train_input)
 
-    with sv.managed_session() as session:
+    with ops.device(m.opt._global_step.device):
+      block_workers_queue = data_flow_ops.FIFOQueue(1,
+                                                    tf.int64,
+                                                    shapes=(),
+                                                    name="block_workers_queue",
+                                                    shared_name="block_workers_queue")
+
+    block_workers_op = block_workers_queue.enqueue(tf.constant(0, dtype=tf.int64))
+    unblock_workers_op = block_workers_queue.dequeue()
+
+    workers_block_if_necessary_op = tf.while_loop(lambda x : block_workers_queue.size() > 0,
+                                                  lambda x : tf.constant(0),
+                                                  [tf.constant(0)])
+
+
+    is_chief = FLAGS.task_id == 0
+    sync_replicas_hook_train = m.opt.make_session_run_hook(is_chief)
+    checkpoint_save_secs = 60*2
+    evaluate_times, compute_R_times = [0], [0]
+
+    tf.logging.info("Starting to train...")
+
+    with tf.train.MonitoredTrainingSession(
+            master=server.target, is_chief=is_chief,
+            hooks=[sync_replicas_hook_train],
+            checkpoint_dir=FLAGS.train_dir,
+            save_checkpoint_secs=checkpoint_save_secs) as session:
       for i in range(config.max_max_epoch):
+
+        session.run([workers_block_if_necessary_op])
 
         # Learning rate decay, which is nil for distributed training...
         lr_decay = config.lr_decay ** max(i + 1 - config.max_epoch, 0.0)
         m.assign_lr(session, config.learning_rate * lr_decay)
 
-        print("Epoch: %d Learning rate: %.3f" % (i + 1, session.run(m.lr)))
+        tf.logging.info("Epoch: %d Learning rate: %.3f" % (i + 1, session.run(m.lr)))
         train_perplexity = run_epoch(session, m, eval_op=m.train_op,
                                      verbose=True)
-        print("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))
-        t_evaluate_start = time.time()
-        eval_train_perplexity = run_epoch(session, m_eval_train)
-        t_evaluate_end = time.time()
-        # The second to last number that is printed is 0 (which is usually accuracy in mnist and resnet).
-        # This is because there is no accuracy in ptb.
-        print("IInfo: %f %d %f %f" % (t_evaluate_start-sum(evaluate_times)-sum(compute_R_times), i + 1, 0, eval_train_perplexity))
+        tf.logging.info("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))
+
+        if FLAGS.should_evaluate:
+            session.run([block_workers_op])
+            t_evaluate_start = time.time()
+            eval_train_perplexity = run_epoch(session, m_eval_train)
+            t_evaluate_end = time.time()
+            # The second to last number that is printed is 0 (which is usually accuracy in mnist and resnet).
+            # This is because there is no accuracy in ptb.
+            tf.logging.info("IInfo: %f %d %f %f" % (t_evaluate_start-sum(evaluate_times)-sum(compute_R_times), i + 1, 0, eval_train_perplexity))
+            evaluate_times.append(t_evaluate_end-t_evaluate_start)
+            session.run([unblock_workers_op])
 
       if FLAGS.save_path:
-        print("Saving model to %s." % FLAGS.save_path)
+        tf.logging.info("Saving model to %s." % FLAGS.save_path)
         sv.saver.save(session, FLAGS.save_path, global_step=sv.global_step)
 
 
