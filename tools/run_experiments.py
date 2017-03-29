@@ -70,11 +70,11 @@ def run_tf_and_download_files(limit, cfg, evaluator_file_name="out_evaluator", m
     cluster_string = cluster_specs["cluster_string"]
 
     while not done(cluster_string, limit, cfg):
-        # Check if things are broken
-        satisfied = tf_ec2_run("tools/tf_ec2.py check_running_instances_satisfy_configuration", cfg)
-        if not satisfed:
-            return False
         time.sleep(60)
+        # Check if things are broken
+        satisfied = tf_ec2_run(["tools/tf_ec2.py", "check_running_instances_satisfy_configuration"], cfg)
+        if not satisfied:
+            return False
 
     tf_ec2_run(kill_args.split(), cfg)
 

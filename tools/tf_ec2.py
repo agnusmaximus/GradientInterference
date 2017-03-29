@@ -732,10 +732,7 @@ def tf_ec2_run(argv, configuration):
     def check_running_instances_satisfy_configuration(argv):
         # Create a map of instance types to instances of that type
         live_instances = ec2.instances.filter(Filters=[{'Name': 'instance-state-name', 'Values': ['running']}])
-        idle_instances = get_idle_instances()
-        idle_instances_public_ips = set([x.public_ip_address for x in idle_instances])
-        non_idle_instances = [x for x in live_instances if x.public_ip_address not in idle_instances_public_ips]
-        instance_type_to_instance_map = summarize_instances(non_idle_instances)
+        instance_type_to_instance_map = summarize_instances(live_instances)
 
         # Get instance requirements
         reqs = get_instance_requirements()
