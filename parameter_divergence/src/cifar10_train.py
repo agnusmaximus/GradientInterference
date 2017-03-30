@@ -82,11 +82,11 @@ def train():
     #global_step = tf.contrib.framework.get_or_create_global_step()
     scope_1, scope_2 = "parameters_1", "parameters_2"
 
+    with tf.variable_scope("test_data"):
+        images_test, labels_test = cifar10.inputs(True)
     # Unshuffled train data
     with tf.variable_scope("train_data"):
         images, labels = cifar10.inputs(False)
-    with tf.variable_scope("test_data"):
-        images_test, labels_test = cifar10.inputs(True)
 
     with tf.variable_scope(scope_1):
         #images_1, labels_1 = cifar10.inputs(False)
