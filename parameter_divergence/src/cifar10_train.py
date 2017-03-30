@@ -194,10 +194,10 @@ def train():
         print("Layer differences: ", (epoch, layer_diffs))
 
         # Evaluate on test data
-        """print("Evaluating on test...")
+        print("Evaluating on test...")
         true_count_1, true_count_2 = 0, 0
         cur_index = 0
-        for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL//FLAGS.eval_batchsize):
+        """"for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL//FLAGS.eval_batchsize):
             print("%d of %d" % (i, cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL//FLAGS.eval_batchsize))
             images_eval_real, labels_eval_real, cur_index = next_batch(FLAGS.eval_batchsize, images_test_raw, labels_test_raw, cur_index)
             fd = {images_1 : images_eval_real,
