@@ -83,8 +83,10 @@ def train():
     scope_1, scope_2 = "parameters_1", "parameters_2"
 
     # Unshuffled train data
-    images, labels = cifar10.inputs(False)
-    images_test, labels_test = cifar10.inputs(True)
+    with tf.variable_scope("train_data"):
+        images, labels = cifar10.inputs(False)
+    with tf.variable_scope("test_data"):
+        images_test, labels_test = cifar10.inputs(True)
 
     with tf.variable_scope(scope_1):
         #images_1, labels_1 = cifar10.inputs(False)
@@ -232,7 +234,7 @@ def train():
 
         # Print all the data related to figures 3 and 4 of https://arxiv.org/pdf/1509.01240.pdf
         print("Layer distances: ", layer_diffs)
-        print("Epoch: %f TrainError1: %f TrainError2: %f TestError1: %f TestError2: %f" % (epoch, precision_train_1, precision_train_2, precision_test_1, precision_test_2))
+        print("Epoch: %f TrainError1: %f TrainError2: %f TestError1: %f TestError2: %f" % (epoch, 1-precision_train_1, 1-precision_train_2, 1-precision_test_1, 1-precision_test_2))
 
         # Optimize
         cur_index = 0
