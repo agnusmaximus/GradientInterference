@@ -352,15 +352,6 @@ def train(total_loss, scope_name):
   # Apply gradients.
   apply_gradient_op = opt.apply_gradients(grads)
 
-  # Add histograms for trainable variables.
-  for var in tf.trainable_variables():
-    tf.summary.histogram(var.op.name, var)
-
-  # Add histograms for gradients.
-  for grad, var in grads:
-    if grad is not None:
-      tf.summary.histogram(var.op.name + '/gradients', grad)
-
   return apply_gradient_op
 
 
