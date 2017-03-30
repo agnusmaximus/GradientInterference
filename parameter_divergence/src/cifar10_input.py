@@ -195,8 +195,9 @@ def distorted_inputs(data_dir, batch_size):
          'This will take a few minutes.' % min_queue_examples)
 
   # Generate a batch of images and labels by building up a queue of examples.
+  # The queue gives 1 image at a time
   return _generate_image_and_label_batch(float_image, read_input.label,
-                                         min_queue_examples, batch_size,
+                                         min_queue_examples, 1,
                                          shuffle=True)
 
 
@@ -252,6 +253,7 @@ def inputs(eval_data, data_dir, batch_size):
                            min_fraction_of_examples_in_queue)
 
   # Generate a batch of images and labels by building up a queue of examples.
+  # The queue gives 1 image at a time
   return _generate_image_and_label_batch(float_image, read_input.label,
-                                         min_queue_examples, batch_size,
+                                         min_queue_examples, 1,
                                          shuffle=False)
