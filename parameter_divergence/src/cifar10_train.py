@@ -191,7 +191,7 @@ def train():
             if np.linalg.norm(v2) != 0:
                 v2 = np.linalg.norm(v2)
             diff = np.linalg.norm(v1-v2)
-            layer_diffs.append((v1, diff))
+            layer_diffs.append((variables_1[i], diff))
         print("Layer differences: ", (epoch, layer_diffs))
 
         # Evaluate on test data
