@@ -22,19 +22,20 @@ def plot_figures(f):
     f_file.close()
     layer_names_and_distances = extract_parameter_differences(rawtext)
 
+    plt.cla()
     for layer_name, distances in layer_names_and_distances.items():
         #if "conv" not in layer_name or "weights" not in layer_name:
         #    continue
-        if "weights" not in layer_name:
-            continue
-        plt.plot(list(range(0, len(distances))), distances, label=layer_name)
+        #if "conv" not in layer_name or "weights" not in layer_name:
+        if "conv" in layer_name and "weights" in layer_name:
+            plt.plot(list(range(0, len(distances))), distances, label=layer_name)
     plt.xlabel("Epoch")
     plt.ylabel("Normalized Euclidean Distance")
     plt.title("Parameter Distance")
-    plt.legend(loc="upper left")
+    plt.legend(loc="lower right")
     plt.savefig("ParameterDistance.png")
 
 if __name__=="__main__":
-    inputs = ["batchsize500"]
+    inputs = ["batchsize60"]
     for f in inputs:
         plot_figures(f)
