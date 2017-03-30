@@ -237,10 +237,6 @@ def train():
         # Optimize
         cur_index = 0
         for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN // FLAGS.batch_size + 1):
-            if i == exclude_index:
-                # We remove the first training example
-                continue
-
             images_real_1, labels_real_1, next_index = next_batch(FLAGS.batch_size, images_raw,
                                                                   labels_raw, cur_index,
                                                                   exclude_index=exclude_index)
