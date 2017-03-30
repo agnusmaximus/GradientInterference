@@ -256,7 +256,7 @@ def train():
             l1, l2 = mon_sess.run([loss_1, loss_2], feed_dict=fd)
 
             if i % 100 == 0:
-                epoch_cur = epoch + i / float(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
+                epoch_cur = epoch + i * FLAGS.batch_size / float(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
                 print("Epoch: %f Losses: %f %f" % (epoch_cur, l1, l2))
 
         epoch += 1
