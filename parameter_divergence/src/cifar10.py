@@ -324,7 +324,7 @@ def _add_loss_summaries(total_loss):
   return loss_averages_op
 
 
-def train(total_loss, global_step):
+def train(total_loss, global_step, scope_name):
   """Train CIFAR-10 model.
 
   Create an optimizer and apply to all trainable variables. Add moving
