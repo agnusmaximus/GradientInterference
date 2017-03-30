@@ -117,6 +117,8 @@ def train():
                      images_2 : images_fake,
                      labels_2 : labels_fake}
           v1, v2 = mon_sess.run([v1, v2], feed_dict=fd_fake)
+          v1, v2 = v1.flatten(), v2.flatten()
+          v1, v2 = v1 / np.linalg.norm(v1), v2 / np.linalg.norm(v2)
           diff = np.linalg.norm(v1-v2)
           print("Difference between variable weights: %f" % diff)
           assert(diff == 0)
@@ -162,7 +164,7 @@ def train():
 
         # Evaluate on test data
         print("Evaluating on test...")
-        true_count_1, true_count_2 = 0, 1
+        true_count_1, true_count_2 = 0, 0
         for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL):
             if i % 1000 == 0:
                 print("%d of %d" % (i, cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL))
