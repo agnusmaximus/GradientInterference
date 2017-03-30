@@ -79,7 +79,6 @@ def next_batch(target_batch_size, images, labels, cur_index, exclude_index=-1, s
 def train():
   """Train CIFAR-10 for a number of steps."""
   with tf.Graph().as_default():
-    #global_step = tf.contrib.framework.get_or_create_global_step()
     scope_1, scope_2 = "parameters_1", "parameters_2"
 
     # Unshuffled train data
@@ -110,10 +109,11 @@ def train():
     variables_2 = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope="parameters_2")
     assert(len(variables_1) == len(variables_2))
 
-    init_op = tf.initialize_all_variables()
-
-    with tf.Session() as mon_sess:
-      mon_sess.run([init_op])
+    with tf.train.MonitoredTrainingSession(
+        checkpoint_dir=FLAGS.train_dir,
+        hooks=[tf.train.StopAtStepHook(last_step=FLAGS.max_steps)],
+        config=tf.ConfigProto(
+            log_device_placement=FLAGS.log_device_placement)) as mon_sess:
 
       # First we make sure the parameters of the two models are the same.
       print("Making sure models have the same initial value...")
