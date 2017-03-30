@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import random
 
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
@@ -129,7 +130,9 @@ def _generate_image_and_label_batch(image, label, min_queue_examples,
         [image, label],
         batch_size=batch_size,
         num_threads=num_preprocess_threads,
-        capacity=min_queue_examples + 3 * batch_size)
+        capacity=min_queue_examples + 3 * batch_size,
+        name="%d" % random.randint(0, 10000000000))
+
 
   # Display the training images in the visualizer.
   tf.summary.image('images', images)

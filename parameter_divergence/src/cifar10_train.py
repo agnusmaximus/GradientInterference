@@ -84,6 +84,7 @@ def train():
 
     with tf.variable_scope("test_data"):
         images_test, labels_test = cifar10.inputs(True)
+
     # Unshuffled train data
     with tf.variable_scope("train_data"):
         images, labels = cifar10.inputs(False)
