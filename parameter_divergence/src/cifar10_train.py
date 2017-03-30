@@ -171,7 +171,7 @@ def train():
       # Swap index refers to the index of the example to swap with the example excluded.
       exclude_index, swap_index = 0, 1
 
-      while not mon_sess.should_stop():
+      while True:
 
         # Find parameter differences
         layer_diffs = []
