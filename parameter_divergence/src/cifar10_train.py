@@ -110,11 +110,7 @@ def train():
     variables_2 = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope="parameters_2")
     assert(len(variables_1) == len(variables_2))
 
-    with tf.train.MonitoredTrainingSession(
-        checkpoint_dir=FLAGS.train_dir,
-        hooks=[tf.train.StopAtStepHook(last_step=FLAGS.max_steps)],
-        config=tf.ConfigProto(
-            log_device_placement=FLAGS.log_device_placement)) as mon_sess:
+    with tf.Session() as mon_sess:
 
       # First we make sure the parameters of the two models are the same.
       print("Making sure models have the same initial value...")
