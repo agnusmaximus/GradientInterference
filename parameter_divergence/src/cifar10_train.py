@@ -80,8 +80,6 @@ def train():
   """Train CIFAR-10 for a number of steps."""
   with tf.Graph().as_default():
     #global_step = tf.contrib.framework.get_or_create_global_step()
-    g1 = tf.Variable(0, name="global_step_1", trainable=False)
-    g2 = tf.Variable(0, name="global_step_2", trainable=False)
     scope_1, scope_2 = "parameters_1", "parameters_2"
 
     # Unshuffled train data
@@ -96,7 +94,7 @@ def train():
         labels_1 = tf.placeholder(tf.int32, shape=(None,))
         logits_1 = cifar10.inference(images_1)
         loss_1 = cifar10.loss(logits_1, labels_1, scope_1)
-        train_op_1 = cifar10.train(loss_1, g1, scope_1)
+        train_op_1 = cifar10.train(loss_1, scope_1)
         top_k_op_1 = tf.nn.in_top_k(logits_1, labels_1, 1)
 
     with tf.variable_scope(scope_2):
@@ -105,7 +103,7 @@ def train():
         labels_2 = tf.placeholder(tf.int32, shape=(None,))
         logits_2 = cifar10.inference(images_2)
         loss_2 = cifar10.loss(logits_2, labels_2, scope_2)
-        train_op_2 = cifar10.train(loss_2, g2, scope_2)
+        train_op_2 = cifar10.train(loss_2, scope_2)
         top_k_op_2 = tf.nn.in_top_k(logits_2, labels_2, 1)
 
     variables_1 = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope="parameters_1")
@@ -114,7 +112,7 @@ def train():
 
     with tf.train.MonitoredTrainingSession(
         checkpoint_dir=FLAGS.train_dir,
-        hooks=[g1,g2,tf.train.StopAtStepHook(last_step=FLAGS.max_steps)],
+        hooks=[tf.train.StopAtStepHook(last_step=FLAGS.max_steps)],
         config=tf.ConfigProto(
             log_device_placement=FLAGS.log_device_placement)) as mon_sess:
 
