@@ -52,11 +52,29 @@ tf.app.flags.DEFINE_string('train_dir', '/tmp/cifar10_train',
                            """and checkpoint.""")
 tf.app.flags.DEFINE_integer('max_steps', 1000000,
                             """Number of batches to run.""")
+tf.app.flags.DEFINE_integer('eval_batchsize', 1000,
+                            """Number of batches to run.""")
 tf.app.flags.DEFINE_boolean('log_device_placement', False,
                             """Whether to log device placement.""")
 tf.app.flags.DEFINE_integer('log_frequency', 10,
                             """How often to log results to the console.""")
 
+def next_batch_indices(target_batch_size, n_elements, cur_index, exclude_index=-1, swap_index=-1):
+    indices = list(range(cur_index, min(n_elements, cur_index + target_batch_size)))
+    next_index = cur_index + target_batch_size
+    if exclude_index in indices:
+        indices.remove(exclude_index)
+    indices = [exclude_index if x == swap_index else x for x in indices]
+    while next_index < n_elements and len(indices) < target_batch_size:
+        indices.append(cur_index)
+        next_index += 1
+    if next_index >= n_elements:
+        next_index = 0
+    return indices, next_index
+
+def next_batch(target_batch_size, images, labels, cur_index, exclude_index=-1, swap_index=-1):
+    indices, next_index = next_batch_indices(target_batch_size, len(images), cur_index, exclude_index, swap_index)
+    return images[indices], labels[indices], next_index
 
 def train():
   """Train CIFAR-10 for a number of steps."""
@@ -70,8 +88,8 @@ def train():
 
     with tf.variable_scope(scope_1):
         #images_1, labels_1 = cifar10.inputs(False)
-        images_1 = tf.placeholder(tf.float32, shape=(FLAGS.batch_size, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, 3))
-        labels_1 = tf.placeholder(tf.int32, shape=(FLAGS.batch_size,))
+        images_1 = tf.placeholder(tf.float32, shape=(None, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, 3))
+        labels_1 = tf.placeholder(tf.int32, shape=(None,))
         logits_1 = cifar10.inference(images_1)
         loss_1 = cifar10.loss(logits_1, labels_1, scope_1)
         train_op_1 = cifar10.train(loss_1, global_step)
@@ -79,8 +97,8 @@ def train():
 
     with tf.variable_scope(scope_2):
         #images_2, labels_2 = cifar10.inputs(False)
-        images_2 = tf.placeholder(tf.float32, shape=(FLAGS.batch_size, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, 3))
-        labels_2 = tf.placeholder(tf.int32, shape=(FLAGS.batch_size,))
+        images_2 = tf.placeholder(tf.float32, shape=(None, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, 3))
+        labels_2 = tf.placeholder(tf.int32, shape=(None,))
         logits_2 = cifar10.inference(images_2)
         loss_2 = cifar10.loss(logits_2, labels_2, scope_2)
         train_op_2 = cifar10.train(loss_2, global_step)
@@ -89,9 +107,6 @@ def train():
     variables_1 = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope="parameters_1")
     variables_2 = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope="parameters_2")
     assert(len(variables_1) == len(variables_2))
-
-    # We use batch size = 1 to look at parameter divergence.
-    assert(FLAGS.batch_size == 1)
 
     with tf.train.MonitoredTrainingSession(
         checkpoint_dir=FLAGS.train_dir,
@@ -118,27 +133,37 @@ def train():
                      labels_2 : labels_fake}
           v1, v2 = mon_sess.run([v1, v2], feed_dict=fd_fake)
           v1, v2 = v1.flatten(), v2.flatten()
-          v1, v2 = v1 / np.linalg.norm(v1), v2 / np.linalg.norm(v2)
+          if np.linalg.norm(v1) != 0:
+              v1 = v1 / np.linalg.norm(v1)
+          if np.linalg.norm(v2) != 0:
+              v2 = v2 / np.linalg.norm(v2)
           diff = np.linalg.norm(v1-v2)
           print("Difference between variable weights: %f" % diff)
-          assert(diff == 0)
+          assert(diff < 1e-7)
       print("Done")
 
-      # First we scan all the images and labels into a list
-      print("Scanning training images/labels into a list...")
-      examples, examples_eval = [], []
-      for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN):
-          if i % 1000 == 0:
-              print("%d of %d" % (i, cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN))
-          examples.append(mon_sess.run([images, labels]))
 
+      print("Scanning test images/labels into a list...")
+      images_raw, labels_raw = [], []
+      images_test_raw, labels_test_raw = [], []
       for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL):
           if i % 1000 == 0:
               print("%d of %d" % (i, cifar10.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL))
-          examples_eval.append(mon_sess.run([images_test, labels_test]))
+          images_test_raw.append(mon_sess.run(images_test)[0])
+          labels_test_raw.append(mon_sess.run(labels_test)[0])
+
+      # First we scan all the images and labels into a list
+      print("Scanning training images/labels into a list...")
+      for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN):
+          if i % 1000 == 0:
+              print("%d of %d" % (i, cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN))
+          images_raw.append(mon_sess.run(images)[0])
+          labels_raw.append(mon_sess.run(labels)[0])
 
       print("Done")
 
+      images_raw, labels_raw = np.array(images_raw), np.array(labels_raw)
+      images_test_raw, labels_test_raw = np.array(images_test_raw), np.array(labels_test_raw)
       epoch = 0
 
       # Exclude index refers to the index of the example to exclude.
@@ -158,6 +183,11 @@ def train():
                        labels_2 : labels_fake}
             v1, v2 = variables_1[i], variables_2[i]
             v1, v2 = mon_sess.run([v1, v2], feed_dict=fd_fake)
+            v1, v2 = v1.flatten(), v2.flatten()
+            if np.linalg.norm(v1) != 0:
+                v1 = np.linalg.norm(v1)
+            if np.linalg.norm(v2) != 0:
+                v2 = np.linalg.norm(v2)
             diff = np.linalg.norm(v1-v2)
             layer_diffs.append(diff)
         print("Layer differences: ", (epoch, layer_diffs))
@@ -165,11 +195,10 @@ def train():
         # Evaluate on test data
         print("Evaluating on test...")
         true_count_1, true_count_2 = 0, 0
-        for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL):
-            if i % 1000 == 0:
-                print("%d of %d" % (i, cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL))
-            continue
-            images_eval_real, labels_eval_real = examples_eval[i]
+        cur_index = 0
+        for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL//FLAGS.eval_batchsize):
+            print("%d of %d" % (i, cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL)//FLAGS.eval_batchsize)
+            images_eval_real, labels_eval_real, cur_index = next_batch(FLAGS.eval_batchsize, images_test_raw, labels_test_raw, cur_index)
             fd = {images_1 : images_eval_real,
                   labels_1 : labels_eval_real,
                   images_2 : images_eval_real,
@@ -185,10 +214,10 @@ def train():
         # Evaluate on train data
         print("Evaluating on train...")
         true_count_1, true_count_2 = 0, 0
-        for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN):
-            if i % 1000 == 0:
-                print("%d of %d" % (i, cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN))
-            images_eval_real, labels_eval_real = examples[i]
+        cur_index = 0
+        for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN//FLAGS.eval_batchsize):
+            print("%d of %d" % (i, cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN//FLAGS.eval_batchsize))
+            images_eval_real, labels_eval_real, cur_index = next_batch(FLAGS.eval_batchsize, images_raw, labels_raw, cur_index)
             fd = {images_1 : images_eval_real,
                   labels_1 : labels_eval_real,
                   images_2 : images_eval_real,
@@ -206,12 +235,15 @@ def train():
         print("Epoch: %f TrainError1: %f TrainError2: %f TestError1: %f TestError2: %f" % (epoch, precision_train_1, precision_train_2, precision_test_1, precision_test_2))
 
         # Optimize
+        cur_index = 0
         for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN):
             if i == exclude_index:
                 # We remove the first training example
                 continue
 
-            images_real, labels_real = examples[i]
+            images_real, labels_real = next_batch(FLAGS.batch_size, images_raw,
+                                                  labels_raw, cur_index,
+                                                  exclude_index=exclude_index, swap_index=swap_index)
             images_real_1 = images_real
             labels_real_1 = labels_real
             images_real_2 = images_real
