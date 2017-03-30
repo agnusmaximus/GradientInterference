@@ -158,14 +158,15 @@ def train():
             v1, v2 = mon_sess.run([v1, v2], feed_dict=fd_fake)
             diff = np.linalg.norm(v1-v2)
             layer_diffs.append(diff)
-        print("Epoch: %d, Layer differences: ", (epoch, layer_diffs))
+        print("Layer differences: ", (epoch, layer_diffs))
 
         # Evaluate on test data
         print("Evaluating on test...")
-        true_count_1, true_count_2 = 0, 0
+        true_count_1, true_count_2 = 0, 1
         for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL):
             if i % 1000 == 0:
                 print("%d of %d" % (i, cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL))
+            continue
             images_eval_real, labels_eval_real = examples_eval[i]
             fd = {images_1 : images_eval_real,
                   labels_1 : labels_eval_real,
@@ -185,7 +186,6 @@ def train():
         for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN):
             if i % 1000 == 0:
                 print("%d of %d" % (i, cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN))
-            continue
             images_eval_real, labels_eval_real = examples[i]
             fd = {images_1 : images_eval_real,
                   labels_1 : labels_eval_real,
@@ -210,16 +210,18 @@ def train():
                 continue
 
             images_real, labels_real = examples[i]
-            fd = {images_1 : images_real,
-                  labels_1 : labels_real,
-                  images_2 : images_real,
-                  labels_2 : labels_real}
+            images_real_1 = images_real
+            labels_real_1 = labels_real
+            images_real_2 = images_real
+            labels_real_2 = labels_real
 
             if i == swap_index:
-                # We swap the first training example with the second one
-                # to train the second set of parameters
-                images_swapped, labels_swapped = examples[exclude_index]
-                fd[images_2], fd[labels_2] = images_swapped, labels_swapped
+                images_real_2, labels_real_2 = examples[exclude_index]
+
+            fd = {images_1 : images_real_1,
+                  labels_1 : labels_real_1,
+                  images_2 : images_real_2,
+                  labels_2 : labels_real_2}
 
             mon_sess.run([train_op_1, train_op_2], feed_dict=fd)
             l1, l2 = mon_sess.run([loss_1, loss_2], feed_dict=fd)
