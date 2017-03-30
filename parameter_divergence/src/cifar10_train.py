@@ -241,17 +241,15 @@ def train():
                 # We remove the first training example
                 continue
 
-            images_real, labels_real, cur_index = next_batch(FLAGS.batch_size, images_raw,
-                                                             labels_raw, cur_index,
-                                                             exclude_index=exclude_index,
-                                                             swap_index=swap_index)
-            images_real_1 = images_real
-            labels_real_1 = labels_real
-            images_real_2 = images_real
-            labels_real_2 = labels_real
+            images_real_1, labels_real_1, next_index = next_batch(FLAGS.batch_size, images_raw,
+                                                                  labels_raw, cur_index,
+                                                                  exclude_index=exclude_index)
+            images_real_2, labels_real_2, next_index = next_batch(FLAGS.batch_size, images_raw,
+                                                                  labels_raw, cur_index,
+                                                                  exclude_index=exclude_index,
+                                                                  swap_index=swap_index)
 
-            if i == swap_index:
-                images_real_2, labels_real_2 = examples[exclude_index]
+            cur_index = next_index
 
             fd = {images_1 : images_real_1,
                   labels_1 : labels_real_1,
