@@ -114,7 +114,7 @@ def train():
 
     with tf.train.MonitoredTrainingSession(
         checkpoint_dir=FLAGS.train_dir,
-        hooks=[tf.train.StopAtStepHook(last_step=FLAGS.max_steps)],
+        hooks=[g1,g2,tf.train.StopAtStepHook(last_step=FLAGS.max_steps)],
         config=tf.ConfigProto(
             log_device_placement=FLAGS.log_device_placement)) as mon_sess:
 
