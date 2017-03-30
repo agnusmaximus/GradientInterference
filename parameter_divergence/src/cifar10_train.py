@@ -82,8 +82,8 @@ def train():
     #global_step = tf.contrib.framework.get_or_create_global_step()
     scope_1, scope_2 = "parameters_1", "parameters_2"
 
-    #with tf.variable_scope("test_data"):
-    #    images_test, labels_test = cifar10.inputs(True)
+    with tf.variable_scope("test_data"):
+        images_test, labels_test = cifar10.inputs(True)
     # Unshuffled train data
     with tf.variable_scope("train_data"):
         images, labels = cifar10.inputs(False)
@@ -147,11 +147,11 @@ def train():
       print("Scanning test images/labels into a list...")
       images_raw, labels_raw = [], []
       images_test_raw, labels_test_raw = [], []
-      """for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL):
+      for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL):
           if i % 1000 == 0:
               print("%d of %d" % (i, cifar10.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL))
           images_test_raw.append(mon_sess.run(images_test)[0])
-          labels_test_raw.append(mon_sess.run(labels_test)[0])"""
+          labels_test_raw.append(mon_sess.run(labels_test)[0])
 
       # First we scan all the images and labels into a list
       print("Scanning training images/labels into a list...")
@@ -197,7 +197,7 @@ def train():
         print("Evaluating on test...")
         true_count_1, true_count_2 = 0, 0
         cur_index = 0
-        """"for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL//FLAGS.eval_batchsize):
+        for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL//FLAGS.eval_batchsize):
             print("%d of %d" % (i, cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL//FLAGS.eval_batchsize))
             images_eval_real, labels_eval_real, cur_index = next_batch(FLAGS.eval_batchsize, images_test_raw, labels_test_raw, cur_index)
             fd = {images_1 : images_eval_real,
@@ -207,7 +207,7 @@ def train():
             p1, p2 = mon_sess.run([top_k_op_1, top_k_op_2], feed_dict=fd)
             true_count_1 += np.sum(p1)
             true_count_2 += np.sum(p2)
-        """
+
         precision_test_1 = true_count_1 / float(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL)
         precision_test_2 = true_count_2 / float(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL)
         print("Done")

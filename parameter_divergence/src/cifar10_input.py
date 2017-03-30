@@ -256,4 +256,4 @@ def inputs(eval_data, data_dir, batch_size):
   # The queue gives 1 image at a time
   return _generate_image_and_label_batch(float_image, read_input.label,
                                          min_queue_examples, 1,
-                                         shuffle=True)
+                                         shuffle=False)
