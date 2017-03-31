@@ -468,9 +468,9 @@ def main(_):
         ####
         # Optimization
         ###
-        state = session.run(model.initial_state)
+        state = session.run(m.initial_state)
         feed_dict = {}
-        for i, (c, h) in enumerate(model.initial_state):
+        for i, (c, h) in enumerate(m.initial_state):
           feed_dict[c] = state[i].c
           feed_dict[h] = state[i].h
         tf.logging.info("Evaluating...")
