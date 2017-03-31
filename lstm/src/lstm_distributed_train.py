@@ -454,18 +454,16 @@ def main(_):
             hooks=[sync_replicas_hook_train],
             checkpoint_dir=FLAGS.train_dir,
             save_checkpoint_secs=checkpoint_save_secs) as session:
+
       tf.logging.info("Starting to train...")
       sys.stdout.flush()
-
-
 
       while True:
 
         session.run([workers_block_if_necessary_op])
 
         # Learning rate decay, which is nil for distributed training...
-        lr_decay = config.lr_decay ** max(i + 1 - config.max_epoch, 0.0)
-        m.assign_lr(session, config.learning_rate * lr_decay)
+        m.assign_lr(session, config.learning_rate)
 
         tf.logging.info("Epoch: %d Learning rate: %.3f" % (i + 1, session.run(m.lr)))
         sys.stdout.flush()
@@ -481,7 +479,6 @@ def main(_):
         tf.logging.info("Evaluating...")
         mon_sess.run([m.train_op])
         tf.logging.info("Done Evaluating...")
-
         ####
 
         tf.logging.info("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))
