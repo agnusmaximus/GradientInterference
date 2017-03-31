@@ -201,6 +201,8 @@ class PTBModel(object):
     tvars = tf.trainable_variables()
     grads, _ = tf.clip_by_global_norm(tf.gradients(cost, tvars),
                                       config.max_grad_norm)
+    for i, g in enumerate(grads):
+      grads[i] = tf.Print(grads[i], [grads[i]], message="Compute grad %d" % i)
     optimizer = tf.train.GradientDescentOptimizer(self._lr)
 
     num_workers, num_replicas_to_aggregate = len(FLAGS.worker_hosts.split(",")), FLAGS.num_replicas_to_aggregate
@@ -210,8 +212,8 @@ class PTBModel(object):
 
     optimizer = tf.train.SyncReplicasOptimizer(
       optimizer,
-        replicas_to_aggregate=num_replicas_to_aggregate,
-        total_num_replicas=num_workers,
+      replicas_to_aggregate=num_replicas_to_aggregate,
+      total_num_replicas=num_workers,
     )
     self.opt = optimizer
 
@@ -451,7 +453,6 @@ def main(_):
     sync_replicas_hook_train = m.opt.make_session_run_hook(is_chief)
     checkpoint_save_secs = 60*2
     evaluate_times, compute_R_times = [0], [0]
-
 
     with tf.train.MonitoredTrainingSession(
             master=server.target, is_chief=is_chief,
