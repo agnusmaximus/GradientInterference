@@ -73,8 +73,8 @@ INITIAL_LEARNING_RATE = 0.08       # Initial learning rate.
 # names of the summaries when visualizing a model.
 TOWER_NAME = 'tower'
 
-DATA_URL = 'http://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz'
-
+DATA_URL = "https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz"
+#DATA_URL = 'http://www.cs.toronto.edu/~kriz/cifar-10-pyary.tar.gz'
 
 def _activation_summary(x):
   """Helper to create summaries for activations.
@@ -151,7 +151,7 @@ def distorted_inputs():
   """
   if not FLAGS.data_dir:
     raise ValueError('Please supply a data_dir')
-  data_dir = os.path.join(FLAGS.data_dir, 'cifar-10-batches-bin')
+  data_dir = os.path.join(FLAGS.data_dir, 'cifar-10-batches-py')
   images, labels = cifar10_input.distorted_inputs(data_dir=data_dir,
                                                   batch_size=FLAGS.batch_size)
   if FLAGS.use_fp16:
@@ -175,7 +175,7 @@ def inputs(eval_data):
   """
   if not FLAGS.data_dir:
     raise ValueError('Please supply a data_dir')
-  data_dir = os.path.join(FLAGS.data_dir, 'cifar-10-batches-bin')
+  data_dir = os.path.join(FLAGS.data_dir, 'cifar-10-batches-py')
   images, labels = cifar10_input.inputs(eval_data=eval_data,
                                         data_dir=data_dir,
                                         batch_size=FLAGS.batch_size)
@@ -400,6 +400,6 @@ def maybe_download_and_extract():
     print()
     statinfo = os.stat(filepath)
     print('Successfully downloaded', filename, statinfo.st_size, 'bytes.')
-  extracted_dir_path = os.path.join(dest_directory, 'cifar-10-batches-bin')
+  extracted_dir_path = os.path.join(dest_directory, 'cifar-10-batches-py')
   if not os.path.exists(extracted_dir_path):
     tarfile.open(filepath, 'r:gz').extractall(dest_directory)

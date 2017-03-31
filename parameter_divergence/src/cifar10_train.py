@@ -37,8 +37,11 @@ from __future__ import division
 from __future__ import print_function
 
 from datetime import datetime
+from PIL import Image
 import time
 import numpy as np
+import os
+import sys
 
 import tensorflow as tf
 
@@ -58,6 +61,48 @@ tf.app.flags.DEFINE_boolean('log_device_placement', False,
                             """Whether to log device placement.""")
 tf.app.flags.DEFINE_integer('log_frequency', 10,
                             """How often to log results to the console.""")
+
+def unpickle(file):
+    import cPickle
+    fo = open(file, 'rb')
+    dict = cPickle.load(fo)
+    fo.close()
+    return dict
+
+def crop_center(img,cropx,cropy):
+    y,x,z = img.shape
+    startx = x//2-(cropx//2)
+    starty = y//2-(cropy//2)
+    return img[starty:starty+cropy,startx:startx+cropx,:]
+
+def load_cifar_data_raw():
+    print("Loading raw cifar10 data...")
+    datadir = os.path.join(FLAGS.data_dir, 'cifar-10-batches-py')
+    train_filenames = [os.path.join(datadir, 'data_batch_%d' % i) for i in range(1, 6)]
+    test_filenames = [os.path.join(datadir, 'test_batch')]
+
+    batchsize = 10000
+    train_images, train_labels = [], []
+    for x in train_filenames:
+        data = unpickle(x)
+        images = data["data"].reshape((batchsize, 3, 32, 32)).transpose(0, 2, 3, 1)
+        images = (images - np.mean(images)) / np.std(images)
+        labels = np.array(data["labels"]).reshape((batchsize,))
+        train_images += [crop_center(x, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE) for x in images]
+        train_labels += [x for x in labels]
+
+    test_images, test_labels = [], []
+    for x in test_filenames:
+        data = unpickle(x)
+        images = data["data"].reshape((batchsize, 3, 32, 32)).transpose(0, 2, 3, 1)
+        images = (images - np.mean(images)) / np.std(images)
+        labels = np.array(data["labels"]).reshape((batchsize,))
+        test_images += [crop_center(x, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE) for x in images]
+        test_labels += [x for x in labels]
+
+    print("Done")
+
+    return tuple([np.array(x) for x in [train_images, train_labels, test_images, test_labels]])
 
 def next_batch_indices(target_batch_size, n_elements, cur_index, exclude_index=-1, swap_index=-1):
     indices = list(range(cur_index, min(n_elements, cur_index + target_batch_size)))
@@ -82,13 +127,6 @@ def train():
     #global_step = tf.contrib.framework.get_or_create_global_step()
     scope_1, scope_2 = "parameters_1", "parameters_2"
 
-    with tf.variable_scope("test_data"):
-        images_test, labels_test = cifar10.inputs(True)
-
-    # Unshuffled train data
-    with tf.variable_scope("train_data"):
-        images, labels = cifar10.inputs(False)
-
     with tf.variable_scope(scope_1):
         #images_1, labels_1 = cifar10.inputs(False)
         images_1 = tf.placeholder(tf.float32, shape=(None, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, 3))
@@ -111,10 +149,15 @@ def train():
     variables_2 = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope="parameters_2")
     assert(len(variables_1) == len(variables_2))
 
+    images_test_raw, labels_test_raw, images_raw, labels_raw = load_cifar_data_raw()
+
     with tf.Session() as mon_sess:
 
       tf.initialize_all_variables().run()
       tf.train.start_queue_runners(sess=mon_sess)
+
+      images_raw, labels_raw = np.array(images_raw), np.array(labels_raw)
+      images_test_raw, labels_test_raw = np.array(images_test_raw), np.array(labels_test_raw)
 
       # First we make sure the parameters of the two models are the same.
       print("Making sure models have the same initial value...")
@@ -144,28 +187,6 @@ def train():
           assert(diff < 1e-7)
       print("Done")
 
-
-      print("Scanning test images/labels into a list...")
-      images_raw, labels_raw = [], []
-      images_test_raw, labels_test_raw = [], []
-      for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL):
-          if i % 1000 == 0:
-              print("%d of %d" % (i, cifar10.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL))
-          images_test_raw.append(mon_sess.run(images_test)[0])
-          labels_test_raw.append(mon_sess.run(labels_test)[0])
-
-      # First we scan all the images and labels into a list
-      print("Scanning training images/labels into a list...")
-      for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN):
-          if i % 1000 == 0:
-              print("%d of %d" % (i, cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN))
-          images_raw.append(mon_sess.run(images)[0])
-          labels_raw.append(mon_sess.run(labels)[0])
-
-      print("Done")
-
-      images_raw, labels_raw = np.array(images_raw), np.array(labels_raw)
-      images_test_raw, labels_test_raw = np.array(images_test_raw), np.array(labels_test_raw)
       epoch = 0
 
       # Exclude index refers to the index of the example to exclude.

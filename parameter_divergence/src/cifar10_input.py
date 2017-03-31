@@ -20,7 +20,6 @@ from __future__ import division
 from __future__ import print_function
 
 import os
-import random
 
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
@@ -117,7 +116,7 @@ def _generate_image_and_label_batch(image, label, min_queue_examples,
   """
   # Create a queue that shuffles the examples, and then
   # read 'batch_size' images + labels from the example queue.
-  num_preprocess_threads = 1
+  num_preprocess_threads = 16
   if shuffle:
     images, label_batch = tf.train.shuffle_batch(
         [image, label],
@@ -130,9 +129,7 @@ def _generate_image_and_label_batch(image, label, min_queue_examples,
         [image, label],
         batch_size=batch_size,
         num_threads=num_preprocess_threads,
-        capacity=min_queue_examples + 3 * batch_size,
-        name="%d" % random.randint(0, 10000000000))
-
+        capacity=min_queue_examples + 3 * batch_size)
 
   # Display the training images in the visualizer.
   tf.summary.image('images', images)
@@ -198,9 +195,8 @@ def distorted_inputs(data_dir, batch_size):
          'This will take a few minutes.' % min_queue_examples)
 
   # Generate a batch of images and labels by building up a queue of examples.
-  # The queue gives 1 image at a time
   return _generate_image_and_label_batch(float_image, read_input.label,
-                                         min_queue_examples, 1,
+                                         min_queue_examples, batch_size,
                                          shuffle=True)
 
 
@@ -256,7 +252,6 @@ def inputs(eval_data, data_dir, batch_size):
                            min_fraction_of_examples_in_queue)
 
   # Generate a batch of images and labels by building up a queue of examples.
-  # The queue gives 1 image at a time
   return _generate_image_and_label_batch(float_image, read_input.label,
                                          min_queue_examples, 1,
                                          shuffle=False)
