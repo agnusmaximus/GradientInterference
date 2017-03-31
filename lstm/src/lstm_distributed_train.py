@@ -205,6 +205,7 @@ class PTBModel(object):
     optimizer = tf.train.GradientDescentOptimizer(self._lr)
 
     num_workers, num_replicas_to_aggregate = len(FLAGS.worker_hosts.split(",")), FLAGS.num_replicas_to_aggregate
+    tf.logging.info("Num to aggregate: %d" % num_replicas_to_aggregate)
     if num_replicas_to_aggregate == -1:
         num_replicas_to_aggregate = num_workers
 
@@ -215,9 +216,13 @@ class PTBModel(object):
     )
     self.opt = optimizer
 
+    #self._train_op = optimizer.apply_gradients(
+    #    zip(grads, tvars),
+    #    global_step=tf.contrib.framework.get_or_create_global_step())
+
     self._train_op = optimizer.apply_gradients(
-        zip(grads, tvars),
-        global_step=tf.contrib.framework.get_or_create_global_step())
+      zip(grads, tvars))
+
 
     self._new_lr = tf.placeholder(
         tf.float32, shape=[], name="new_learning_rate")
