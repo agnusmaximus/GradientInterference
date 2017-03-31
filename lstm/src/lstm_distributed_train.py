@@ -208,6 +208,8 @@ class PTBModel(object):
     if num_replicas_to_aggregate == -1:
         num_replicas_to_aggregate = num_workers
 
+    optimizer = tf.train.GradientDescentOptimizer(self._lr)
+
     optimizer = tf.train.SyncReplicasOptimizer(
       optimizer,
       replicas_to_aggregate=num_replicas_to_aggregate,
@@ -422,6 +424,7 @@ def main(_):
               cluster=cluster_spec)):
 
     global_step = tf.Variable(0, name="global_step", trainable=False)
+    global_step_eval = tf.Variable(0, name="global_step_eval", trainable=False)
     initializer = tf.random_uniform_initializer(-config.init_scale,
                                                 config.init_scale)
     with tf.name_scope("Train"):
@@ -429,10 +432,10 @@ def main(_):
         with tf.variable_scope("Model", reuse=None, initializer=initializer):
             m = PTBModel(is_training=True, config=config, input_=train_input, gstep=global_step)
 
-    #with tf.name_scope("EvalTrain"):
-    #  eval_train_input = PTBInput(config=eval_train_config, data=train_data, name="EvalTrain")
-    #  with tf.variable_scope("Model", reuse=True, initializer=initializer):
-    #    m_eval_train = PTBModel(is_training=False, config=config, input_=eval_train_input)
+    with tf.name_scope("EvalTrain"):
+      eval_train_input = PTBInput(config=eval_train_config, data=train_data, name="EvalTrain")
+      with tf.variable_scope("Model", reuse=True, initializer=initializer):
+        m_eval_train = PTBModel(is_training=False, config=config, input_=eval_train_input, gstep=global_step_eval)
 
     with ops.device(m.opt._global_step.device):
       block_workers_queue = data_flow_ops.FIFOQueue(1,
