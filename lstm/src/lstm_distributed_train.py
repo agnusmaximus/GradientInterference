@@ -389,6 +389,8 @@ def get_config():
 
 def main(_):
 
+  num_workers = len(FLAGS.worker_hosts.split(","))
+
   assert FLAGS.job_name in ['ps', 'worker'], 'job_name must be ps or worker'
 
   ps_hosts = FLAGS.ps_hosts.split(',')
@@ -452,13 +454,12 @@ def main(_):
                                                   [tf.constant(0)])
 
 
-  tvars = tf.trainable_variables()
-  tf.logging.info("YOO")
-  tf.logging.info([str(x) for x in tvars])
   is_chief = FLAGS.task_id == 0
   sync_replicas_hook_train = m.opt.make_session_run_hook(is_chief)
   checkpoint_save_secs = 60*2
   evaluate_times, compute_R_times = [0], [0]
+  n_examples_processed = 0
+  cur_epoch_track = 0
 
   with tf.train.MonitoredTrainingSession(
           master=server.target, is_chief=is_chief,
@@ -472,6 +473,23 @@ def main(_):
     while True:
 
       session.run([workers_block_if_necessary_op])
+
+      new_epoch_float = n_examples_processed / float(model.input.epoch_size)
+      new_epoch_track = int(new_epoch_float)
+
+      if FLAGS.should_evaluate and FLAGS.task_id == 0 and (cur_iteration == 0 or new_epoch_track == cur_epoch_track+1):
+          session.run([block_workers_op])
+          t_evaluate_start = time.time()
+          eval_train_perplexity = run_epoch(session, m_eval_train)
+          t_evaluate_end = time.time()
+          # The second to last number that is printed is 0 (which is usually accuracy in mnist and resnet).
+          # This is because there is no accuracy in ptb.
+          tf.logging.info("IInfo: %f %d %f %f" % (t_evaluate_start-sum(evaluate_times)-sum(compute_R_times), i + 1, 0, eval_train_perplexity))
+          sys.stdout.flush()
+          evaluate_times.append(t_evaluate_end-t_evaluate_start)
+          session.run([unblock_workers_op])
+
+      cur_epoch_track = max(cur_epoch_track, new_epoch_track)
 
       # Learning rate decay, which is nil for distributed training...
       m.assign_lr(session, config.learning_rate)
@@ -487,19 +505,8 @@ def main(_):
       tf.logging.info("Evaluating...")
       session.run([m.train_op])
       tf.logging.info("Done Evaluating...")
+      n_examples_processed += FLAGS.batch_size * num_workers
       ####
-
-      if FLAGS.should_evaluate and FLAGS.task_id == 0 and 0:
-          session.run([block_workers_op])
-          t_evaluate_start = time.time()
-          eval_train_perplexity = run_epoch(session, m_eval_train)
-          t_evaluate_end = time.time()
-          # The second to last number that is printed is 0 (which is usually accuracy in mnist and resnet).
-          # This is because there is no accuracy in ptb.
-          tf.logging.info("IInfo: %f %d %f %f" % (t_evaluate_start-sum(evaluate_times)-sum(compute_R_times), i + 1, 0, eval_train_perplexity))
-          sys.stdout.flush()
-          evaluate_times.append(t_evaluate_end-t_evaluate_start)
-          session.run([unblock_workers_op])
 
     if FLAGS.save_path:
       tf.logging.info("Saving model to %s." % FLAGS.save_path)
