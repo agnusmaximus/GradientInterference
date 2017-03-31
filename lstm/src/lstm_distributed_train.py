@@ -470,7 +470,16 @@ def main(_):
         tf.logging.info("Epoch: %d Learning rate: %.3f" % (i + 1, session.run(m.lr)))
         sys.stdout.flush()
 
+        ####
+        # Optimization
+        ###
+        state = mon_sess.run(model.initial_state)
+        feed_dict = {}
+        for i, (c, h) in enumerate(model.initial_state):
+          feed_dict[c] = state[i].c
+          feed_dict[h] = state[i].h
         mon_sess.run([m.train_op])
+        ####
 
         tf.logging.info("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))
         sys.stdout.flush()
