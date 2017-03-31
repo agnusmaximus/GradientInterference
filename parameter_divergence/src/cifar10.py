@@ -186,7 +186,7 @@ def inputs(eval_data):
 
 
 def inference(images):
-      """Build the CIFAR-10 model.
+  """Build the CIFAR-10 model.
   Args:
     images: Images returned from distorted_inputs() or inputs().
   Returns:
