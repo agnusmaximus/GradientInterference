@@ -451,7 +451,7 @@ def main(_):
 
   tvars = tf.trainable_variables()
   tf.logging.info("YOO")
-  tf.logging.info([x for x in tvars])
+  tf.logging.info([str(x) for x in tvars])
   is_chief = FLAGS.task_id == 0
   sync_replicas_hook_train = m.opt.make_session_run_hook(is_chief)
   checkpoint_save_secs = 60*2
