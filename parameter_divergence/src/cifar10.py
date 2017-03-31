@@ -186,11 +186,9 @@ def inputs(eval_data):
 
 
 def inference(images):
-  """Build the CIFAR-10 model.
-
+      """Build the CIFAR-10 model.
   Args:
     images: Images returned from distorted_inputs() or inputs().
-
   Returns:
     Logits.
   """
@@ -214,6 +212,9 @@ def inference(images):
   # pool1
   pool1 = tf.nn.max_pool(conv1, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
                          padding='SAME', name='pool1')
+  # norm1
+  norm1 = tf.nn.lrn(pool1, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75,
+                    name='norm1')
 
   # conv2
   with tf.variable_scope('conv2') as scope:
@@ -221,48 +222,17 @@ def inference(images):
                                          shape=[5, 5, 64, 64],
                                          stddev=5e-2,
                                          wd=0.0)
-    conv = tf.nn.conv2d(pool1, kernel, [1, 1, 1, 1], padding='SAME')
+    conv = tf.nn.conv2d(norm1, kernel, [1, 1, 1, 1], padding='SAME')
     biases = _variable_on_cpu('biases', [64], tf.constant_initializer(0.1))
     pre_activation = tf.nn.bias_add(conv, biases)
     conv2 = tf.nn.relu(pre_activation, name=scope.name)
     _activation_summary(conv2)
 
-  pool2 = tf.nn.max_pool(conv2, ksize=[1, 3, 3, 1],
-                         strides=[1, 2, 2, 1], padding='SAME', name='pool2')
-
-  # conv3
-  with tf.variable_scope('conv3') as scope:
-    kernel = _variable_with_weight_decay('weights',
-                                         shape=[5, 5, 64, 64],
-                                         stddev=5e-2,
-                                         wd=0.0)
-    conv = tf.nn.conv2d(pool2, kernel, [1, 1, 1, 1], padding='SAME')
-    biases = _variable_on_cpu('biases', [64], tf.constant_initializer(0.1))
-    pre_activation = tf.nn.bias_add(conv, biases)
-    conv3 = tf.nn.relu(pre_activation, name=scope.name)
-    _activation_summary(conv3)
-
-  pool3 = tf.nn.max_pool(conv3, ksize=[1, 3, 3, 1],
-                         strides=[1, 2, 2, 1], padding='SAME', name='pool2')
-
-  with tf.variable_scope("fully_connected") as scope:
-      flatten_rest_dim = int(pool3.shape[1] * pool3.shape[2] * pool3.shape[3])
-      reshape = tf.reshape(pool3, [-1, flatten_rest_dim])
-      dim = reshape.get_shape()[1].value
-      weights = _variable_with_weight_decay('weights', shape=[dim, NUM_CLASSES],
-                                            stddev=1/192.0, wd=0)
-      biases = _variable_on_cpu('biases', [NUM_CLASSES],
-                                tf.constant_initializer(0.0))
-      softmax_linear = tf.add(tf.matmul(reshape, weights), biases, name=scope.name)
-
-  """
   # norm2
-  #norm2 = tf.nn.lrn(conv2, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75,
-  #                  name='norm2')
+  norm2 = tf.nn.lrn(conv2, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75,
+                    name='norm2')
   # pool2
-  #pool2 = tf.nn.max_pool(norm2, ksize=[1, 3, 3, 1],
-  #                       strides=[1, 2, 2, 1], padding='SAME', name='pool2')
-  pool2 = tf.nn.max_pool(conv2, ksize=[1, 3, 3, 1],
+  pool2 = tf.nn.max_pool(norm2, ksize=[1, 3, 3, 1],
                          strides=[1, 2, 2, 1], padding='SAME', name='pool2')
 
   # local3
@@ -297,7 +267,6 @@ def inference(images):
                               tf.constant_initializer(0.0))
     softmax_linear = tf.add(tf.matmul(local4, weights), biases, name=scope.name)
     _activation_summary(softmax_linear)
-  """
 
   return softmax_linear
 
