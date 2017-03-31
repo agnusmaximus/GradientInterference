@@ -478,7 +478,10 @@ def main(_):
         for i, (c, h) in enumerate(model.initial_state):
           feed_dict[c] = state[i].c
           feed_dict[h] = state[i].h
+        tf.logging.info("Evaluating...")
         mon_sess.run([m.train_op])
+        tf.logging.info("Done Evaluating...")
+
         ####
 
         tf.logging.info("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))
