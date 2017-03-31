@@ -210,18 +210,18 @@ class PTBModel(object):
         num_replicas_to_aggregate = num_workers
 
     optimizer = tf.train.SyncReplicasOptimizer(
-        optimizer,
+      optimizer,
         replicas_to_aggregate=num_replicas_to_aggregate,
         total_num_replicas=num_workers,
     )
     self.opt = optimizer
 
-    #self._train_op = optimizer.apply_gradients(
-    #    zip(grads, tvars),
-    #    global_step=tf.contrib.framework.get_or_create_global_step())
-
     self._train_op = optimizer.apply_gradients(
-      zip(grads, tvars))
+        zip(grads, tvars),
+      global_step=tf.contrib.framework.get_or_create_global_step())
+
+    #self._train_op = optimizer.apply_gradients(
+    #  zip(grads, tvars))
 
 
     self._new_lr = tf.placeholder(
@@ -428,10 +428,10 @@ def main(_):
         with tf.variable_scope("Model", reuse=None, initializer=initializer):
             m = PTBModel(is_training=True, config=config, input_=train_input)
 
-    with tf.name_scope("EvalTrain"):
-      eval_train_input = PTBInput(config=eval_train_config, data=train_data, name="EvalTrain")
-      with tf.variable_scope("Model", reuse=True, initializer=initializer):
-        m_eval_train = PTBModel(is_training=False, config=config, input_=eval_train_input)
+    #with tf.name_scope("EvalTrain"):
+    #  eval_train_input = PTBInput(config=eval_train_config, data=train_data, name="EvalTrain")
+    #  with tf.variable_scope("Model", reuse=True, initializer=initializer):
+    #    m_eval_train = PTBModel(is_training=False, config=config, input_=eval_train_input)
 
     with ops.device(m.opt._global_step.device):
       block_workers_queue = data_flow_ops.FIFOQueue(1,
