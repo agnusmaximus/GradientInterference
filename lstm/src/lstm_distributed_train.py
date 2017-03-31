@@ -364,9 +364,10 @@ def run_epoch(session, model, eval_op=None, verbose=False):
     costs += cost
     iters += model.input.num_steps
 
-    tf.logging.info("%.3f perplexity: %.3f speed: %.0f wps" %
-                    (step * 1.0 / model.input.epoch_size, np.exp(costs / iters),
-                     iters * model.input.batch_size / (time.time() - start_time)))
+    if i % 1000 == 0:
+      tf.logging.info("%.3f perplexity: %.3f speed: %.0f wps" %
+                      (step * 1.0 / model.input.epoch_size, np.exp(costs / iters),
+                       iters * model.input.batch_size / (time.time() - start_time)))
     sys.stdout.flush()
 
   return np.exp(costs / iters)
