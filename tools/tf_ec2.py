@@ -138,7 +138,7 @@ cfg_resnet_cifar100 = Cfg({
 
     # Cluster topology
     "n_masters" : 1,                      # Should always be 1
-    "n_workers" : 3,
+    "n_workers" : 1,
     "n_ps" : 1,
     "n_evaluators" : 1,                   # Continually validates the model on the validation data
     "num_replicas_to_aggregate" : "4",
@@ -150,14 +150,14 @@ cfg_resnet_cifar100 = Cfg({
     "availability_zone" : "us-west-2a",
 
     # Machine type - instance type configuration.
-    "master_type" : "p2.xlarge",
-    "worker_type" : "p2.xlarge",
-    "ps_type" : "p2.xlarge",
-    "evaluator_type" : "p2.xlarge",
+    "master_type" : "m4.large",
+    "worker_type" : "m4.large",
+    "ps_type" : "m4.large",
+    "evaluator_type" : "m4.large",
     "image_id": "ami-f9fe7799", # GradientInterferenceGPU
 
     # Launch specifications
-    "spot_price" : "1",                 # Has to be a string
+    "spot_price" : ".05",                 # Has to be a string
 
     # SSH configuration
     "ssh_username" : "ubuntu",            # For sshing. E.G: ssh ssh_username@hostname
@@ -468,6 +468,102 @@ cfg_dcgan = Cfg({
     ],
 })
 
+cfg_lstm = Cfg({
+    "name" : "gradient_interference_lstm_test",
+    "key_name": "MaxLamKeyPair",          # Necessary to ssh into created instances
+
+    # Cluster topology
+    "n_masters" : 1,                      # Should always be 1
+    "n_workers" : 3,
+    "n_ps" : 1,
+    "n_evaluators" : 1,                   # Continually validates the model on the validation data
+    "num_replicas_to_aggregate" : "4",
+
+    "method" : "spot",
+
+    # Region speficiation
+    "region" : "us-west-2",
+    "availability_zone" : "us-west-2a",
+
+    # Machine type - instance type configuration.
+    "master_type" : "p2.xlarge",
+    "worker_type" : "p2.xlarge",
+    "ps_type" : "p2.xlarge",
+    "evaluator_type" : "p2.xlarge",
+    "image_id": "ami-f9fe7799", # GradientInterferenceGPU
+
+    # Launch specifications
+    "spot_price" : ".5",                 # Has to be a string
+
+    # SSH configuration
+    "ssh_username" : "ubuntu",            # For sshing. E.G: ssh ssh_username@hostname
+    "path_to_keyfile" : "/Users/maxlam/Desktop/School/Fall2016/Research/DistributedSGD/MaxLamKeyPair.pem",
+
+    # NFS configuration
+    # To set up these values, go to Services > ElasticFileSystem > Create new filesystem, and follow the directions.
+    "nfs_ip_address" : "172.31.38.15", # us-west-2a
+   #"nfs_ip_address" : "172.31.6.18",         # us-west-2c
+   #"nfs_ip_address" : "172.31.30.114",         # us-west-2b
+    "nfs_mount_point" : "/home/ubuntu/inception_shared",       # NFS base dir
+    "base_out_dir" : "%(nfs_mount_point)s/%(name)s", # Master writes checkpoints to this directory. Outfiles are written to this directory.
+
+    "setup_commands" :
+    [
+        "sudo rm -rf %(base_out_dir)s",
+        "mkdir %(base_out_dir)s",
+    ],
+
+    # Command specification
+    # Master pre commands are run only by the master
+    "master_pre_commands" :
+    [
+        "cd GradientInterference",
+        "git fetch && git reset --hard origin/master",
+    ],
+
+    # Pre commands are run on every machine before the actual training.
+    "pre_commands" :
+    [
+        "cd GradientInterference",
+        "git fetch && git reset --hard origin/master",
+    ],
+
+    # Model configuration
+    "batch_size" : "64",
+    "initial_learning_rate" : ".1",
+    "learning_rate_decay_factor" : "1",
+    "num_epochs_per_decay" : "350.0",
+
+    # Train command specifies how the ps/workers execute tensorflow.
+    # PS_HOSTS - special string replaced with actual list of ps hosts.
+    # TASK_ID - special string replaced with actual task index.
+    # JOB_NAME - special string replaced with actual job name.
+    # WORKER_HOSTS - special string replaced with actual list of worker hosts
+    # ROLE_ID - special string replaced with machine's identity (E.G: master, worker0, worker1, ps, etc)
+    # %(...)s - Inserts self referential string value.
+    "train_commands" :
+    [
+        "python lstm/src/lstm_distributed_train.py "
+        "--batch_size=%(batch_size)s "
+        "--should_evaluate=true "
+        "--should_compute_R=false "
+        "--initial_learning_rate=%(initial_learning_rate)s "
+        "--learning_rate_decay_factor=%(learning_rate_decay_factor)s "
+        "--num_epochs_per_decay=%(num_epochs_per_decay)s "
+        "--train_dir=%(base_out_dir)s/train_dir "
+        "--worker_hosts='WORKER_HOSTS' "
+        "--ps_hosts='PS_HOSTS' "
+        "--task_id=TASK_ID "
+        "--variable_batchsize=false "
+        "--num_replicas_to_aggregate=%(num_replicas_to_aggregate)s "
+        "--job_name=JOB_NAME > %(base_out_dir)s/out_ROLE_ID 2>&1 &"
+    ],
+
+    # Commands to run on the evaluator
+    "evaluate_commands" :
+   [
+    ],
+})
 
 def tf_ec2_run(argv, configuration):
 
@@ -1164,6 +1260,7 @@ if __name__ == "__main__":
     #cfg = cfg_resnet
     #cfg = cfg_mnist
     #cfg = cfg_dcgan
-    cfg = cfg_resnet_cifar100
+    #cfg = cfg_resnet_cifar100
+    cfg = cfg_lstm
     print(cfg)
     tf_ec2_run(sys.argv, cfg)
