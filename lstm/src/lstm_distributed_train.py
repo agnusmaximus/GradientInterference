@@ -415,8 +415,7 @@ def main(_):
 
   config = get_config()
   eval_train_config = get_config()
-  eval_train_config.batch_size = 1
-  eval_train_config.num_steps = 1
+  eval_train_config.batch_size = 50
 
   # Distributed model creation
   with tf.device(
