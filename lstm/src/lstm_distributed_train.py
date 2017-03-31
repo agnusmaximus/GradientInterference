@@ -349,7 +349,9 @@ def run_epoch(session, model, eval_op=None, verbose=False):
       feed_dict[c] = state[i].c
       feed_dict[h] = state[i].h
 
+    tf.logging.info("Evaluating...")
     vals = session.run(fetches, feed_dict)
+    tf.logging.info("Done Evaluating...")
     cost = vals["cost"]
     state = vals["final_state"]
 
