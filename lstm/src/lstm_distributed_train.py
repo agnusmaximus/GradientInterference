@@ -366,7 +366,7 @@ def run_epoch(session, model, eval_op=None, verbose=False):
       tf.logging.info("%.3f perplexity: %.3f speed: %.0f wps" %
                       (step * 1.0 / model.input.epoch_size, np.exp(costs / iters),
                        iters * model.input.batch_size / (time.time() - start_time)))
-    sys.stdout.flush()
+      sys.stdout.flush()
 
   return np.exp(costs / iters)
 
@@ -469,6 +469,9 @@ def main(_):
     tf.logging.info("Starting to train...")
     sys.stdout.flush()
 
+    # Learning rate decay, which is nil for distributed training...
+    m.assign_lr(session, config.learning_rate)
+
     while True:
       cur_iteration += 1
 
@@ -477,7 +480,7 @@ def main(_):
       new_epoch_float = n_examples_processed / float(m.input.epoch_size)
       new_epoch_track = int(new_epoch_float)
 
-      if FLAGS.should_evaluate and FLAGS.task_id == 0 and (cur_iteration == 0 or new_epoch_track == cur_epoch_track+1):
+      if 0 and FLAGS.should_evaluate and FLAGS.task_id == 0 and (cur_iteration == 0 or new_epoch_track == cur_epoch_track+1):
           session.run([block_workers_op])
           t_evaluate_start = time.time()
           eval_train_perplexity = run_epoch(session, m_eval_train)
@@ -490,9 +493,6 @@ def main(_):
           session.run([unblock_workers_op])
 
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
-
-      # Learning rate decay, which is nil for distributed training...
-      m.assign_lr(session, config.learning_rate)
 
       ####
       # Optimization
@@ -507,6 +507,8 @@ def main(_):
       tf.logging.info("Done Evaluating...")
       n_examples_processed += FLAGS.batch_size * num_workers
       ####
+
+      tf.logging.info("Epoch: %f" % (n_examples_processed / float(m.input.epoch_size)))
 
     if FLAGS.save_path:
       tf.logging.info("Saving model to %s." % FLAGS.save_path)
