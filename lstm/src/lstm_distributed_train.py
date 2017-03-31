@@ -480,14 +480,14 @@ def main(_):
       new_epoch_float = n_examples_processed / float(m.input.epoch_size)
       new_epoch_track = int(new_epoch_float)
 
-      if 0 and FLAGS.should_evaluate and FLAGS.task_id == 0 and (cur_iteration == 0 or new_epoch_track == cur_epoch_track+1):
+      if FLAGS.should_evaluate and FLAGS.task_id == 0 and (cur_iteration == 0 or new_epoch_track == cur_epoch_track+1):
           session.run([block_workers_op])
           t_evaluate_start = time.time()
           eval_train_perplexity = run_epoch(session, m_eval_train)
           t_evaluate_end = time.time()
           # The second to last number that is printed is 0 (which is usually accuracy in mnist and resnet).
           # This is because there is no accuracy in ptb.
-          tf.logging.info("IInfo: %f %d %f %f" % (t_evaluate_start-sum(evaluate_times)-sum(compute_R_times), i + 1, 0, eval_train_perplexity))
+          tf.logging.info("IInfo: %f %d %f %f" % (t_evaluate_start-sum(evaluate_times)-sum(compute_R_times), new_epoch_track, 0, eval_train_perplexity))
           sys.stdout.flush()
           evaluate_times.append(t_evaluate_end-t_evaluate_start)
           session.run([unblock_workers_op])
