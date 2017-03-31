@@ -87,9 +87,7 @@ def load_cifar_data_raw():
         data = unpickle(x)
         images = data["data"].reshape((batchsize, 3, 32, 32)).transpose(0, 2, 3, 1)
         labels = np.array(data["labels"]).reshape((batchsize,))
-        batch_of_images = [crop_center(x, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE) for x in images]
-        batch_of_images = [(x - np.mean(x)) / np.std(x) for x in batch_of_images]
-        train_images += batch_of_images
+        train_images += [(crop_center(x, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE)-128.0)/255.0 for x in images]
         train_labels += [x for x in labels]
 
     test_images, test_labels = [], []
@@ -97,10 +95,7 @@ def load_cifar_data_raw():
         data = unpickle(x)
         images = data["data"].reshape((batchsize, 3, 32, 32)).transpose(0, 2, 3, 1)
         labels = np.array(data["labels"]).reshape((batchsize,))
-        #test_images += [(crop_center(x, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE) - 128.0) / 255.0 for x in images]
-        batch_of_images = [crop_center(x, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE) for x in images]
-        batch_of_images = [(x - np.mean(x)) / np.std(x) for x in batch_of_images]
-        test_images += batch_of_images
+        test_images += [(crop_center(x, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE)-128.0)/255.0 for x in images]
         test_labels += [x for x in labels]
 
     print("Done")
