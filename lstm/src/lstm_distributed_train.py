@@ -449,55 +449,58 @@ def main(_):
                                                   [tf.constant(0)])
 
 
-    is_chief = FLAGS.task_id == 0
-    sync_replicas_hook_train = m.opt.make_session_run_hook(is_chief)
-    checkpoint_save_secs = 60*2
-    evaluate_times, compute_R_times = [0], [0]
+  tvars = tf.trainable_variables()
+  tf.logging.info("YOO")
+  tf.logging.info([x for x in tvars])
+  is_chief = FLAGS.task_id == 0
+  sync_replicas_hook_train = m.opt.make_session_run_hook(is_chief)
+  checkpoint_save_secs = 60*2
+  evaluate_times, compute_R_times = [0], [0]
 
-    with tf.train.MonitoredTrainingSession(
-            master=server.target, is_chief=is_chief,
-            hooks=[sync_replicas_hook_train],
-            checkpoint_dir=FLAGS.train_dir,
-            save_checkpoint_secs=checkpoint_save_secs) as session:
+  with tf.train.MonitoredTrainingSession(
+          master=server.target, is_chief=is_chief,
+          hooks=[sync_replicas_hook_train],
+          checkpoint_dir=FLAGS.train_dir,
+          save_checkpoint_secs=checkpoint_save_secs) as session:
 
-      tf.logging.info("Starting to train...")
-      sys.stdout.flush()
+    tf.logging.info("Starting to train...")
+    sys.stdout.flush()
 
-      while True:
+    while True:
 
-        session.run([workers_block_if_necessary_op])
+      session.run([workers_block_if_necessary_op])
 
-        # Learning rate decay, which is nil for distributed training...
-        m.assign_lr(session, config.learning_rate)
+      # Learning rate decay, which is nil for distributed training...
+      m.assign_lr(session, config.learning_rate)
 
-        ####
-        # Optimization
-        ###
-        state = session.run(m.initial_state)
-        feed_dict = {}
-        for i, (c, h) in enumerate(m.initial_state):
-          feed_dict[c] = state[i].c
-          feed_dict[h] = state[i].h
-        tf.logging.info("Evaluating...")
-        session.run([m.train_op])
-        tf.logging.info("Done Evaluating...")
-        ####
+      ####
+      # Optimization
+      ###
+      state = session.run(m.initial_state)
+      feed_dict = {}
+      for i, (c, h) in enumerate(m.initial_state):
+        feed_dict[c] = state[i].c
+        feed_dict[h] = state[i].h
+      tf.logging.info("Evaluating...")
+      session.run([m.train_op])
+      tf.logging.info("Done Evaluating...")
+      ####
 
-        if FLAGS.should_evaluate and FLAGS.task_id == 0 and 0:
-            session.run([block_workers_op])
-            t_evaluate_start = time.time()
-            eval_train_perplexity = run_epoch(session, m_eval_train)
-            t_evaluate_end = time.time()
-            # The second to last number that is printed is 0 (which is usually accuracy in mnist and resnet).
-            # This is because there is no accuracy in ptb.
-            tf.logging.info("IInfo: %f %d %f %f" % (t_evaluate_start-sum(evaluate_times)-sum(compute_R_times), i + 1, 0, eval_train_perplexity))
-            sys.stdout.flush()
-            evaluate_times.append(t_evaluate_end-t_evaluate_start)
-            session.run([unblock_workers_op])
+      if FLAGS.should_evaluate and FLAGS.task_id == 0 and 0:
+          session.run([block_workers_op])
+          t_evaluate_start = time.time()
+          eval_train_perplexity = run_epoch(session, m_eval_train)
+          t_evaluate_end = time.time()
+          # The second to last number that is printed is 0 (which is usually accuracy in mnist and resnet).
+          # This is because there is no accuracy in ptb.
+          tf.logging.info("IInfo: %f %d %f %f" % (t_evaluate_start-sum(evaluate_times)-sum(compute_R_times), i + 1, 0, eval_train_perplexity))
+          sys.stdout.flush()
+          evaluate_times.append(t_evaluate_end-t_evaluate_start)
+          session.run([unblock_workers_op])
 
-      if FLAGS.save_path:
-        tf.logging.info("Saving model to %s." % FLAGS.save_path)
-        sv.saver.save(session, FLAGS.save_path, global_step=sv.global_step)
+    if FLAGS.save_path:
+      tf.logging.info("Saving model to %s." % FLAGS.save_path)
+      sv.saver.save(session, FLAGS.save_path, global_step=sv.global_step)
 
 
 if __name__ == "__main__":
