@@ -356,10 +356,10 @@ def run_epoch(session, model, eval_op=None, verbose=False):
     costs += cost
     iters += model.input.num_steps
 
-    if verbose and step % (model.input.epoch_size // 10) == 10:
-      tf.logging.info("%.3f perplexity: %.3f speed: %.0f wps" %
-            (step * 1.0 / model.input.epoch_size, np.exp(costs / iters),
-             iters * model.input.batch_size / (time.time() - start_time)))
+    tf.logging.info("%.3f perplexity: %.3f speed: %.0f wps" %
+                    (step * 1.0 / model.input.epoch_size, np.exp(costs / iters),
+                     iters * model.input.batch_size / (time.time() - start_time)))
+    sys.stdout.flush()
 
   return np.exp(costs / iters)
 
