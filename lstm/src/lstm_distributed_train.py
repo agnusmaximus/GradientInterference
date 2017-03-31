@@ -355,16 +355,14 @@ def run_epoch(session, model, eval_op=None, verbose=False):
       feed_dict[c] = state[i].c
       feed_dict[h] = state[i].h
 
-    tf.logging.info("Evaluating...")
     vals = session.run(fetches, feed_dict)
-    tf.logging.info("Done Evaluating...")
     cost = vals["cost"]
     state = vals["final_state"]
 
     costs += cost
     iters += model.input.num_steps
 
-    if i % 1000 == 0:
+    if step % 100 == 0:
       tf.logging.info("%.3f perplexity: %.3f speed: %.0f wps" %
                       (step * 1.0 / model.input.epoch_size, np.exp(costs / iters),
                        iters * model.input.batch_size / (time.time() - start_time)))
