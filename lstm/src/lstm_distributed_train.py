@@ -124,13 +124,14 @@ class PTBInput(object):
 class PTBModel(object):
   """The PTB model."""
 
-  def __init__(self, is_training, config, input_):
+  def __init__(self, is_training, config, input_, gstep):
     self._input = input_
 
     batch_size = input_.batch_size
     num_steps = input_.num_steps
     size = config.hidden_size
     vocab_size = config.vocab_size
+    self.global_step = gstep
 
     # Slightly better results can be obtained with forget gate biases
     # initialized to 1 but the hyperparameters of the model would need to be
@@ -219,7 +220,7 @@ class PTBModel(object):
 
     self._train_op = optimizer.apply_gradients(
         zip(grads, tvars),
-      global_step=tf.contrib.framework.get_or_create_global_step())
+      global_step=self.global_step)
 
     #self._train_op = optimizer.apply_gradients(
     #  zip(grads, tvars))
@@ -422,12 +423,14 @@ def main(_):
           tf.train.replica_device_setter(
               worker_device='/job:worker/task:%d' % FLAGS.task_id,
               cluster=cluster_spec)):
+
+    global_step = tf.Variable(0, name="global_step", trainable=False)
     initializer = tf.random_uniform_initializer(-config.init_scale,
                                                 config.init_scale)
     with tf.name_scope("Train"):
         train_input = PTBInput(config=config, data=train_data, name="TrainInput")
         with tf.variable_scope("Model", reuse=None, initializer=initializer):
-            m = PTBModel(is_training=True, config=config, input_=train_input)
+            m = PTBModel(is_training=True, config=config, input_=train_input, gstep=global_step)
 
     #with tf.name_scope("EvalTrain"):
     #  eval_train_input = PTBInput(config=eval_train_config, data=train_data, name="EvalTrain")
