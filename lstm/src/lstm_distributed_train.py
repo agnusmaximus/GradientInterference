@@ -474,7 +474,7 @@ def main(_):
 
       session.run([workers_block_if_necessary_op])
 
-      new_epoch_float = n_examples_processed / float(model.input.epoch_size)
+      new_epoch_float = n_examples_processed / float(m.input.epoch_size)
       new_epoch_track = int(new_epoch_float)
 
       if FLAGS.should_evaluate and FLAGS.task_id == 0 and (cur_iteration == 0 or new_epoch_track == cur_epoch_track+1):
