@@ -456,7 +456,10 @@ def main(_):
             save_checkpoint_secs=checkpoint_save_secs) as session:
       tf.logging.info("Starting to train...")
       sys.stdout.flush()
-      for i in range(config.max_max_epoch):
+
+
+
+      while True:
 
         session.run([workers_block_if_necessary_op])
 
@@ -466,12 +469,13 @@ def main(_):
 
         tf.logging.info("Epoch: %d Learning rate: %.3f" % (i + 1, session.run(m.lr)))
         sys.stdout.flush()
-        train_perplexity = run_epoch(session, m, eval_op=m.train_op,
-                                     verbose=True)
+
+        mon_sess.run([m.train_op])
+
         tf.logging.info("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))
         sys.stdout.flush()
 
-        if FLAGS.should_evaluate and FLAGS.task_id == 0:
+        if FLAGS.should_evaluate and FLAGS.task_id == 0 and 0:
             session.run([block_workers_op])
             t_evaluate_start = time.time()
             eval_train_perplexity = run_epoch(session, m_eval_train)
