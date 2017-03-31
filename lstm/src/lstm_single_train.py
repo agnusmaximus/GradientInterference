@@ -129,6 +129,7 @@ class PTBModel(object):
             lstm_cell(), output_keep_prob=config.keep_prob)
     cell = tf.contrib.rnn.MultiRNNCell(
         [attn_cell() for _ in range(config.num_layers)], state_is_tuple=True)
+    tf.logging.info(("YO: %d" % cell.state_size)
 
     self._initial_state = cell.zero_state(batch_size, data_type())
 

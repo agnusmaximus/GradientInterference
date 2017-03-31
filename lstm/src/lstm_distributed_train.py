@@ -252,7 +252,7 @@ class PTBModel(object):
 
 class DistributedConfig(object):
   """Like medium config, except infinite epochs, no decay"""
-  init_scale = 0.05
+  init_scale = 0.1
   learning_rate = 1.0
   max_grad_norm = 5
   num_layers = 2
@@ -260,8 +260,8 @@ class DistributedConfig(object):
   hidden_size = 650
   max_epoch = 6
   max_max_epoch = 1000000000
-  keep_prob = 0.5
-  lr_decay = 1
+  keep_prob = 1
+  lr_decay = .5
   batch_size = FLAGS.batch_size
   vocab_size = 10000
 
