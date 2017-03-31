@@ -460,6 +460,7 @@ def main(_):
   evaluate_times, compute_R_times = [0], [0]
   n_examples_processed = 0
   cur_epoch_track = 0
+  cur_iteration = -1
 
   with tf.train.MonitoredTrainingSession(
           master=server.target, is_chief=is_chief,
@@ -471,6 +472,7 @@ def main(_):
     sys.stdout.flush()
 
     while True:
+      cur_iteration += 1
 
       session.run([workers_block_if_necessary_op])
 
