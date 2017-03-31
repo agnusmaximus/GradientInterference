@@ -86,9 +86,8 @@ def load_cifar_data_raw():
     for x in train_filenames:
         data = unpickle(x)
         images = data["data"].reshape((batchsize, 3, 32, 32)).transpose(0, 2, 3, 1)
-        images = (images - 128.0) / 255.0
         labels = np.array(data["labels"]).reshape((batchsize,))
-        train_images += [crop_center(x, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE) for x in images]
+        train_images += [(crop_center(x, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE)-128.0)/255.0 for x in images]
         train_labels += [x for x in labels]
 
     test_images, test_labels = [], []
