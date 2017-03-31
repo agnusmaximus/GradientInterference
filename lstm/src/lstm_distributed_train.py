@@ -465,9 +465,6 @@ def main(_):
         # Learning rate decay, which is nil for distributed training...
         m.assign_lr(session, config.learning_rate)
 
-        tf.logging.info("Epoch: %d Learning rate: %.3f" % (i + 1, session.run(m.lr)))
-        sys.stdout.flush()
-
         ####
         # Optimization
         ###
@@ -480,9 +477,6 @@ def main(_):
         mon_sess.run([m.train_op])
         tf.logging.info("Done Evaluating...")
         ####
-
-        tf.logging.info("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))
-        sys.stdout.flush()
 
         if FLAGS.should_evaluate and FLAGS.task_id == 0 and 0:
             session.run([block_workers_op])
