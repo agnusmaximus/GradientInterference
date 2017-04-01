@@ -55,7 +55,7 @@ tf.app.flags.DEFINE_string('train_dir', '/tmp/cifar10_train',
                            """and checkpoint.""")
 tf.app.flags.DEFINE_integer('max_steps', 1000000,
                             """Number of batches to run.""")
-tf.app.flags.DEFINE_integer('eval_batchsize', 1000,
+tf.app.flags.DEFINE_integer('eval_batchsize', 100,
                             """Number of batches to run.""")
 tf.app.flags.DEFINE_boolean('log_device_placement', False,
                             """Whether to log device placement.""")
@@ -117,6 +117,7 @@ def next_batch_indices(target_batch_size, n_elements, cur_index, exclude_index=-
 
 def next_batch(target_batch_size, images, labels, cur_index, exclude_index=-1, swap_index=-1):
     indices, next_index = next_batch_indices(target_batch_size, len(images), cur_index, exclude_index, swap_index)
+    assert(len(indices) != 0)
     return images[indices], labels[indices], next_index
 
 def train():
@@ -191,7 +192,7 @@ def train():
       # Swap index refers to the index of the example to swap with the example excluded.
       exclude_index, swap_index = 0, 1
 
-      while True:
+      while epoch < 60:
 
         # Find parameter differences
         layer_diffs = []
@@ -219,6 +220,7 @@ def train():
         cur_index = 0
         for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL//FLAGS.eval_batchsize):
             print("%d of %d" % (i, cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL//FLAGS.eval_batchsize))
+            continue
             images_eval_real, labels_eval_real, cur_index = next_batch(FLAGS.eval_batchsize, images_test_raw, labels_test_raw, cur_index)
             fd = {images_1 : images_eval_real,
                   labels_1 : labels_eval_real,
@@ -238,6 +240,7 @@ def train():
         cur_index = 0
         for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN//FLAGS.eval_batchsize):
             print("%d of %d" % (i, cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN//FLAGS.eval_batchsize))
+            continue
             images_eval_real, labels_eval_real, cur_index = next_batch(FLAGS.eval_batchsize, images_raw, labels_raw, cur_index)
             fd = {images_1 : images_eval_real,
                   labels_1 : labels_eval_real,

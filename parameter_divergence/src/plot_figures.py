@@ -18,6 +18,7 @@ def extract_parameter_differences(text):
 
 def plot_figures(f):
     f_file = open(f, "r")
+    name = f.split("/")[-1]
     rawtext = f_file.read()
     f_file.close()
     layer_names_and_distances = extract_parameter_differences(rawtext)
@@ -27,15 +28,15 @@ def plot_figures(f):
         #if "conv" not in layer_name or "weights" not in layer_name:
         #    continue
         #if "conv" not in layer_name or "weights" not in layer_name:
-        if "conv" in layer_name and "weights" in layer_name:
-            plt.plot(list(range(0, len(distances))), distances, label=layer_name)
+        if ("conv1" in layer_name or "conv3" in layer_name) and "weights" in layer_name:
+            plt.plot(list(range(0, len(distances))), distances, label=layer_name + "_" + name)
     plt.xlabel("Epoch")
     plt.ylabel("Normalized Euclidean Distance")
     plt.title("Parameter Distance")
-    plt.legend(loc="lower right")
-    plt.savefig("ParameterDistance.png")
+    plt.legend(loc="upper left")
+    plt.savefig("ParameterDistance_%s.png" % name)
 
 if __name__=="__main__":
-    inputs = ["batchsize60"]
+    inputs = sys.argv[1:]
     for f in inputs:
         plot_figures(f)
