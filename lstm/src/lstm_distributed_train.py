@@ -454,7 +454,7 @@ def main(_):
 
   is_chief = FLAGS.task_id == 0
   sync_replicas_hook_train = m.opt.make_session_run_hook(is_chief)
-  checkpoint_save_secs = 60*2
+  checkpoint_save_secs = 60*20
   evaluate_times, compute_R_times = [0], [0]
   n_examples_processed = 0
   cur_epoch_track = 0

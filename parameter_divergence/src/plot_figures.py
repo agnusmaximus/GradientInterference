@@ -23,13 +23,15 @@ def plot_figures(f):
     f_file.close()
     layer_names_and_distances = extract_parameter_differences(rawtext)
 
-    plt.cla()
+    #plt.cla()
     for layer_name, distances in layer_names_and_distances.items():
         #if "conv" not in layer_name or "weights" not in layer_name:
         #    continue
         #if "conv" not in layer_name or "weights" not in layer_name:
         if ("conv1" in layer_name or "conv3" in layer_name) and "weights" in layer_name:
             plt.plot(list(range(0, len(distances))), distances, label=layer_name + "_" + name)
+
+    plt.yscale('log')
     plt.xlabel("Epoch")
     plt.ylabel("Normalized Euclidean Distance")
     plt.title("Parameter Distance")
