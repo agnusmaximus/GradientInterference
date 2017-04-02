@@ -192,10 +192,11 @@ def train():
       # Swap index refers to the index of the example to swap with the example excluded.
       exclude_index, swap_index = 0, 1
 
-      while epoch < 60:
+      while epoch < 16:
 
-        # Find parameter differences
-        layer_diffs = []
+        # Aggregate all parameters 
+        model_1_agg_variables = {}
+        model_2_agg_variables = {}
         for i in range(len(variables_1)):
             images_fake = np.zeros((FLAGS.batch_size, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, 3))
             labels_fake = np.zeros((FLAGS.batch_size,))
@@ -206,12 +207,31 @@ def train():
             v1, v2 = variables_1[i], variables_2[i]
             v1, v2 = mon_sess.run([v1, v2], feed_dict=fd_fake)
             v1, v2 = v1.flatten(), v2.flatten()
+            if "conv" in variables_1[i].name:
+                agg_name = variables_1[i].name.split("/")[-2]
+                if "all" not in model_1_agg_variables:
+                    model_1_agg_variables["all"] = np.array([])
+                if "all" not in model_2_agg_variables:
+                    model_2_agg_variables["all"] = np.array([])
+                if agg_name not in model_1_agg_variables:
+                    model_1_agg_variables[agg_name] = np.array([])
+                if agg_name not in model_2_agg_variables:
+                    model_2_agg_variables[agg_name] = np.array([])
+                model_1_agg_variables[agg_name] = np.hstack([model_1_agg_variables[agg_name], v1])
+                model_2_agg_variables[agg_name] = np.hstack([model_2_agg_variables[agg_name], v2])
+                model_1_agg_variables["all"] = np.hstack([model_1_agg_variables[agg_name], v1])
+                model_2_agg_variables["all"] = np.hstack([model_2_agg_variables[agg_name], v2])
+
+        # Find parameter differences
+        layer_diffs = []
+        for layer_name, layer in model_1_agg_variables.items():
+            v1, v2 = model_1_agg_variables[layer_name], model_2_agg_variables[layer_name]
             if np.linalg.norm(v1) != 0:
                 v1 = np.linalg.norm(v1)
             if np.linalg.norm(v2) != 0:
                 v2 = np.linalg.norm(v2)
             diff = np.linalg.norm(v1-v2)
-            layer_diffs.append((variables_1[i].name, diff))
+            layer_diffs.append((layer_name, diff))
         print("Layer differences: ", (epoch, layer_diffs))
 
         # Evaluate on test data
