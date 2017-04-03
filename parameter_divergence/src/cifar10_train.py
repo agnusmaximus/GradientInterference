@@ -192,7 +192,7 @@ def train():
       # Swap index refers to the index of the example to swap with the example excluded.
       exclude_index, swap_index = 0, 1
 
-      while epoch < 16:
+      while True:
 
         # Aggregate all parameters
         model_1_agg_variables = {}
@@ -222,6 +222,7 @@ def train():
                 model_1_agg_variables["all"] = np.hstack([model_1_agg_variables[agg_name], v1])
                 model_2_agg_variables["all"] = np.hstack([model_2_agg_variables[agg_name], v2])
 
+
         # Find parameter differences
         layer_diffs = []
         for layer_name, layer in model_1_agg_variables.items():
@@ -237,7 +238,7 @@ def train():
         # Evaluate on test data
         print("Evaluating on test...")
         true_count_1, true_count_2 = 0, 0
-        cur_index = 0
+        cur_index, n_perfect = 0, 0
         for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL//FLAGS.eval_batchsize):
             #print("%d of %d" % (i, cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL//FLAGS.eval_batchsize))
 
@@ -271,6 +272,11 @@ def train():
 
         precision_train_1 = true_count_1 / float(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
         precision_train_2 = true_count_2 / float(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
+
+        if precision_train_1 >= .99 or precision_train_2 >= .99:
+            n_perfect += 1
+            if n_perfect >= 10:
+                break
         print("Done")
 
         # Print all the data related to figures 3 and 4 of https://arxiv.org/pdf/1509.01240.pdf
