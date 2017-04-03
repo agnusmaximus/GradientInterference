@@ -61,6 +61,8 @@ tf.app.flags.DEFINE_boolean('log_device_placement', False,
                             """Whether to log device placement.""")
 tf.app.flags.DEFINE_integer('log_frequency', 10,
                             """How often to log results to the console.""")
+tf.app.flags.DEFINE_boolean('test_load_dumped_data_files', True,
+                            """Whether to test saving of data files""")
 
 def unpickle(file):
     import cPickle
@@ -119,6 +121,7 @@ def next_batch(target_batch_size, images, labels, cur_index, exclude_index=-1, s
     indices, next_index = next_batch_indices(target_batch_size, len(images), cur_index, exclude_index, swap_index)
     assert(len(indices) != 0)
     return images[indices], labels[indices], next_index
+
 
 def train():
   """Train CIFAR-10 for a number of steps."""
@@ -197,6 +200,7 @@ def train():
         # Aggregate all parameters
         model_1_agg_variables = {}
         model_2_agg_variables = {}
+        all_variables = {}
         for i in range(len(variables_1)):
             images_fake = np.zeros((FLAGS.batch_size, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, 3))
             labels_fake = np.zeros((FLAGS.batch_size,))
@@ -205,8 +209,15 @@ def train():
                        images_2 : images_fake,
                        labels_2 : labels_fake}
             v1, v2 = variables_1[i], variables_2[i]
+            name_v1, name_v2 = v1.name, v2.name
             v1, v2 = mon_sess.run([v1, v2], feed_dict=fd_fake)
+
+            # Save all parameter weights
+            all_variables["model1/" + name_v1] = v1
+            all_variables["model2/" + name_v2] = v2
+
             v1, v2 = v1.flatten(), v2.flatten()
+
             if "conv" in variables_1[i].name:
                 agg_name = variables_1[i].name.split("/")[-2]
                 if "all" not in model_1_agg_variables:
@@ -222,6 +233,19 @@ def train():
                 model_1_agg_variables["all"] = np.hstack([model_1_agg_variables[agg_name], v1])
                 model_2_agg_variables["all"] = np.hstack([model_2_agg_variables[agg_name], v2])
 
+        # Save all variables
+        output_file_name = "parameter_difference_batchsize_%d_epoch_%d_save" % (FLAGS.batch_size, epoch)
+        pickle.dump(all_variables, output_file_name)
+
+        # Test the saved values
+        if FLAGS.test_load_dumped_data_files:
+            print("Testing whether loaded variables succeeded...")
+            all_variables_loaded = pickle.load(output_file_name)
+            for k,v in all_variables_loaded.items():
+                assert(k in all_variables)
+                assert(np.equal(all_variables[k], all_variables_loaded[k]))
+            print("Success!")
+            sys.exit(0)
 
         # Find parameter differences
         layer_diffs = []
