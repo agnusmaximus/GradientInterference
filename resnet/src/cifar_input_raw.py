@@ -67,6 +67,12 @@ def crop_center(img,cropx,cropy):
     starty = y//2-(cropy//2)
     return img[starty:starty+cropy,startx:startx+cropx,:]
 
+def one_hot(x):
+    num_el = 10 if FLAGS.dataset == 'cifar10' else 100
+    a = np.zeros(num_el)
+    a[x] = 1
+    return a
+
 def load_cifar_data_raw():
     print("Loading raw cifar10 data...")
     datadir = os.path.join(FLAGS.data_dir, 'cifar-10-batches-py')
@@ -80,7 +86,7 @@ def load_cifar_data_raw():
         images = data["data"].reshape((batchsize, 3, 32, 32)).transpose(0, 2, 3, 1)
         labels = np.array(data["labels"]).reshape((batchsize,))
         train_images += [(crop_center(x, IMAGE_SIZE, IMAGE_SIZE)-128.0)/255.0 for x in images]
-        train_labels += [x for x in labels]
+        train_labels += [one_hot(x) for x in labels]
 
     test_images, test_labels = [], []
     for x in test_filenames:
@@ -88,7 +94,7 @@ def load_cifar_data_raw():
         images = data["data"].reshape((batchsize, 3, 32, 32)).transpose(0, 2, 3, 1)
         labels = np.array(data["labels"]).reshape((batchsize,))
         test_images += [(crop_center(x, IMAGE_SIZE, IMAGE_SIZE)-128.0)/255.0 for x in images]
-        test_labels += [x for x in labels]
+        test_labels += [one_hot(x) for x in labels]
 
     print("Done")
 
