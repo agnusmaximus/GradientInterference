@@ -30,7 +30,7 @@ FLAGS = tf.app.flags.FLAGS
 
 NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN=50000
 
-DATA_URL = 'http://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz' if dataset_name == 'cifar10' else 'http://www.cs.toronto.edu/~kriz/cifar-100-python.tar.gz'
+DATA_URL = 'http://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz' if FLAGS.dataset == 'cifar10' else 'http://www.cs.toronto.edu/~kriz/cifar-100-python.tar.gz'
 
 def maybe_download_and_extract():
   """Download and extract the tarball from Alex's website."""
