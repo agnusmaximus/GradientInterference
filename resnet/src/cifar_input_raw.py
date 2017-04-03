@@ -20,6 +20,7 @@ import tensorflow as tf
 
 import os
 import re
+import numpy as np
 import sys
 import tarfile
 
