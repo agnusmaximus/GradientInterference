@@ -59,7 +59,7 @@ def model_evaluate(sess, model, images_pl, labels_pl, images_raw, labels_raw, ba
   cur_batch_index = 0
 
   while step < num_iter:
-    images_real, labels_real, cur_batch_index = cifar_input_raw.next_batch(batch_size, images_raw, labels_raw, cur_batch_index)
+    images_real, labels_real, cur_batch_index = cifar_input_raw.next_batch(FLAGS.batch_size, images_raw, labels_raw, cur_batch_index)
     feed_dict = {images_pl:images_real, labels_pl:labels_real}
     (summaries, loss, predictions, truth) = sess.run(
       [model.summaries, model.cost, model.predictions,
