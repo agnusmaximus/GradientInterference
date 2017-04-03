@@ -194,7 +194,7 @@ def train():
 
       while epoch < 16:
 
-        # Aggregate all parameters 
+        # Aggregate all parameters
         model_1_agg_variables = {}
         model_2_agg_variables = {}
         for i in range(len(variables_1)):
@@ -226,10 +226,10 @@ def train():
         layer_diffs = []
         for layer_name, layer in model_1_agg_variables.items():
             v1, v2 = model_1_agg_variables[layer_name], model_2_agg_variables[layer_name]
-            if np.linalg.norm(v1) != 0:
-                v1 = np.linalg.norm(v1)
-            if np.linalg.norm(v2) != 0:
-                v2 = np.linalg.norm(v2)
+            #if np.linalg.norm(v1) != 0:
+            #    v1 = np.linalg.norm(v1)
+            #if np.linalg.norm(v2) != 0:
+            #    v2 = np.linalg.norm(v2)
             diff = np.linalg.norm(v1-v2)
             layer_diffs.append((layer_name, diff))
         print("Layer differences: ", (epoch, layer_diffs))
