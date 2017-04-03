@@ -237,17 +237,20 @@ def train():
 
         # Save all variables
         output_file_name = "parameter_difference_batchsize_%d_epoch_%d_save" % (FLAGS.batch_size, epoch)
-        pickle.dump(all_variables, output_file_name)
+        output_file = open(output_file_name, "wb")
+        cPickle.dump(all_variables, output_file)
+        output_file.close()
 
         # Test the saved values
         if FLAGS.test_load_dumped_data_files:
+            input_file = open(output_file_name, "rb")
             print("Testing whether loaded variables succeeded...")
-            all_variables_loaded = pickle.load(output_file_name)
+            all_variables_loaded = cPickle.load(input_file)
+            input_file.close()
             for k,v in all_variables_loaded.items():
                 assert(k in all_variables)
-                assert(np.equal(all_variables[k], all_variables_loaded[k]))
+                assert(np.all(np.equal(all_variables[k].flatten(), all_variables_loaded[k].flatten())))
             print("Success!")
-            sys.exit(0)
 
         # Find parameter differences
         layer_diffs = []
