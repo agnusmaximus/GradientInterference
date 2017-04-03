@@ -48,6 +48,9 @@ import tensorflow as tf
 import cifar10
 import cifar10_input
 
+import cPickle
+import pickle
+
 FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_string('train_dir', '/tmp/cifar10_train',
@@ -65,7 +68,6 @@ tf.app.flags.DEFINE_boolean('test_load_dumped_data_files', True,
                             """Whether to test saving of data files""")
 
 def unpickle(file):
-    import cPickle
     fo = open(file, 'rb')
     dict = cPickle.load(fo)
     fo.close()
