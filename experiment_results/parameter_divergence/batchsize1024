@@ -1,0 +1,124 @@
+Layer distances:  [(u'conv3', 0.0), (u'conv2', 0.0), ('all', 0.0), (u'conv1', 0.0)]
+Epoch: 0.000000 TrainError1: 0.900800 TrainError2: 0.900800 TestError1: 0.900100 TestError2: 0.900100
+Epoch: 0.000000 Losses: 2667.492676 2671.880127
+Layer differences:  (1, [(u'conv3', 114.08445550267406), (u'conv2', 16.576660326175748), ('all', 114.08215924088243), (u'conv1', 15.219739577215757)])
+Evaluating on test...
+Done
+Evaluating on train...
+Done
+Layer distances:  [(u'conv3', 114.08445550267406), (u'conv2', 16.576660326175748), ('all', 114.08215924088243), (u'conv1', 15.219739577215757)]
+Epoch: 1.000000 TrainError1: 0.899900 TrainError2: 0.810200 TestError1: 0.896800 TestError2: 0.813900
+Epoch: 1.000000 Losses: 2357.061279 2259.738037
+Layer differences:  (2, [(u'conv3', 113.92017799429652), (u'conv2', 16.513534012052027), ('all', 113.91578612008919), (u'conv1', 14.919775695330234)])
+Evaluating on test...
+Done
+Evaluating on train...
+Done
+Layer distances:  [(u'conv3', 113.92017799429652), (u'conv2', 16.513534012052027), ('all', 113.91578612008919), (u'conv1', 14.919775695330234)]
+Epoch: 2.000000 TrainError1: 0.900000 TrainError2: 0.716400 TestError1: 0.898400 TestError2: 0.721400
+Epoch: 2.000000 Losses: 2357.297363 1971.397705
+
+Layer differences:  (3, [(u'conv3', 113.88915781970162), (u'conv2', 16.453039863208957), ('all', 113.88371783033934), (u'conv1', 14.591137756376082)])
+Evaluating on test...
+Done
+Evaluating on train...
+Done
+Layer distances:  [(u'conv3', 113.88915781970162), (u'conv2', 16.453039863208957), ('all', 113.88371783033934), (u'conv1', 14.591137756376082)]
+Epoch: 3.000000 TrainError1: 0.899800 TrainError2: 0.653200 TestError1: 0.902400 TestError2: 0.662600
+Epoch: 3.000000 Losses: 2357.227783 1774.663574
+Layer differences:  (4, [(u'conv3', 113.77798698725069), (u'conv2', 16.357998003079828), ('all', 113.76621023818673), (u'conv1', 14.249908275319941)])
+Evaluating on test...
+Done
+Evaluating on train...
+Done
+Layer distances:  [(u'conv3', 113.77798698725069), (u'conv2', 16.357998003079828), ('all', 113.76621023818673), (u'conv1', 14.249908275319941)]
+Epoch: 4.000000 TrainError1: 0.900000 TrainError2: 0.712200 TestError1: 0.898400 TestError2: 0.725600
+Epoch: 4.000000 Losses: 2357.503418 1744.410400
+Layer differences:  (5, [(u'conv3', 113.65797542270072), (u'conv2', 16.233900535811252), ('all', 113.64439479178843), (u'conv1', 13.88698860941286)])
+Evaluating on test...
+Done
+Evaluating on train...
+Done
+Layer distances:  [(u'conv3', 113.65797542270072), (u'conv2', 16.233900535811252), ('all', 113.64439479178843), (u'conv1', 13.88698860941286)]
+Epoch: 5.000000 TrainError1: 0.900000 TrainError2: 0.512100 TestError1: 0.898400 TestError2: 0.551100
+Epoch: 5.000000 Losses: 2357.548828 1430.939087
+Layer differences:  (6, [(u'conv3', 113.50819137715548), (u'conv2', 16.098874127913376), ('all', 113.49281674662279), (u'conv1', 13.590749377642794)])
+Evaluating on test...
+Done
+Evaluating on train...
+Done
+Layer distances:  [(u'conv3', 113.50819137715548), (u'conv2', 16.098874127913376), ('all', 113.49281674662279), (u'conv1', 13.590749377642794)]
+Epoch: 6.000000 TrainError1: 0.900000 TrainError2: 0.471900 TestError1: 0.898400 TestError2: 0.519100
+Epoch: 6.000000 Losses: 2357.552246 1303.607788
+Layer differences:  (7, [(u'conv3', 113.33480145930702), (u'conv2', 15.933696616449081), ('all', 113.31971882906072), (u'conv1', 13.278347552602121)])
+Evaluating on test...
+Done
+Evaluating on train...
+Done
+Layer distances:  [(u'conv3', 113.33480145930702), (u'conv2', 15.933696616449081), ('all', 113.31971882906072), (u'conv1', 13.278347552602121)]
+Epoch: 7.000000 TrainError1: 0.900000 TrainError2: 0.482700 TestError1: 0.898400 TestError2: 0.533200
+Epoch: 7.000000 Losses: 2357.552490 1223.079102
+Layer differences:  (8, [(u'conv3', 113.14254678818823), (u'conv2', 15.759218346180745), ('all', 113.12593123623689), (u'conv1', 12.981414047590556)])
+Evaluating on test...
+Done
+Evaluating on train...
+Done
+Layer distances:  [(u'conv3', 113.14254678818823), (u'conv2', 15.759218346180745), ('all', 113.12593123623689), (u'conv1', 12.981414047590556)]
+Epoch: 8.000000 TrainError1: 0.900000 TrainError2: 0.529400 TestError1: 0.898400 TestError2: 0.571600
+Epoch: 8.000000 Losses: 2357.552490 1413.352539
+Layer differences:  (9, [(u'conv3', 112.90905134562018), (u'conv2', 15.555210583291606), ('all', 112.88995158426867), (u'conv1', 12.671709793897982)])
+Evaluating on test...
+Done
+Evaluating on train...
+Done
+Layer distances:  [(u'conv3', 112.90905134562018), (u'conv2', 15.555210583291606), ('all', 112.88995158426867), (u'conv1', 12.671709793897982)]
+Epoch: 9.000000 TrainError1: 0.900000 TrainError2: 0.397600 TestError1: 0.898400 TestError2: 0.504600
+Epoch: 9.000000 Losses: 2357.552490 1001.947571
+Layer differences:  (10, [(u'conv3', 112.64755533913548), (u'conv2', 15.320683475180118), ('all', 112.62668194430503), (u'conv1', 12.334064288809255)])
+Evaluating on test...
+Done
+Evaluating on train...
+Done
+Layer distances:  [(u'conv3', 112.64755533913548), (u'conv2', 15.320683475180118), ('all', 112.62668194430503), (u'conv1', 12.334064288809255)]
+Epoch: 10.000000 TrainError1: 0.900000 TrainError2: 0.343100 TestError1: 0.898400 TestError2: 0.476500
+Epoch: 10.000000 Losses: 2357.552490 960.333740
+Layer differences:  (11, [(u'conv3', 112.33394527095609), (u'conv2', 15.058062256692134), ('all', 112.31178564523111), (u'conv1', 11.996004610192506)])
+Evaluating on test...
+Done
+Evaluating on train...
+Done
+Layer distances:  [(u'conv3', 112.33394527095609), (u'conv2', 15.058062256692134), ('all', 112.31178564523111), (u'conv1', 11.996004610192506)]
+Epoch: 11.000000 TrainError1: 0.900000 TrainError2: 0.358900 TestError1: 0.898400 TestError2: 0.495500
+Epoch: 11.000000 Losses: 2357.552246 928.727905
+Layer differences:  (12, [(u'conv3', 112.01970800221075), (u'conv2', 14.795163003144868), ('all', 111.99753926230369), (u'conv1', 11.636233637211706)])
+Evaluating on test...
+Done
+Evaluating on train...
+Done
+Layer distances:  [(u'conv3', 112.01970800221075), (u'conv2', 14.795163003144868), ('all', 111.99753926230369), (u'conv1', 11.636233637211706)]
+Epoch: 12.000000 TrainError1: 0.900000 TrainError2: 0.379600 TestError1: 0.898400 TestError2: 0.525200
+Epoch: 12.000000 Losses: 2357.552246 994.953247
+Layer differences:  (13, [(u'conv3', 111.65914545671842), (u'conv2', 14.49227184687453), ('all', 111.63697281870449), (u'conv1', 11.27446373917768)])
+Evaluating on test...
+Done
+Evaluating on train...
+Done
+Layer distances:  [(u'conv3', 111.65914545671842), (u'conv2', 14.49227184687453), ('all', 111.63697281870449), (u'conv1', 11.27446373917768)]
+Epoch: 13.000000 TrainError1: 0.900000 TrainError2: 0.322900 TestError1: 0.898400 TestError2: 0.502900
+Epoch: 13.000000 Losses: 2357.552246 806.413208
+Layer differences:  (14, [(u'conv3', 111.28446552669328), (u'conv2', 14.181358816685719), ('all', 111.2629311743825), (u'conv1', 10.9151446231041)])
+Evaluating on test...
+Done
+Evaluating on train...
+Done
+Layer distances:  [(u'conv3', 111.28446552669328), (u'conv2', 14.181358816685719), ('all', 111.2629311743825), (u'conv1', 10.9151446231041)]
+Epoch: 14.000000 TrainError1: 0.900000 TrainError2: 0.287400 TestError1: 0.898400 TestError2: 0.504400
+Epoch: 14.000000 Losses: 2357.552246 771.382568
+Layer differences:  (15, [(u'conv3', 110.8959947335275), (u'conv2', 13.868733047550148), ('all', 110.8732515596872), (u'conv1', 10.582172258682554)])
+Evaluating on test...
+Done
+Evaluating on train...
+Done
+Layer distances:  [(u'conv3', 110.8959947335275), (u'conv2', 13.868733047550148), ('all', 110.8732515596872), (u'conv1', 10.582172258682554)]
+Epoch: 15.000000 TrainError1: 0.900000 TrainError2: 0.204800 TestError1: 0.898400 TestError2: 0.475200
+Epoch: 15.000000 Losses: 2357.552490 636.396057
