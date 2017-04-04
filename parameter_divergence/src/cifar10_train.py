@@ -192,6 +192,7 @@ def train():
       print("Done")
 
       epoch = 0
+      n_perfect = 0
 
       # Exclude index refers to the index of the example to exclude.
       # Swap index refers to the index of the example to swap with the example excluded.
@@ -267,7 +268,7 @@ def train():
         # Evaluate on test data
         print("Evaluating on test...")
         true_count_1, true_count_2 = 0, 0
-        cur_index, n_perfect = 0, 0
+        cur_index = 0
         for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL//FLAGS.eval_batchsize):
             #print("%d of %d" % (i, cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL//FLAGS.eval_batchsize))
 
@@ -302,7 +303,12 @@ def train():
         precision_train_1 = true_count_1 / float(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
         precision_train_2 = true_count_2 / float(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
 
-        if precision_train_1 >= .99 or precision_train_2 >= .99:
+        output_file_name = "parameter_difference_batchsize_%d_epoch_%d_train_test_error" % (FLAGS.batch_size, epoch)
+        output_file = open(output_file_name, "w")
+        cPickle.dump([precision_train_1, precision_train_2, precision_test_1, precision_test_2], output_file)
+        output_file.close()
+
+        if precision_train_1 >= .999 or precision_train_2 >= .999:
             n_perfect += 1
             if n_perfect >= 10:
                 break
