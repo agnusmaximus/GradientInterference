@@ -6,9 +6,15 @@ import sys
 import cPickle
 import glob
 
+model_match_string = "/*_save"
+train_test_match_string = "/*train_test_error"
+
+#model_match_string = "/*64*_save"
+#train_test_match_string = "/*64*train_test_error"
+
 def load_all_models_all_batches(directory):
     print("Loading models...")
-    model_files = glob.glob(directory + "/*_save")
+    model_files = glob.glob(directory + model_match_string)
     print(len(model_files))
     all_models = {}
     for i, f in enumerate(model_files):
@@ -98,6 +104,54 @@ def plot_all_parameter_diffs(all_models):
     plt.title("All Batchsizes")
     plt.savefig("allbatchsize.png")
 
+def load_train_test_errors(dirname):
+    print("Loading train test errors")
+    train_test_errors = {}
+    for fname in glob.glob(dirname + train_test_match_string):
+        epoch = fname.split("_")[-4]
+        batchsize = fname.split("_")[-6]
+        f = open(fname, "r")
+        precision_train_1, precision_train_2, precision_test_1, precision_test_2 = cPickle.load(f)
+        f.close()
+        if batchsize not in train_test_errors:
+            train_test_errors[batchsize] = {}
+        train_test_errors[batchsize][epoch] = (1-precision_train_1, 1-precision_test_1)
+    print("Done")
+    return train_test_errors
+
+def plot_train_test_errors(all_models, all_train_test_errors):
+
+    def extract_errors(train_test_error, key=0):
+        errors = []
+        for epoch, value in sorted(train_test_error.items(), key=lambda x : int(x[0])):
+            errors.append(value[key])
+        return errors
+
+    for batchsize in all_models.keys():
+        epoch_differences = extract_epoch_differences(all_models[batchsize])
+        train_errors = extract_errors(all_train_test_errors[batchsize], key=0)
+        test_errors = extract_errors(all_train_test_errors[batchsize], key=1)
+
+        all_norm_differences = epoch_differences["all"]
+        length = len(all_norm_differences)
+        assert(length == len(train_errors))
+        assert(length == len(test_errors))
+
+        abs_diffs = [abs(test_errors[i]-train_errors[i]) for i in range(len(test_errors))]
+
+        plt.cla()
+        plt.plot(list(range(length)), all_norm_differences, label="norm diff")
+        plt.plot(list(range(length)), train_errors, label="train error")
+        plt.plot(list(range(length)), test_errors, label="test error")
+        plt.plot(list(range(length)), abs_diffs, label="abs(train_error-test_error)")
+        plt.xlabel("Epoch")
+        plt.ylabel("")
+        plt.legend(loc="upper right", fontsize=7)
+        plt.title("Train vs test vs parameter difference")
+        plt.savefig("TrainTestParameterDifferences%d.png" % int(batchsize))
+
 # [batchsize][epoch] contains
+train_test_errors = load_train_test_errors(sys.argv[1])
 models = load_all_models_all_batches(sys.argv[1])
-plot_all_parameter_diffs(models)
+#plot_all_parameter_diffs(models)
+plot_train_test_errors(models, train_test_errors)
