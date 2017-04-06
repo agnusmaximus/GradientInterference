@@ -32,7 +32,7 @@ def compute_loss(sess, data, placeholders, loss_op, method="train"):
     assert(n_examples % FLAGS.eval_batchsize == 0)
     sum_loss = 0
     for i in range(n_examples//FLAGS.eval_batchsize):
-        print("%d of %d" % (i, n_examples//FLAGS.eval_batchsize))
+        #print("%d of %d" % (i, n_examples//FLAGS.eval_batchsize))
         images_eval_real, labels_eval_real, cur_index = next_batch(FLAGS.eval_batchsize, images_data, labels_data, cur_index)
         fd = {images_placeholder : images_eval_real,
               labels_placeholder : labels_eval_real}
@@ -59,7 +59,7 @@ def compute_error(sess, data, placeholders, top_k_op, method="train"):
     assert(n_examples % FLAGS.eval_batchsize == 0)
     true_count = 0
     for i in range(n_examples//FLAGS.eval_batchsize):
-        print("%d of %d" % (i, n_examples//FLAGS.eval_batchsize))
+        #print("%d of %d" % (i, n_examples//FLAGS.eval_batchsize))
         images_eval_real, labels_eval_real, cur_index = next_batch(FLAGS.eval_batchsize, images_data, labels_data, cur_index)
         fd = {images_placeholder : images_eval_real,
               labels_placeholder : labels_eval_real}
@@ -172,8 +172,9 @@ def recreate_loss(model_file_name, train_test_error_file_name):
         loss_train_2 = compute_loss(sess, (images_test_raw, labels_test_raw, images_raw, labels_raw), (images_2, labels_2), loss_2, method="train")
 
         # Save train and test losses
-        f = open("_".join(train_test_error_file_name.split("_")[:-1]) + "_loss")
+        f = open("_".join(train_test_error_file_name.split("_")[:-1]) + "_loss", "w")
         cPickle.dump([loss_train_1, loss_test_1, loss_train_2, loss_test_2], file=f)
+        f.close()
 
 def check_model_train_test_files_for_correctness(model_train_test_files):
 
@@ -207,5 +208,8 @@ if __name__=="__main__":
 
     cifar10.maybe_download_and_extract()
 
+    i = 0
     for model_file, train_test_file in model_train_test_files:
+        print("%d of %d" % (i, len(model_train_test_files)))
         recreate_loss(model_file, train_test_file)
+        i += 1
