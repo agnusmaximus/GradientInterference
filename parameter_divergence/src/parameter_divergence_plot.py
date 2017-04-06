@@ -52,33 +52,35 @@ def aggregate_conv_layer_variables(model_variables):
         agg_variables["all"] = np.hstack([agg_variables["all"], v.flatten()])
     return agg_variables
 
-def compute_parameter_distances(all_variables):
+def compute_parameter_distances(all_variables, use_normalized_distance=True):
     m1_variables, m2_variables = separate_model1_model2_variables(all_variables)
     assert(set(m1_variables.keys()) == set(m2_variables.keys()))
     m1_variables, m2_variables = aggregate_conv_layer_variables(m1_variables), aggregate_conv_layer_variables(m2_variables)
     assert(set(m1_variables.keys()) == set(m2_variables.keys()))
     diffs = {}
     for k in m1_variables.keys():
-        #difference = np.linalg.norm(m1_variables[k]-m2_variables[k])
-        difference = np.linalg.norm(m1_variables[k]/np.linalg.norm(m1_variables[k])-m2_variables[k]/np.linalg.norm(m2_variables[k]))
+        if not use_normalized_distance:
+            difference = np.linalg.norm(m1_variables[k]-m2_variables[k])
+        elif use_normalized_distance:
+            difference = np.linalg.norm(m1_variables[k]/np.linalg.norm(m1_variables[k])-m2_variables[k]/np.linalg.norm(m2_variables[k]))
         diffs[k] = difference
     print(diffs)
     return diffs
 
-def extract_epoch_differences(model):
+def extract_epoch_differences(model, use_normalized_distance=False):
     epoch_differences = {}
     for epoch in sorted(model.keys(), key=lambda x:int(x)):
-        diffs = compute_parameter_distances(model[epoch])
+        diffs = compute_parameter_distances(model[epoch], use_normalized_distance=use_normalized_distance)
         for k,v in diffs.items():
             if k not in epoch_differences:
                 epoch_differences[k] = []
             epoch_differences[k].append(v)
     return epoch_differences
 
-def plot_differences(batchsize, epoch_differences):
+def plot_differences(batchsize, epoch_differences, name_prefix=""):
     for k, differences in epoch_differences.items():
         x_indices = list(range(0, len(differences)))
-        plt.plot(x_indices, differences, label=("batchsize_%d" % int(batchsize)) + k)
+        plt.plot(x_indices, differences, label=(name_prefix + "batchsize_%d" % int(batchsize)) + k)
 
 def plot_all_parameter_diffs(all_models):
     for batchsize in all_models.keys():
@@ -104,6 +106,46 @@ def plot_all_parameter_diffs(all_models):
     plt.title("All Batchsizes")
     plt.savefig("allbatchsize.png")
 
+def plot_all_parameter_diffs_compare_normalized_dist_and_dist(all_models):
+    # Do normalized (norm(x/norm(x)-y/norm(y)))
+    for batchsize in all_models.keys():
+        # [layer_name] = differences_for_epoch_1, differences_for_epoch_2 ...
+        epoch_differences_normalized = extract_epoch_differences(all_models[batchsize], use_normalized_distance=True)
+
+        plt.cla()
+        plot_differences(batchsize, epoch_differences_normalized, name_prefix="normalized-")
+        plt.xlabel("Epoch")
+        plt.ylabel("Norm")
+        plt.legend(loc="upper left")
+        plt.title("batchsize_%d_parameter_divergence_normalized" % int(batchsize))
+        plt.savefig("batchsize_%d_parameter_divergence_normalized.png" % int(batchsize))
+
+    # Do non -normalized (norm(x-y))
+    for batchsize in all_models.keys():
+        # [layer_name] = differences_for_epoch_1, differences_for_epoch_2 ...
+        epoch_differences_non_normalized = extract_epoch_differences(all_models[batchsize], use_normalized_distance=False)
+
+        plt.cla()
+        plot_differences(batchsize, epoch_differences_non_normalized, name_prefix="non-normalized-")
+        plt.xlabel("Epoch")
+        plt.ylabel("Norm")
+        plt.legend(loc="upper left")
+        plt.title("batchsize_%d_parameter_divergence_non_normalized" % int(batchsize))
+        plt.savefig("batchsize_%d_parameter_divergence_non_normalized.png" % int(batchsize))
+
+def plot_all_batchsize_all_non_normalized_dists(all_models):
+    # Do non-normalized
+    for batchsize in all_models.keys():
+        # [layer_name] = differences_for_epoch_1, differences_for_epoch_2 ...
+        epoch_differences_non_normalized = extract_epoch_differences(all_models[batchsize], use_normalized_distance=False)
+        epoch_differences_non_normalized = {k:v for k,v in epoch_differences_non_normalized.items() if k == "all"}
+        plot_differences(batchsize, epoch_differences_non_normalized, name_prefix="non-normalized-")
+    plt.xlabel("Epoch")
+    plt.ylabel("Norm")
+    plt.legend(loc="upper left")
+    plt.title("all_parameter_divergence_non_normalized")
+    plt.savefig("all_parameter_divergence_non_normalized.png")
+
 def load_train_test_errors(dirname):
     print("Loading train test errors")
     train_test_errors = {}
@@ -128,7 +170,7 @@ def plot_train_test_errors(all_models, all_train_test_errors):
         return errors
 
     for batchsize in all_models.keys():
-        epoch_differences = extract_epoch_differences(all_models[batchsize])
+        epoch_differences = extract_epoch_differences(all_models[batchsize], use_normalized_distance=False)
         train_errors = extract_errors(all_train_test_errors[batchsize], key=0)
         test_errors = extract_errors(all_train_test_errors[batchsize], key=1)
 
@@ -147,11 +189,15 @@ def plot_train_test_errors(all_models, all_train_test_errors):
         plt.xlabel("Epoch")
         plt.ylabel("")
         plt.legend(loc="upper right", fontsize=7)
-        plt.title("Train vs test vs parameter difference")
-        plt.savefig("TrainTestParameterDifferences%d.png" % int(batchsize))
+        plt.title("Train vs test vs parameter difference batchsize %d non normalized" % int(batchsize))
+        plt.savefig("TrainTestParameterDifferencesNonNormalized%d.png" % int(batchsize))
 
-# [batchsize][epoch] contains
-train_test_errors = load_train_test_errors(sys.argv[1])
-models = load_all_models_all_batches(sys.argv[1])
-#plot_all_parameter_diffs(models)
-plot_train_test_errors(models, train_test_errors)
+
+if __name__ == "__main__":
+    # [batchsize][epoch] contains
+    train_test_errors = load_train_test_errors(sys.argv[1])
+    models = load_all_models_all_batches(sys.argv[1])
+    plot_all_batchsize_all_non_normalized_dists(models)
+    plot_all_parameter_diffs_compare_normalized_dist_and_dist(models)
+    plot_all_parameter_diffs(models)
+    plot_train_test_errors(models, train_test_errors)
