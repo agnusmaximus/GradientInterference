@@ -194,7 +194,7 @@ if __name__=="__main__":
     # model - parameter_difference_batchsize_%d_epoch_%d_save
     # train/test - parameter_difference_batchsize_%d_epoch_%d_train_test_error
     save_directory = sys.argv[1]
-    files = glob.glob(save_directory + "/*")
+    files = glob.glob(save_directory + "/parameter_difference_batchsize_*")
     model_files, train_test_files = [], []
     for i, f in enumerate(sorted(files)):
         if i % 2 == 0:
