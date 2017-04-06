@@ -8,6 +8,7 @@ import glob
 
 model_match_string = "/*_save"
 train_test_match_string = "/*train_test_error"
+train_test_loss_match_string = "/*train_test_loss"
 
 #model_match_string = "/*64*_save"
 #train_test_match_string = "/*64*train_test_error"
@@ -161,6 +162,21 @@ def load_train_test_errors(dirname):
     print("Done")
     return train_test_errors
 
+def load_train_test_errors(dirname):
+    print("Loading train test errors")
+    train_test_losses = {}
+    for fname in glob.glob(dirname + train_test_loss_match_string):
+        epoch = fname.split("_")[-4]
+        batchsize = fname.split("_")[-6]
+        f = open(fname, "r")
+        loss_train_1, loss_train_2, loss_test_1, loss_test_2 = cPickle.load(f)
+        f.close()
+        if batchsize not in train_test_errors:
+            train_test_errors[batchsize] = {}
+        train_test_losses[batchsize][epoch] = (loss_train_1, loss_test_1)
+    print("Done")
+    return train_test_losses
+
 def plot_train_test_errors(all_models, all_train_test_errors):
 
     def extract_errors(train_test_error, key=0):
@@ -192,12 +208,44 @@ def plot_train_test_errors(all_models, all_train_test_errors):
         plt.title("Train vs test vs parameter difference batchsize %d non normalized" % int(batchsize))
         plt.savefig("TrainTestParameterDifferencesNonNormalized%d.png" % int(batchsize))
 
+def plot_train_test_losses(all_models, all_train_test_losses):
+
+    def extract_errors(train_test_error, key=0):
+        errors = []
+        for epoch, value in sorted(train_test_error.items(), key=lambda x : int(x[0])):
+            errors.append(value[key])
+        return errors
+
+    for batchsize in all_models.keys():
+        epoch_differences = extract_epoch_differences(all_models[batchsize], use_normalized_distance=False)
+        train_losses = extract_errors(all_train_test_losses[batchsize], key=0)
+        test_losses = extract_errors(all_train_test_losses[batchsize], key=1)
+
+        all_norm_differences = epoch_differences["all"]
+        length = len(all_norm_differences)
+        assert(length == len(train_losses))
+        assert(length == len(test_losses))
+
+        abs_diffs = [abs(test_losses[i]-train_losses[i]) for i in range(len(test_losses))]
+
+        plt.cla()
+        plt.plot(list(range(length)), all_norm_differences, label="norm diff")
+        plt.plot(list(range(length)), train_losses, label="train loss")
+        plt.plot(list(range(length)), test_losses, label="test loss")
+        plt.plot(list(range(length)), abs_diffs, label="abs(train_loss-test_loss)")
+        plt.xlabel("Epoch")
+        plt.ylabel("")
+        plt.legend(loc="upper right", fontsize=7)
+        plt.title("Train vs test vs parameter difference batchsize %d non normalized" % int(batchsize))
+        plt.savefig("TrainTestParameterDifferencesNonNormalized%d.png" % int(batchsize))
 
 if __name__ == "__main__":
     # [batchsize][epoch] contains
     train_test_errors = load_train_test_errors(sys.argv[1])
+    train_test_losses = load_train_test_losses(sys.argv[1])
     models = load_all_models_all_batches(sys.argv[1])
     plot_all_batchsize_all_non_normalized_dists(models)
     plot_all_parameter_diffs_compare_normalized_dist_and_dist(models)
     plot_all_parameter_diffs(models)
     plot_train_test_errors(models, train_test_errors)
+    plot_train_test_losses(models, train_test_losses)
