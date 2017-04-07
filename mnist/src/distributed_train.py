@@ -366,9 +366,6 @@ def train(target, dataset, cluster_spec):
         total_sum_of_norms += gnorm
         total_sum_of_gradients += gsum
 
-      fd = {}
-      fd[step_placeholder] = cur_step
-
       R = dataset.num_examples * total_sum_of_norms / np.linalg.norm(total_sum_of_gradients) ** 2
 
       # We enqueue R to worker's queues
@@ -377,6 +374,8 @@ def train(target, dataset, cluster_spec):
         sess.run([R_queue_enqueue[i]], feed_dict=fd)
 
       # We let workers know that we've computed R
+      fd = {}
+      fd[step_placeholder] = cur_step
       sess.run([update_r_computed_step], feed_dict=fd)
 
       return R
