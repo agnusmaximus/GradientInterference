@@ -228,6 +228,17 @@ def train(target, dataset, cluster_spec):
         R_images_work_queue.append(data_flow_ops.FIFOQueue(-1, tf.float32, name=name_images, shared_name=name_images))
         R_labels_work_queue.append(data_flow_ops.FIFOQueue(-1, tf.int64, name=name_labels, shared_name=name_labels))
 
+      # R queue for distributing R to workers
+      R_queue = []
+      R_queue_enqueue = []
+      R_queue_dequeue = []
+      R_placeholder = tf.placeholder(tf.float32, shape=(None))
+      for i in range(num_workers):
+        name = "R_queue_%d" % i
+        R_queue.append(data_flow_ops.FIFOQueue(-1, tf.float32, name=name, shared_name=name))
+        R_queue_enqueue.append(R_queue[i].enqueue(R_placeholder))
+        R_queue_dequeue.append(R_queue[i].dequeue())
+
       gradient_sums_queue = data_flow_ops.FIFOQueue(-1, tf.float32, name="gradient_sums_queue", shared_name="gradient_sums_queue")
       sum_of_norms_queue = data_flow_ops.FIFOQueue(-1, tf.float32, name="gradient_norms_queue", shared_name="gradient_norms_queue")
 
@@ -357,8 +368,18 @@ def train(target, dataset, cluster_spec):
 
       fd = {}
       fd[step_placeholder] = cur_step
+
+      R = dataset.num_examples * total_sum_of_norms / np.linalg.norm(total_sum_of_gradients) ** 2
+
+      # We enqueue R to worker's queues
+      for i in range(num_workers):
+        fd = {R_placeholder : R}
+        sess.run([R_queue_enqueue[i]], feed_dict=fd)
+
+      # We let workers know that we've computed R
       sess.run([update_r_computed_step], feed_dict=fd)
-      return dataset.num_examples * total_sum_of_norms / np.linalg.norm(total_sum_of_gradients) ** 2
+
+      return R
 
     # Other workers need to wait for the master to finish
     received_step = 0
@@ -366,6 +387,9 @@ def train(target, dataset, cluster_spec):
       tf.logging.info("Received step: %d vs Cur step: %d" % (received_step, cur_step))
       sys.stdout.flush()
       received_step = sess.run([R_computed_step])[0]
+
+    # We also pop from the R queue
+    return sess.run([R_queue_dequeue[FLAGS.task_id]])[0]
 
   sync_replicas_hook = opt.make_session_run_hook(is_chief)
 
