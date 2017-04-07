@@ -462,7 +462,8 @@ def train(target, dataset, cluster_spec):
           compute_R_times.append(t_compute_r_end-t_compute_r_start)
         if FLAGS.should_compute_R and FLAGS.task_id != 0:
           R = distributed_compute_R(mon_sess, step)
-        batchsize_to_use = int(R / num_workers)
+        if FLAGS.should_compute_R:
+          batchsize_to_use = int(R / num_workers)
 
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
 
