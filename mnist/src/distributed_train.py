@@ -451,6 +451,7 @@ def train(target, dataset, cluster_spec):
 
       # We use step since it's synchronized across workers
       # Step != 0 is a hack to make sure R isn't computed twice in the beginning
+      batchsize_to_use = FLAGS.batch_size
       if (step % num_steps_per_epoch == 0 and step != 0) or step == -1:
         if FLAGS.should_compute_R and FLAGS.task_id == 0:
           t_compute_r_start = time.time()
@@ -461,14 +462,16 @@ def train(target, dataset, cluster_spec):
           tf.logging.info("Master done computing R... Elapsed time: %f" % (t_compute_r_end-t_compute_r_start))
           compute_R_times.append(t_compute_r_end-t_compute_r_start)
         if FLAGS.should_compute_R and FLAGS.task_id != 0:
-          distributed_compute_R(mon_sess, step)
+          R = distributed_compute_R(mon_sess, step)
+        batchsize_to_use = int(R / num_workers)
 
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
 
       tf.logging.info("Epoch: %d" % int(cur_epoch_track))
 
       # Dequeue variable batchsize inputs
-      feed_dict = mnist.fill_feed_dict(dataset, images, labels, FLAGS.batch_size)
+      tf.logging.info("Using batchsize: %d" % batchsize_to_use)
+      feed_dict = mnist.fill_feed_dict(dataset, images, labels, batchsize_to_use)
       loss_value, step = mon_sess.run([train_op, global_step], run_metadata=run_metadata, options=run_options, feed_dict=feed_dict)
       n_examples_processed += FLAGS.batch_size * num_workers
 
