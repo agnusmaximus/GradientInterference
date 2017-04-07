@@ -408,6 +408,7 @@ def train(target, dataset, cluster_spec):
   checkpoint_save_secs = 60*5
 
   compute_R_times, evaluate_times = [0], [0]
+  batchsize_to_use = FLAGS.batch_size
 
   with tf.train.MonitoredTrainingSession(
       master=target, is_chief=is_chief,
@@ -450,7 +451,6 @@ def train(target, dataset, cluster_spec):
 
       # We use step since it's synchronized across workers
       # Step != 0 is a hack to make sure R isn't computed twice in the beginning
-      batchsize_to_use = FLAGS.batch_size
       if (step % num_steps_per_epoch == 0 and step != 0) or step == -1:
         if FLAGS.should_compute_R and FLAGS.task_id == 0:
           t_compute_r_start = time.time()
