@@ -33,6 +33,7 @@ FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_boolean('should_evaluate', False, 'Whether Chief should do evaluation per epoch.')
 tf.app.flags.DEFINE_boolean('should_compute_R', False, 'Whether Chief should do compute R per epoch.')
+tf.app.flags.DEFINE_boolean('should_use_synthetic_R', False, 'Whether Chief should do compute R per epoch.')
 tf.app.flags.DEFINE_integer('evaluate_batchsize', 1000,
                            """Batchsize for evaluation""")
 
@@ -410,6 +411,25 @@ def train(target, dataset, cluster_spec):
   compute_R_times, evaluate_times = [0], [0]
   batchsize_to_use = FLAGS.batch_size
 
+  synthetic_R = [
+                 1634.717201,
+                 4637.780621,
+                 4949.509475,
+                 7828.160499,
+                 5212.469291,
+                 6623.980588,
+                 10139.389658,
+                 13001.223429,
+                 10721.092182,
+                 15725.914711,
+                 10162.416791,
+                 8593.163561,
+                 18036.319066,
+                 25562.322287,
+                 22058.938752,
+                 10855.233343,
+                 16747.397712]
+
   with tf.train.MonitoredTrainingSession(
       master=target, is_chief=is_chief,
       hooks=[sync_replicas_hook],
@@ -462,8 +482,12 @@ def train(target, dataset, cluster_spec):
           compute_R_times.append(t_compute_r_end-t_compute_r_start)
         if FLAGS.should_compute_R and FLAGS.task_id != 0:
           R = distributed_compute_R(mon_sess, step)
-        if FLAGS.should_compute_R:
-          batchsize_to_use = int(R / num_workers)
+
+      if FLAGS.should_use_synthetic_R:
+        if cur_epoch_track < len(synthetic_R):
+          batchsize_to_use = synthetic_R[cur_epoch_track]
+        else:
+          batchsize_to_use = FLAGS.batch_size
 
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
 
