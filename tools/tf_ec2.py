@@ -29,10 +29,10 @@ cfg_resnet = Cfg({
 
     # Cluster topology
     "n_masters" : 1,                      # Should always be 1
-    "n_workers" : 3,
+    "n_workers" : 7,
     "n_ps" : 1,
     "n_evaluators" : 1,                   # Continually validates the model on the validation data
-    "num_replicas_to_aggregate" : "4",
+    "num_replicas_to_aggregate" : "8",
 
     "method" : "spot",
 
@@ -48,7 +48,7 @@ cfg_resnet = Cfg({
     "image_id": "ami-f9fe7799", # GradientInterferenceGPU
 
     # Launch specifications
-    "spot_price" : "1",                 # Has to be a string
+    "spot_price" : ".6",                 # Has to be a string
 
     # SSH configuration
     "ssh_username" : "ubuntu",            # For sshing. E.G: ssh ssh_username@hostname
@@ -101,7 +101,7 @@ cfg_resnet = Cfg({
         "python resnet/src/resnet_distributed_train.py "
         "--batch_size=%(batch_size)s "
         "--should_evaluate=false "
-        "--should_compute_R=true "
+        "--should_compute_R=false "
         "--initial_learning_rate=%(initial_learning_rate)s "
         "--learning_rate_decay_factor=%(learning_rate_decay_factor)s "
         "--num_epochs_per_decay=%(num_epochs_per_decay)s "
@@ -262,14 +262,14 @@ cfg_mnist = Cfg({
     "availability_zone" : "us-west-2a",
 
     # Machine type - instance type configuration.
-    "master_type" : "m3.medium",
-    "worker_type" : "m3.medium",
-    "ps_type" : "m3.medium",
-    "evaluator_type" : "m3.medium",
+    "master_type" : "p2.xlarge",
+    "worker_type" : "p2.xlarge",
+    "ps_type" : "p2.xlarge",
+    "evaluator_type" : "p2.xlarge",
     "image_id": "ami-f9fe7799", # GradientInterferenceGPU
 
     # Launch specifications
-    "spot_price" : ".1",                 # Has to be a string
+    "spot_price" : ".3",                 # Has to be a string
 
     # SSH configuration
     "ssh_username" : "ubuntu",            # For sshing. E.G: ssh ssh_username@hostname
@@ -305,8 +305,8 @@ cfg_mnist = Cfg({
     ],
 
     # Model configuration
-    "batch_size" : "64",
-    "initial_learning_rate" : ".1",
+    "batch_size" : "256",
+    "initial_learning_rate" : ".0005",
     "learning_rate_decay_factor" : "1",
     "num_epochs_per_decay" : "350.0",
 
@@ -321,8 +321,9 @@ cfg_mnist = Cfg({
     [
         "python mnist/src/mnist_distributed_train.py "
         "--batch_size=%(batch_size)s "
-        "--should_evaluate=false "
-        "--should_compute_R=true "
+        "--should_evaluate=true "
+        "--should_compute_R=false "
+        "--should_use_synthetic_R=true "
         "--initial_learning_rate=%(initial_learning_rate)s "
         "--learning_rate_decay_factor=%(learning_rate_decay_factor)s "
         "--num_epochs_per_decay=%(num_epochs_per_decay)s "
@@ -519,6 +520,8 @@ cfg_lstm = Cfg({
     [
         "cd GradientInterference",
         "git fetch && git reset --hard origin/master",
+        "wget http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz",
+        "tar xvf simple-examples.tgz"
     ],
 
     # Pre commands are run on every machine before the actual training.
@@ -526,10 +529,12 @@ cfg_lstm = Cfg({
     [
         "cd GradientInterference",
         "git fetch && git reset --hard origin/master",
+        "wget http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz",
+        "tar xvf simple-examples.tgz"
     ],
 
     # Model configuration
-    "batch_size" : "64",
+    "batch_size" : "30",
     "initial_learning_rate" : ".1",
     "learning_rate_decay_factor" : "1",
     "num_epochs_per_decay" : "350.0",
@@ -544,6 +549,7 @@ cfg_lstm = Cfg({
     "train_commands" :
     [
         "python lstm/src/lstm_distributed_train.py "
+        "--data_path=simple-examples/data/ "
         "--batch_size=%(batch_size)s "
         "--should_evaluate=true "
         "--should_compute_R=false "
@@ -1258,9 +1264,9 @@ def tf_ec2_run(argv, configuration):
 
 if __name__ == "__main__":
     #cfg = cfg_resnet
-    #cfg = cfg_mnist
+    cfg = cfg_mnist
     #cfg = cfg_dcgan
     #cfg = cfg_resnet_cifar100
-    cfg = cfg_lstm
+    #cfg = cfg_lstm
     print(cfg)
     tf_ec2_run(sys.argv, cfg)

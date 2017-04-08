@@ -124,7 +124,6 @@ def run_experiments():
     accuracy_cfgs = filter_cfgs(accuracy_outdir, accuracy_cfgs)
     print(list(x["name"] for x in accuracy_cfgs))
     for cfg in accuracy_cfgs:
-        cfg["spot_price"] = str(int(cfg["spot_price"])*2)
         succeeded = False
         while not succeeded:
             shutdown_and_launch(cfg)
