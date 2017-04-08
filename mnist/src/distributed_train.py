@@ -485,7 +485,7 @@ def train(target, dataset, cluster_spec):
 
       if FLAGS.should_use_synthetic_R:
         if cur_epoch_track < len(synthetic_R):
-          batchsize_to_use = int(synthetic_R[cur_epoch_track] / num_workers)
+          batchsize_to_use = int(synthetic_R[cur_epoch_track] / 4 / num_workers)
         else:
           batchsize_to_use = FLAGS.batch_size
 
