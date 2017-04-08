@@ -483,6 +483,8 @@ def train(target, dataset, cluster_spec):
         if FLAGS.should_compute_R and FLAGS.task_id != 0:
           R = distributed_compute_R(mon_sess, step)
 
+        batchsize_to_use = max(1, int(R / 4 / num_workers))
+
       if FLAGS.should_use_synthetic_R:
         if cur_epoch_track < len(synthetic_R):
           batchsize_to_use = int(synthetic_R[cur_epoch_track] / 4 / num_workers)
