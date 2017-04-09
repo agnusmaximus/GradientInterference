@@ -505,7 +505,7 @@ def main(_):
       tf.logging.info("Evaluating...")
       session.run([m.train_op])
       tf.logging.info("Done Evaluating...")
-      n_examples_processed += num_workers
+      n_examples_processed += num_workers * FLAGS.batch_size
       ####
 
       tf.logging.info("Epoch: %f" % (n_examples_processed / float(m.input.epoch_size)))
