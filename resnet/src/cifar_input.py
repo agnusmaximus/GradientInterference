@@ -126,10 +126,10 @@ def build_input(dataset, data_path, batch_size, mode):
   image = tf.cast(tf.transpose(depth_major, [1, 2, 0]), tf.float32)
 
   if mode == 'train':
-    image = tf.image.resize_image_with_crop_or_pad(
-        image, image_size+4, image_size+4)
-    image = tf.random_crop(image, [image_size, image_size, 3])
-    image = tf.image.random_flip_left_right(image)
+    #image = tf.image.resize_image_with_crop_or_pad(
+        #image, image_size+4, image_size+4)
+    #image = tf.random_crop(image, [image_size, image_size, 3])
+    #image = tf.image.random_flip_left_right(image)
     # Brightness/saturation/constrast provides small gains .2%~.5% on cifar.
     # image = tf.image.random_brightness(image, max_delta=63. / 255.)
     # image = tf.image.random_saturation(image, lower=0.5, upper=1.5)
@@ -243,10 +243,10 @@ def build_input_multi_batchsize(dataset, data_path, batch_size, mode):
   image = tf.cast(tf.transpose(depth_major, [1, 2, 0]), tf.float32)
 
   if mode == 'train':
-    image = tf.image.resize_image_with_crop_or_pad(
-        image, image_size+4, image_size+4)
-    image = tf.random_crop(image, [image_size, image_size, 3])
-    image = tf.image.random_flip_left_right(image)
+    #image = tf.image.resize_image_with_crop_or_pad(
+    #    image, image_size+4, image_size+4)
+    #image = tf.random_crop(image, [image_size, image_size, 3])
+    #image = tf.image.random_flip_left_right(image)
     # Brightness/saturation/constrast provides small gains .2%~.5% on cifar.
     # image = tf.image.random_brightness(image, max_delta=63. / 255.)
     # image = tf.image.random_saturation(image, lower=0.5, upper=1.5)
