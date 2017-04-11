@@ -58,7 +58,7 @@ tf.app.flags.DEFINE_string('train_dir', '/tmp/cifar10_train',
                            """and checkpoint.""")
 tf.app.flags.DEFINE_integer('max_steps', 1000000,
                             """Number of batches to run.""")
-tf.app.flags.DEFINE_integer('evaluate_batch_size', 100,
+tf.app.flags.DEFINE_integer('evaluate_batch_size', 1000,
                             """Number of batches to run.""")
 tf.app.flags.DEFINE_boolean('log_device_placement', False,
                             """Whether to log device placement.""")
@@ -212,7 +212,7 @@ def train():
         get_feed_dict.fractional_dataset_index = next_index
         assert(images_real.shape[0] == batch_size)
         assert(labels_real.shape[0] == batch_size)
-        print(images_real.shape, label_real.shape)
+        print(images_real.shape, labels_real.shape)
         return {images : images_real, labels: labels_real}
     get_feed_dict.fractional_dataset_index = 0
 
