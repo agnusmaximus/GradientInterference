@@ -80,14 +80,8 @@ def run_tf_and_download_files(limit, cfg, evaluator_file_name="out_evaluator", m
 
     time.sleep(10)
 
-    download_evaluator_file_args = "tools/tf_ec2.py download_file %s %s %s" % (cluster_string, evaluator_file_name, outdir)
-    tf_ec2_run(download_evaluator_file_args.split(), cfg)
-
     download_master_file_args = "tools/tf_ec2.py download_file %s %s %s" % (cluster_string, master_file_name, outdir)
     tf_ec2_run(download_master_file_args.split(), cfg)
-
-    download_ps_file_args = "tools/tf_ec2.py download_file %s %s %s" % (cluster_string, ps_file_name, outdir)
-    tf_ec2_run(download_ps_file_args.split(), cfg)
 
     return True
 
