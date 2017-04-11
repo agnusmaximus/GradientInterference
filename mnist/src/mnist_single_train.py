@@ -65,7 +65,7 @@ def load_fractional_repeated_data(dataset, r=2):
   # We tile each fractional set r times
   images_final = np.tile(images_fractional, r)
   labels_final = np.tile(labels_fractional, r)
-  assert(images_final.shape == (dataset.num_examples, IMAGE_SIZE, IMAGE_SIZE, NUM_CHANNELS))
+  assert(images_final.shape == (dataset.num_examples, mnist.IMAGE_SIZE, mnist.IMAGE_SIZE, mnist.NUM_CHANNELS))
   assert(labels_final.shape == (dataset.num_examples,))
 
   return images_final, labels_final
