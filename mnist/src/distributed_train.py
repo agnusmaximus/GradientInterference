@@ -37,6 +37,7 @@ tf.app.flags.DEFINE_float('learning_rate', 0.1, 'Constant learning rate.')
 
 # Distributed defines
 tf.app.flags.DEFINE_string('job_name', '', 'One of "ps", "worker"')
+tf.app.flags.DEFINE_integer('task_id', 0, 'Task ID of the worker/replica running the training.')
 tf.app.flags.DEFINE_string('ps_hosts', '',
                            """Comma-separated list of hostname:port for the """
                            """parameter server jobs. e.g. """
