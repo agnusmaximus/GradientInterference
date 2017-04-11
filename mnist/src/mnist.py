@@ -29,7 +29,7 @@ IMAGE_SIZE = 28
 IMAGE_PIXELS = IMAGE_SIZE * IMAGE_SIZE
 NUM_CHANNELS = 1
 PIXEL_DEPTH = 255
-SEED = 66478  # Set to None for random seed.
+SEED = 0  # Set to None for random seed.
 
 FLAGS = tf.app.flags.FLAGS
 
