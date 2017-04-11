@@ -104,7 +104,7 @@ def get_next_fractional_batch(fractional_images, fractional_labels, cur_index, b
   assert(next_batch_images.shape[0] == batch_size)
   assert(next_batch_labels.shape[0] == batch_size)
 
-  return next_batch_images, next_batch_labels, next_index
+  return next_batch_images, next_batch_labels, next_index % fractional_labels.shape[0]
 
 def main(unused_args):
     print("Loading dataset")
