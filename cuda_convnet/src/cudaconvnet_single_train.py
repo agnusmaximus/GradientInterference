@@ -259,7 +259,6 @@ def train():
       print("Starting training loop...")
       sys.stdout.flush()
       while True:
-        print("YO")
         new_epoch_float = n_examples_processed / float(num_examples)
         new_epoch_track = int(new_epoch_float)
         if cur_iteration == 0 or (new_epoch_track - cur_epoch_track >= 1):
@@ -273,6 +272,8 @@ def train():
             t_evaluate_end = time.time()
             evaluate_times.append(t_evaluate_end-t_evaluate_start)
         cur_epoch_track = max(cur_epoch_track, new_epoch_track)
+        print("YO")
+        sys.stdout.flush()
         feed_dict = get_feed_dict(FLAGS.batch_size)
         sess.run([train_op], feed_dict=feed_dict)
         cur_iteration += 1
