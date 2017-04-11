@@ -41,6 +41,8 @@ tf.app.flags.DEFINE_integer('evaluate_batch_size', 1000,
                            """Batchsize for evaluation""")
 tf.app.flags.DEFINE_integer('checkpoint_save_secs', 60*10,
                            """Seconds between checkpoint saving""")
+tf.app.flags.DEFINE_bool('use_fractional_dataset', False,
+                         """Use fractional dataset""")
 
 
 np.set_printoptions(threshold=np.nan)
@@ -74,13 +76,35 @@ def load_fractional_repeated_data(dataset, r=2):
   images_first_segment = images_final[:int(dataset.num_examples/r)]
   images_second_segment = images_final[int(dataset.num_examples/r):2*int(dataset.num_examples/r)]
   assert(np.linalg.norm(images_first_segment - images_second_segment) == 0)
-
   return images_final, labels_final
+
+def get_next_fractional_batch(fractional_images, fractional_labels, cur_index, batch_size):
+  start = cur_index
+  end = min(cur_index+batch_size, fractional_labels.shape[0])
+  next_index = end
+  next_batch_images = fractional_images[start:end]
+  next_batch_labels = fractional_labels[start:end]
+
+  # Wrap around
+  wraparound_images = np.array([])
+  wraparound_labels = np.array([])
+  if end-start < batch_size:
+    next_index = batch_size-(end-start)
+    wraparound_images = fractional_images[0:next_index]
+    wraparound_labels = fractional_images[0:next_index]
+
+  images_final = np.hstack((next_batch_images, wraparound_images))
+  labels_final = np.hstack((next_batch_labels, wraparound_labels))
+
+  assert(labels_final.shape[0] == batch_size)
+  assert(images_final.shape[0] == batch_size)
+
+  return images_final, labels_final, next_index
 
 def main(unused_args):
     print("Loading dataset")
     dataset = mnist_data.load_mnist().train
-    fractional_imags, fractional_labels = load_fractional_repeated_data(dataset)
+    fractional_images, fractional_labels = load_fractional_repeated_data(dataset)
     print("Done loading dataset")
 
     FLAGS = tf.app.flags.FLAGS
@@ -107,6 +131,24 @@ def main(unused_args):
     # Compute gradients and apply it
     grads = opt.compute_gradients(total_loss)
     train_op = opt.apply_gradients(grads, global_step=global_step)
+
+    # Helper function to load feed dictionary
+    def get_feed_dict(batch_size, fractional_dataset_index=-1):
+      if fractional_dataset_index != -1:
+        get_feed_dict.fractional_dataset_index = fractional_dataset_index
+
+      if FLAGS.use_fractional_dataset:
+        images_real, labels_real, next_index = get_next_fractional_batch(fractional_images, fractional_labels,
+                                                                         get_feed_dict.fractional_dataset_index,
+                                                                         batch_size)
+        get_feed_dict.fractional_dataset_index = next_index
+        assert(images_real.shape[0] == batch_size)
+        assert(labels_real.shape[0] == batch_size)
+        return {images : images_real, labels: labels_real}
+      else:
+        return mnist.fill_feed_dict(dataset, images, labels, batch_size)
+    # Initialize static variable of feed dict to 0
+    get_feed_dict.fractional_dataset_index = 0
 
     # Helper function to evaluate on training set
     def model_evaluate(sess):
