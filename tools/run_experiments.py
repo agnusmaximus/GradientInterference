@@ -57,7 +57,7 @@ def check_if_reached_accuracy(cluster_string, accuracy, cfg, master_file_name="o
         if m:
             cur_acc = max(cur_acc, float(m.group(3)))
     print("Currently on accuracy %f" % cur_acc)
-    return cur_acc > accuracy
+    return cur_acc >= accuracy
 
 def run_tf_and_download_files(limit, cfg, evaluator_file_name="out_evaluator", master_file_name="out_master", ps_file_name="out_ps_0", outdir="result_dir", done=check_if_reached_epochs):
 
@@ -121,7 +121,7 @@ def run_experiments():
         succeeded = False
         while not succeeded:
             shutdown_and_launch(cfg)
-            succeeded = run_tf_and_download_files(.70, cfg, done=check_if_reached_accuracy, outdir=accuracy_outdir)
+            succeeded = run_tf_and_download_files(.995, cfg, done=check_if_reached_accuracy, outdir=accuracy_outdir)
 
 if __name__ == "__main__":
     run_experiments()
