@@ -134,6 +134,7 @@ def run_experiments():
     R_cfgs = glob.glob("experiment_configs/ratio_configs/*")
     R_cfgs = [load_cfg_from_file(x) for x in R_cfgs]
     R_cfgs = filter_cfgs(R_outdir, R_cfgs)
+    R_cfgs = R_cfgs[1:]
     print(list(x["name"] for x in R_cfgs))
     for cfg in R_cfgs:
         succeeded = False
