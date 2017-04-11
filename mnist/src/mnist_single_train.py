@@ -37,13 +37,25 @@ tf.app.flags.DEFINE_float('learning_rate', 0.1,
                           'Learning rate.')
 tf.app.flags.DEFINE_float('learning_rate_decay_factor', 1,
                           'Learning rate decay factor.')
-tf.app.flags.DEFINE_integer('evaluate_batchsize', 1000,
+tf.app.flags.DEFINE_integer('evaluate_batch_size', 1000,
                            """Batchsize for evaluation""")
 tf.app.flags.DEFINE_integer('checkpoint_save_secs', 60*10,
                            """Seconds between checkpoint saving""")
 
 
 np.set_printoptions(threshold=np.nan)
+
+# We keep 1/r of the data, and let the data be
+# S_r = [(s1, ... s_n/r), (s1, ... s_n/r), .... (s1, ... s_n/r) ],
+# where (s1, ... s_n/r) is appearing r times
+def load_fractional_repeated_data(dataset, r=2):
+  # First we assert we are using mnist training
+  assert(dataset.num_examples == 60000)
+
+  # We assert that the number of examples is divisible by r
+  assert(dataset.num_examples % r == 0)
+
+
 
 def main(unused_args):
     print("Loading dataset")
@@ -62,7 +74,7 @@ def main(unused_args):
     logits = mnist.inference(images, train=True)
 
     # Accuracy validation
-    val_acc = tf.reduce_sum(mnist.evaluation(logits, labels)) / tf.constant(FLAGS.evaluate_batchsize)
+    val_acc = tf.reduce_sum(mnist.evaluation(logits, labels)) / tf.constant(FLAGS.evaluate_batch_size)
 
     # Add classification loss.
     total_loss = mnist.loss(logits, labels)
