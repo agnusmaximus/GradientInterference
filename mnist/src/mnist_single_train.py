@@ -91,11 +91,11 @@ def get_next_fractional_batch(fractional_images, fractional_labels, cur_index, b
   wraparound_labels = np.array([])
   if end-start < batch_size:
     next_index = batch_size-(end-start)
-    wraparound_images = fractional_images[0:next_index]
-    wraparound_labels = fractional_images[0:next_index]
+    wraparound_images = fractional_images[:next_index]
+    wraparound_labels = fractional_labels[:next_index]
 
-  images_final = np.vstack((next_batch_images, wraparound_images))
-  labels_final = np.vstack((next_batch_labels, wraparound_labels))
+  images_final = np.stack((next_batch_images, wraparound_images), axis=0)
+  labels_final = np.stack((next_batch_labels, wraparound_labels), axis=0)
 
   assert(labels_final.shape[0] == batch_size)
   assert(images_final.shape[0] == batch_size)
