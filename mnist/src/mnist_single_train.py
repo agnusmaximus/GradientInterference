@@ -50,7 +50,7 @@ np.set_printoptions(threshold=np.nan)
 # We keep 1/r of the data, and let the data be
 # S_r = [(s1, ... s_n/r), (s1, ... s_n/r), .... (s1, ... s_n/r) ],
 # where (s1, ... s_n/r) is appearing r times
-def load_fractional_repeated_data(dataset, r=2):
+def load_fractional_repeated_data(dataset, r=10):
 
   # First we assert we are using mnist training
   assert(dataset.num_examples == 60000)
