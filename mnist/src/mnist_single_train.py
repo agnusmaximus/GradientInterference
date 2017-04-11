@@ -43,6 +43,8 @@ tf.app.flags.DEFINE_integer('checkpoint_save_secs', 60*10,
                            """Seconds between checkpoint saving""")
 tf.app.flags.DEFINE_bool('use_fractional_dataset', False,
                          """Use fractional dataset""")
+tf.app.flags.DEFINE_integer('dataset_fraction', 2,
+                           """Fractional repeated dataset fraction""")
 
 
 np.set_printoptions(threshold=np.nan)
@@ -121,7 +123,7 @@ def get_next_fractional_batch(fractional_images, fractional_labels, cur_index, b
 def main(unused_args):
     print("Loading dataset")
     dataset = mnist_data.load_mnist().train
-    fractional_images, fractional_labels = load_fractional_repeated_data(dataset)
+    fractional_images, fractional_labels = load_fractional_repeated_data(dataset, r=FLAGS.dataset_fraction)
     print("Done loading dataset")
 
     FLAGS = tf.app.flags.FLAGS
