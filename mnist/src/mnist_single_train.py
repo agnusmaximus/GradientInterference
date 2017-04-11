@@ -211,7 +211,7 @@ def main(unused_args):
             new_epoch_float = n_examples_processed / float(dataset.num_examples)
             new_epoch_track = int(new_epoch_float)
             #if new_epoch_track == cur_epoch_track + 1 or cur_iteration == 0:
-            if int(new_epoch_float * 10) % 2 == 0:
+            if int(new_epoch_float * 100) % 20 == 0:
                 tf.logging.info("Evaluating...")
                 t_evaluate_start = time.time()
                 acc, loss = model_evaluate(mon_sess)
