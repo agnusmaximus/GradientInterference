@@ -154,7 +154,6 @@ def load_fractional_repeated_data(all_images, all_labels, r=2):
   return images_final, labels_final
 
 def get_next_fractional_batch(fractional_images, fractional_labels, cur_index, batch_size):
-  print("Getting next batch from fractional repeated dataset")
   start = cur_index
   end = min(cur_index+batch_size, fractional_labels.shape[0])
   next_index = end
@@ -171,8 +170,6 @@ def get_next_fractional_batch(fractional_images, fractional_labels, cur_index, b
 
   assert(wraparound_images.shape[0] == wraparound_labels.shape[0])
   if wraparound_images.shape[0] != 0:
-    print(next_batch_images.shape)
-    print(wraparound_images.shape)
     next_batch_images = np.vstack((next_batch_images, wraparound_images))
     next_batch_labels = np.hstack((next_batch_labels, wraparound_labels))
 
