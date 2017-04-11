@@ -117,10 +117,11 @@ def train(target, dataset, cluster_spec):
 
   # Helper function to evaluate on training set
   def model_evaluate(sess):
-    tf.logging.info("Evaluating model...")
-    sys.stdout.flush()
 
     num_examples = dataset.num_examples
+
+    tf.logging.info("Evaluating model on training set with num examples %d..." % num_examples)
+    sys.stdout.flush()
 
     # This simply makes sure that we are evaluating on the training set
     assert(num_examples == 60000)
