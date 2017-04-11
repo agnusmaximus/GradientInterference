@@ -1,5 +1,6 @@
 import sys
 import glob
+import re
 import matplotlib.pyplot as plt
 from plot_defines import *
 import os
@@ -11,7 +12,7 @@ if not os.path.exists(time_to_accuracy_directory):
     os.makedirs(time_to_accuracy_directory)
 
 def get_app_name(fname):
-    return fname.findall("gradient_interference_([A-Za-z]+)_.*", fname)[0]
+    return re.findall("gradient_interference_([A-Za-z]+)_.*", fname)[0]
 
 def extract_data(fname):
     f = open(fname, "r")
@@ -28,7 +29,7 @@ def extract_data(fname):
     return data
 
 def get_batchsize(fname):
-    return fname.findall(".*batchsize=([0-9]+)")[0]
+    return re.findall(".*batchsize=([0-9]+)", fname)[0]
 
 def extract_time_to_accuracy(data, target):
     max_accuracy = 0
@@ -52,7 +53,7 @@ def extract_epochs_to_accuracy(data, target):
 
 def plot_time_to_accuracy(all_data, app_name, target_accuracy):
     plt.cla()
-    all_data.sort(key=lambda x : x[0])
+    all_data.sort(key=lambda x : int(x[0]))
     time_to_accuracies = []
     for batchsize, data in all_data:
         time_to_accuracies.append(extract_time_to_accuracy(data, target_accuracy))
@@ -66,12 +67,14 @@ def plot_time_to_accuracy(all_data, app_name, target_accuracy):
 
 def plot_epochs_to_accuracy(all_data, app_name, target_accuracy):
     plt.cla()
-    all_data.sort(key=lambda x : x[0])
+    all_data.sort(key=lambda x : int(x[0]))
     time_to_accuracies = []
     for batchsize, data in all_data:
         time_to_accuracies.append(extract_epochs_to_accuracy(data, target_accuracy))
     batchsizes = [x[0] for x in all_data]
     assert(len(batchsizes) == len(time_to_accuracies))
+    print(batchsizes)
+    print(time_to_accuracies)
     plt.plot(batchsizes, time_to_accuracies)
     plt.xlabel("Batchsize")
     plt.ylabel("Epochs to accuracy %f" % target_accuracy)
@@ -90,7 +93,7 @@ if __name__=="__main__":
         application_to_data[application_name].append((get_batchsize(f), extract_data(f)))
 
     accuracy_targets = {
-        "mnist" : .95,
+        "mnist" : 1,
         "resnet" : .95,
         "resnetcifar100" : .68
     }
