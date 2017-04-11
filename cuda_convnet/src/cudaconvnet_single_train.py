@@ -259,10 +259,10 @@ def train():
       print("Starting training loop...")
       sys.stdout.flush()
       while True:
+        print("YO")
         new_epoch_float = n_examples_processed / float(num_examples)
         new_epoch_track = int(new_epoch_float)
-        #if (new_epoch_track - cur_epoch_track >= 1) or cur_iteration == 0:
-        if 1:
+        if cur_iteration == 0 or (new_epoch_track - cur_epoch_track >= 1):
             last_epoch_evaluated = new_epoch_float
             tf.logging.info("Evaluating...")
             sys.stdout.flush()
