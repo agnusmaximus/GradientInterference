@@ -259,7 +259,7 @@ def train():
       cur_epoch_track = 0
       last_epoch_evaluated = 0
       num_examples = images_fractional_train.shape[0]
-      while not sess.should_stop():
+      while True:
         new_epoch_float = n_examples_processed / float(num_examples)
         new_epoch_track = int(new_epoch_float)
         if (new_epoch_track - cur_epoch_track >= 1) or cur_iteration == 0:
