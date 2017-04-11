@@ -259,20 +259,20 @@ def train():
       cur_epoch_track = 0
       last_epoch_evaluated = 0
       num_examples = images_fractional_train.shape[0]
-      while not mon_sess.should_stop():
+      while not sess.should_stop():
         new_epoch_float = n_examples_processed / float(num_examples)
         new_epoch_track = int(new_epoch_float)
         if (new_epoch_track - cur_epoch_track >= 1) or cur_iteration == 0:
             last_epoch_evaluated = new_epoch_float
             tf.logging.info("Evaluating...")
             t_evaluate_start = time.time()
-            acc, loss = model_evaluate(mon_sess)
+            acc, loss = model_evaluate(sess)
             tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times), new_epoch_float, acc, loss))
             t_evaluate_end = time.time()
             evaluate_times.append(t_evaluate_end-t_evaluate_start)
         cur_epoch_track = max(cur_epoch_track, new_epoch_track)
         feed_dict = get_feed_dict(FLAGS.batch_size)
-        mon_sess.run([train_op], feed_dict=feed_dict)
+        sess.run([train_op], feed_dict=feed_dict)
         cur_iteration += 1
         n_examples_processed += FLAGS.batch_size
 
