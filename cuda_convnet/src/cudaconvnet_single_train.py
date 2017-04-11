@@ -217,7 +217,7 @@ def train():
 
       num_examples = images_fractional_train.shape[0]
 
-      tf.logging.info("Evaluating model on training set with num examples %d..." % num_examples)
+      print("Evaluating model on training set with num examples %d..." % num_examples)
       sys.stdout.flush()
 
       # This simply makes sure that we are evaluating on the training set
@@ -233,13 +233,13 @@ def train():
         acc_p, loss_p = sess.run(
             [top_k_op, loss_op], feed_dict=feed_dict)
 
-        tf.logging.info("%d of %d" % (i, num_iter))
+        print("%d of %d" % (i, num_iter))
         sys.stdout.flush()
 
         acc += np.sum(acc_p)
         loss += loss_p
 
-      tf.logging.info("Done evaluating...")
+      print("Done evaluating...")
 
       # Compute precision @ 1.
       acc /= float(num_examples)
@@ -263,17 +263,15 @@ def train():
         new_epoch_track = int(new_epoch_float)
         if cur_iteration == 0 or (new_epoch_track - cur_epoch_track >= 1):
             last_epoch_evaluated = new_epoch_float
-            tf.logging.info("Evaluating...")
+            print("Evaluating...")
             sys.stdout.flush()
             t_evaluate_start = time.time()
             acc, loss = model_evaluate(sess)
-            tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times), new_epoch_float, acc, loss))
+            print("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times), new_epoch_float, acc, loss))
             sys.stdout.flush()
             t_evaluate_end = time.time()
             evaluate_times.append(t_evaluate_end-t_evaluate_start)
         cur_epoch_track = max(cur_epoch_track, new_epoch_track)
-        print("YO")
-        sys.stdout.flush()
         feed_dict = get_feed_dict(FLAGS.batch_size)
         sess.run([train_op], feed_dict=feed_dict)
         cur_iteration += 1
