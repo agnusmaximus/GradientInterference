@@ -200,6 +200,7 @@ def main(unused_args):
       acc /= float(num_examples)
       return acc, loss
 
+
     with tf.train.MonitoredTrainingSession(
             checkpoint_dir=FLAGS.train_dir,
             save_checkpoint_secs=FLAGS.checkpoint_save_secs) as mon_sess:
@@ -207,11 +208,13 @@ def main(unused_args):
         cur_iteration = 0
         evaluate_times = []
         cur_epoch_track = 0
+        last_epoch_evaluated = 0
         while not mon_sess.should_stop():
             new_epoch_float = n_examples_processed / float(dataset.num_examples)
             new_epoch_track = int(new_epoch_float)
             #if new_epoch_track == cur_epoch_track + 1 or cur_iteration == 0:
-            if int(new_epoch_float * 100) % 20 == 0:
+            if cur_epoch_float - last_epoch_evaluated >= .2 or cur_iteration == 0:
+                last_epoch_evaluated = cur_epoch_float
                 tf.logging.info("Evaluating...")
                 t_evaluate_start = time.time()
                 acc, loss = model_evaluate(mon_sess)
