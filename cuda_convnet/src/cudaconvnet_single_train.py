@@ -200,7 +200,7 @@ def train():
         images = tf.placeholder(tf.float32, shape=(None, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, cifar10.NUM_CHANNELS))
         labels = tf.placeholder(tf.int32, shape=(None,))
         logits = cifar10.inference(images)
-        loss = cifar10.loss(logits, labels, scope_name)
+        loss_op = cifar10.loss(logits, labels, scope_name)
         train_op = cifar10.train(loss, scope_name)
         top_k_op = tf.nn.in_top_k(logits, labels, 1)
 
@@ -212,7 +212,6 @@ def train():
         get_feed_dict.fractional_dataset_index = next_index
         assert(images_real.shape[0] == batch_size)
         assert(labels_real.shape[0] == batch_size)
-        print(images_real.shape, labels_real.shape)
         return {images : images_real, labels: labels_real}
     get_feed_dict.fractional_dataset_index = 0
 
@@ -235,7 +234,7 @@ def train():
       for i in range(num_iter):
         feed_dict = get_feed_dict(FLAGS.evaluate_batch_size)
         acc_p, loss_p = sess.run(
-            [top_k_op, loss], feed_dict=feed_dict)
+            [top_k_op, loss_op], feed_dict=feed_dict)
 
         tf.logging.info("%d of %d" % (i, num_iter))
         sys.stdout.flush()
