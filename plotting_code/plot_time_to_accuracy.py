@@ -14,6 +14,12 @@ if not os.path.exists(time_to_accuracy_directory):
 def get_app_name(fname):
     return re.findall("gradient_interference_([A-Za-z]+)_.*", fname)[0]
 
+def non_replicated_or_replicated(fname):
+    fractional = re.findall("fractional=([0-9])+.*", fname)
+    if len(fractional) < 1:
+        return "nonreplicated"
+    return "fractional=%s" % fractional[0]
+
 def extract_data(fname):
     f = open(fname, "r")
     data = []
@@ -66,7 +72,7 @@ def plot_time_to_accuracy(all_data, app_name, target_accuracy):
     plt.savefig("%s/%sTimeToAccuracy%f.png" % (time_to_accuracy_directory, app_name, target_accuracy))
 
 def plot_epochs_to_accuracy(all_data, app_name, target_accuracy):
-    plt.cla()
+    #plt.cla()
     all_data.sort(key=lambda x : int(x[0]))
     time_to_accuracies = []
     for batchsize, data in all_data:
@@ -75,8 +81,9 @@ def plot_epochs_to_accuracy(all_data, app_name, target_accuracy):
     assert(len(batchsizes) == len(time_to_accuracies))
     print(batchsizes)
     print(time_to_accuracies)
-    plt.plot(batchsizes, time_to_accuracies)
+    plt.plot(batchsizes, time_to_accuracies, label=app_name)
     plt.xlabel("Batchsize")
+    plt.legend(loc="upper left")
     plt.ylabel("Epochs to accuracy %f" % target_accuracy)
     plt.title("%s epochs to accuracy %f" % (app_name, target_accuracy))
     plt.savefig("%s/%sEpochsToAccuracy%f.png" % (time_to_accuracy_directory, app_name, target_accuracy))
@@ -87,17 +94,16 @@ if __name__=="__main__":
 
     application_to_data = {}
     for f in files:
-        application_name = get_app_name(f)
+        application_name = get_app_name(f) + "_" + non_replicated_or_replicated(f)
         if application_name not in application_to_data:
             application_to_data[application_name] = []
         application_to_data[application_name].append((get_batchsize(f), extract_data(f)))
 
     accuracy_targets = {
-        "mnist" : 1,
-        "resnet" : .95,
-        "resnetcifar100" : .68
+        "mnist_nonreplicated" : .995,
+        "mnist_fractional=2" : .995,
     }
 
     for application_name, data in application_to_data.items():
-        plot_time_to_accuracy(data, application_name, accuracy_targets[application_name])
+        #plot_time_to_accuracy(data, application_name, accuracy_targets[application_name])
         plot_epochs_to_accuracy(data, application_name, accuracy_targets[application_name])
