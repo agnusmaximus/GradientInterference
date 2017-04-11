@@ -132,14 +132,14 @@ def train(target, dataset, cluster_spec):
     acc, loss = 0, 0
 
     for i in range(num_iter):
-      feed_dict = mnist.fill_feed_dict(dataset, images, labels, batch_size)
+      feed_dict = mnist.fill_feed_dict(dataset, images, labels, FLAGS.evaluate_batch_size)
       acc_p, loss_p = sess.run(
         [val_acc, total_loss], feed_dict=feed_dict)
 
       tf.logging.info("%d of %d" % (i, num_iter))
       sys.stdout.flush()
 
-      acc += acc_p * batch_size
+      acc += acc_p * FLAGS.evaluate_batch_size
       loss += loss_p
 
     tf.logging.info("Done evaluating...")
