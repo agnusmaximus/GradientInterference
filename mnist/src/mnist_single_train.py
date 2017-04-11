@@ -79,6 +79,7 @@ def load_fractional_repeated_data(dataset, r=2):
   return images_final, labels_final
 
 def get_next_fractional_batch(fractional_images, fractional_labels, cur_index, batch_size):
+  print("Getting next batch from fractional repeated dataset")
   start = cur_index
   end = min(cur_index+batch_size, fractional_labels.shape[0])
   next_index = end
