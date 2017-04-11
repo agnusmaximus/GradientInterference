@@ -63,7 +63,7 @@ def load_fractional_repeated_data(dataset, r=2):
   labels_fractional = all_labels[:int(dataset.num_examples / r)]
 
   # We tile each fractional set r times
-  images_final = np.tile(images_fractional, r)
+  images_final = np.tile(images_fractional, (r, 1, 1, 1))
   labels_final = np.tile(labels_fractional, r)
   print(images_final.shape)
   print(labels_final.shape)
