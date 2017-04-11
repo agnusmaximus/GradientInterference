@@ -208,7 +208,8 @@ def main(unused_args):
         while not mon_sess.should_stop():
             new_epoch_float = n_examples_processed / float(dataset.num_examples)
             new_epoch_track = int(new_epoch_float)
-            if new_epoch_track == cur_epoch_track + 1 or cur_iteration == 0:
+            #if new_epoch_track == cur_epoch_track + 1 or cur_iteration == 0:
+            if cur_iteration % 200 == 0:
                 tf.logging.info("Evaluating...")
                 t_evaluate_start = time.time()
                 acc, loss = model_evaluate(mon_sess)
