@@ -1,0 +1,284 @@
+ubuntu@ip-172-31-24-134:~/GradientInterference/resnet/src$ python resnet_single_train.py --batch_size=64 --dataset="cifar100"
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcublas.so.8.0 locally
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcudnn.so.5 locally
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcufft.so.8.0 locally
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcuda.so.1 locally
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcurand.so.8.0 locally
+INFO:tensorflow:/tmp/cifar_data/cifar-100-binary/train*
+INFO:tensorflow:['/tmp/cifar_data/cifar-100-binary/train.bin']
+DEBUG:tensorflow:image after unit (?, 32, 32, 16)
+DEBUG:tensorflow:image after unit (?, 32, 32, 16)
+DEBUG:tensorflow:image after unit (?, 32, 32, 16)
+DEBUG:tensorflow:image after unit (?, 32, 32, 16)
+DEBUG:tensorflow:image after unit (?, 32, 32, 16)
+DEBUG:tensorflow:image after unit (?, 16, 16, 32)
+DEBUG:tensorflow:image after unit (?, 16, 16, 32)
+DEBUG:tensorflow:image after unit (?, 16, 16, 32)
+DEBUG:tensorflow:image after unit (?, 16, 16, 32)
+DEBUG:tensorflow:image after unit (?, 16, 16, 32)
+DEBUG:tensorflow:image after unit (?, 8, 8, 64)
+DEBUG:tensorflow:image after unit (?, 8, 8, 64)
+DEBUG:tensorflow:image after unit (?, 8, 8, 64)
+DEBUG:tensorflow:image after unit (?, 8, 8, 64)
+DEBUG:tensorflow:image after unit (?, 8, 8, 64)
+INFO:tensorflow:Create CheckpointSaverHook.
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE3 instructions, but these are available on your machine and could speed up CPU computations.
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.1 instructions, but these are available on your machine and could speed up CPU computations.
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.2 instructions, but these are available on your machine and could speed up CPU computations.
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX instructions, but these are available on your machine and could speed up CPU computations.
+I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:910] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:885] Found device 0 with properties:
+name: GRID K520
+major: 3 minor: 0 memoryClockRate (GHz) 0.797
+pciBusID 0000:00:03.0
+Total memory: 3.94GiB
+Free memory: 3.91GiB
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:906] DMA: 0
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:916] 0:   Y
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:975] Creating TensorFlow device (/gpu:0) -> (device: 0, name: GRID K520, pci bus id: 0000:00:03.0)
+INFO:tensorflow:Evaluating...
+INFO:tensorflow:Evaluating model...
+INFO:tensorflow:Saving checkpoints for 0 into /tmp/imagenet_train/model.ckpt.
+INFO:tensorflow:0 of 50
+INFO:tensorflow:1 of 50
+INFO:tensorflow:2 of 50
+INFO:tensorflow:3 of 50
+INFO:tensorflow:4 of 50
+INFO:tensorflow:5 of 50
+INFO:tensorflow:6 of 50
+INFO:tensorflow:7 of 50
+INFO:tensorflow:8 of 50
+INFO:tensorflow:9 of 50
+INFO:tensorflow:10 of 50
+INFO:tensorflow:11 of 50
+INFO:tensorflow:12 of 50
+INFO:tensorflow:13 of 50
+INFO:tensorflow:14 of 50
+INFO:tensorflow:15 of 50
+INFO:tensorflow:16 of 50
+INFO:tensorflow:17 of 50
+INFO:tensorflow:18 of 50
+INFO:tensorflow:19 of 50
+INFO:tensorflow:20 of 50
+INFO:tensorflow:21 of 50
+INFO:tensorflow:22 of 50
+INFO:tensorflow:23 of 50
+INFO:tensorflow:24 of 50
+INFO:tensorflow:25 of 50
+INFO:tensorflow:26 of 50
+INFO:tensorflow:27 of 50
+INFO:tensorflow:28 of 50
+INFO:tensorflow:29 of 50
+INFO:tensorflow:30 of 50
+INFO:tensorflow:31 of 50
+INFO:tensorflow:32 of 50
+INFO:tensorflow:33 of 50
+INFO:tensorflow:34 of 50
+INFO:tensorflow:35 of 50
+INFO:tensorflow:36 of 50
+INFO:tensorflow:37 of 50
+INFO:tensorflow:38 of 50
+INFO:tensorflow:39 of 50
+INFO:tensorflow:40 of 50
+INFO:tensorflow:41 of 50
+INFO:tensorflow:42 of 50
+INFO:tensorflow:43 of 50
+INFO:tensorflow:44 of 50
+INFO:tensorflow:45 of 50
+INFO:tensorflow:46 of 50
+INFO:tensorflow:47 of 50
+INFO:tensorflow:48 of 50
+INFO:tensorflow:49 of 50
+INFO:tensorflow:Done evaluating...
+INFO:tensorflow:IInfo: 1491656352.751982 0.000000 0.011160 245.964024
+I tensorflow/core/common_runtime/gpu/pool_allocator.cc:247] PoolAllocator: After 222323 get requests, put_count=222311 evicted_count=1000 eviction_rate=0.0044982 and unsatisfied allocation rate=0.00500173
+I tensorflow/core/common_runtime/gpu/pool_allocator.cc:259] Raising pool_size_limit_ from 100 to 110
+I tensorflow/core/common_runtime/gpu/pool_allocator.cc:247] PoolAllocator: After 6786 get requests, put_count=6780 evicted_count=1000 eviction_rate=0.147493 and unsatisfied allocation rate=0.151636
+I tensorflow/core/common_runtime/gpu/pool_allocator.cc:259] Raising pool_size_limit_ from 256 to 281
+INFO:tensorflow:global_step/sec: 0.888067
+INFO:tensorflow:global_step/sec: 4.38851
+INFO:tensorflow:global_step/sec: 4.39632
+INFO:tensorflow:global_step/sec: 4.39424
+INFO:tensorflow:global_step/sec: 4.42543
+INFO:tensorflow:global_step/sec: 4.4373
+INFO:tensorflow:global_step/sec: 4.43778
+INFO:tensorflow:Evaluating...
+INFO:tensorflow:Evaluating model...
+INFO:tensorflow:0 of 50
+INFO:tensorflow:1 of 50
+INFO:tensorflow:2 of 50
+INFO:tensorflow:3 of 50
+INFO:tensorflow:4 of 50
+INFO:tensorflow:5 of 50
+INFO:tensorflow:6 of 50
+INFO:tensorflow:7 of 50
+INFO:tensorflow:8 of 50
+INFO:tensorflow:9 of 50
+INFO:tensorflow:10 of 50
+INFO:tensorflow:11 of 50
+INFO:tensorflow:12 of 50
+INFO:tensorflow:13 of 50
+INFO:tensorflow:14 of 50
+INFO:tensorflow:15 of 50
+INFO:tensorflow:16 of 50
+INFO:tensorflow:17 of 50
+INFO:tensorflow:18 of 50
+INFO:tensorflow:19 of 50
+INFO:tensorflow:20 of 50
+INFO:tensorflow:Saving checkpoints for 782 into /tmp/imagenet_train/model.ckpt.
+INFO:tensorflow:21 of 50
+INFO:tensorflow:22 of 50
+INFO:tensorflow:23 of 50
+INFO:tensorflow:24 of 50
+INFO:tensorflow:25 of 50
+INFO:tensorflow:26 of 50
+INFO:tensorflow:27 of 50
+INFO:tensorflow:28 of 50
+INFO:tensorflow:29 of 50
+INFO:tensorflow:30 of 50
+INFO:tensorflow:31 of 50
+INFO:tensorflow:32 of 50
+INFO:tensorflow:33 of 50
+INFO:tensorflow:34 of 50
+INFO:tensorflow:35 of 50
+INFO:tensorflow:36 of 50
+INFO:tensorflow:37 of 50
+INFO:tensorflow:38 of 50
+INFO:tensorflow:39 of 50
+INFO:tensorflow:40 of 50
+INFO:tensorflow:41 of 50
+INFO:tensorflow:42 of 50
+INFO:tensorflow:43 of 50
+INFO:tensorflow:44 of 50
+INFO:tensorflow:45 of 50
+INFO:tensorflow:46 of 50
+INFO:tensorflow:47 of 50
+INFO:tensorflow:48 of 50
+INFO:tensorflow:49 of 50
+INFO:tensorflow:Done evaluating...
+INFO:tensorflow:IInfo: 1491656532.356501 1.000960 0.124400 196.940579
+INFO:tensorflow:global_step/sec: 0.942668
+INFO:tensorflow:global_step/sec: 4.29404
+INFO:tensorflow:global_step/sec: 4.4387
+INFO:tensorflow:global_step/sec: 4.44477
+INFO:tensorflow:global_step/sec: 4.43081
+INFO:tensorflow:global_step/sec: 4.44314
+INFO:tensorflow:global_step/sec: 4.43821
+INFO:tensorflow:global_step/sec: 4.43668
+INFO:tensorflow:Evaluating...
+INFO:tensorflow:Evaluating model...
+INFO:tensorflow:0 of 50
+INFO:tensorflow:1 of 50
+INFO:tensorflow:2 of 50
+INFO:tensorflow:3 of 50
+INFO:tensorflow:4 of 50
+INFO:tensorflow:5 of 50
+INFO:tensorflow:6 of 50
+INFO:tensorflow:7 of 50
+INFO:tensorflow:8 of 50
+INFO:tensorflow:9 of 50
+INFO:tensorflow:10 of 50
+INFO:tensorflow:11 of 50
+INFO:tensorflow:12 of 50
+INFO:tensorflow:13 of 50
+INFO:tensorflow:14 of 50
+INFO:tensorflow:15 of 50
+INFO:tensorflow:16 of 50
+INFO:tensorflow:17 of 50
+INFO:tensorflow:18 of 50
+INFO:tensorflow:19 of 50
+INFO:tensorflow:20 of 50
+INFO:tensorflow:21 of 50
+INFO:tensorflow:22 of 50
+INFO:tensorflow:23 of 50
+INFO:tensorflow:24 of 50
+INFO:tensorflow:25 of 50
+INFO:tensorflow:26 of 50
+INFO:tensorflow:27 of 50
+INFO:tensorflow:28 of 50
+INFO:tensorflow:29 of 50
+INFO:tensorflow:30 of 50
+INFO:tensorflow:31 of 50
+INFO:tensorflow:32 of 50
+INFO:tensorflow:33 of 50
+INFO:tensorflow:34 of 50
+INFO:tensorflow:35 of 50
+INFO:tensorflow:36 of 50
+INFO:tensorflow:37 of 50
+INFO:tensorflow:38 of 50
+INFO:tensorflow:39 of 50
+INFO:tensorflow:40 of 50
+INFO:tensorflow:41 of 50
+INFO:tensorflow:42 of 50
+INFO:tensorflow:43 of 50
+INFO:tensorflow:44 of 50
+INFO:tensorflow:45 of 50
+INFO:tensorflow:Saving checkpoints for 1563 into /tmp/imagenet_train/model.ckpt.
+INFO:tensorflow:46 of 50
+INFO:tensorflow:47 of 50
+INFO:tensorflow:48 of 50
+INFO:tensorflow:49 of 50
+INFO:tensorflow:Done evaluating...
+INFO:tensorflow:IInfo: 1491656709.463101 2.000640 0.189140 175.606193
+INFO:tensorflow:global_step/sec: 0.947404
+INFO:tensorflow:global_step/sec: 4.38012
+INFO:tensorflow:global_step/sec: 4.44335
+INFO:tensorflow:global_step/sec: 4.43395
+INFO:tensorflow:global_step/sec: 4.43752
+INFO:tensorflow:global_step/sec: 4.44377
+INFO:tensorflow:global_step/sec: 4.43911
+INFO:tensorflow:global_step/sec: 4.44631
+INFO:tensorflow:Evaluating...
+INFO:tensorflow:Evaluating model...
+INFO:tensorflow:0 of 50
+INFO:tensorflow:1 of 50
+INFO:tensorflow:2 of 50
+INFO:tensorflow:3 of 50
+INFO:tensorflow:4 of 50
+INFO:tensorflow:5 of 50
+INFO:tensorflow:6 of 50
+INFO:tensorflow:7 of 50
+INFO:tensorflow:8 of 50
+INFO:tensorflow:9 of 50
+INFO:tensorflow:10 of 50
+INFO:tensorflow:11 of 50
+INFO:tensorflow:12 of 50
+INFO:tensorflow:13 of 50
+INFO:tensorflow:14 of 50
+INFO:tensorflow:15 of 50
+INFO:tensorflow:16 of 50
+INFO:tensorflow:17 of 50
+INFO:tensorflow:18 of 50
+INFO:tensorflow:19 of 50
+INFO:tensorflow:20 of 50
+INFO:tensorflow:21 of 50
+INFO:tensorflow:22 of 50
+INFO:tensorflow:23 of 50
+INFO:tensorflow:24 of 50
+INFO:tensorflow:25 of 50
+INFO:tensorflow:26 of 50
+INFO:tensorflow:27 of 50
+INFO:tensorflow:28 of 50
+INFO:tensorflow:29 of 50
+INFO:tensorflow:30 of 50
+INFO:tensorflow:31 of 50
+INFO:tensorflow:32 of 50
+INFO:tensorflow:33 of 50
+INFO:tensorflow:34 of 50
+INFO:tensorflow:35 of 50
+INFO:tensorflow:36 of 50
+INFO:tensorflow:37 of 50
+INFO:tensorflow:38 of 50
+INFO:tensorflow:39 of 50
+INFO:tensorflow:40 of 50
+INFO:tensorflow:41 of 50
+INFO:tensorflow:42 of 50
+INFO:tensorflow:43 of 50
+INFO:tensorflow:44 of 50
+INFO:tensorflow:45 of 50
+INFO:tensorflow:46 of 50
+INFO:tensorflow:47 of 50
+INFO:tensorflow:48 of 50
+INFO:tensorflow:49 of 50
+INFO:tensorflow:Done evaluating...
+INFO:tensorflow:IInfo: 1491656886.388006 3.000320 0.270800 154.510766

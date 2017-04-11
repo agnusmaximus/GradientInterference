@@ -406,8 +406,8 @@ cfg_mnist_single = Cfg({
     ],
 
     # Model configuration
-    "batch_size" : "256",
-    "learning_rate" : ".0004",
+    "batch_size" : "16",
+    "learning_rate" : ".002",
 
     # Train command specifies how the ps/workers execute tensorflow.
     # PS_HOSTS - special string replaced with actual list of ps hosts.
@@ -422,6 +422,7 @@ cfg_mnist_single = Cfg({
         "--batch_size=%(batch_size)s "
         "--learning_rate=%(learning_rate)s "
         "--train_dir=%(base_out_dir)s/train_dir "
+        "--use_fractional_dataset=true "
         "> %(base_out_dir)s/out_ROLE_ID 2>&1 &"
     ],
 

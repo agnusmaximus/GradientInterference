@@ -129,18 +129,5 @@ def run_experiments():
             shutdown_and_launch(cfg)
             succeeded = run_tf_and_download_files(.70, cfg, done=check_if_reached_accuracy, outdir=accuracy_outdir)
 
-    print("Running experiments for ratio...")
-    R_outdir = "experiment_results/ratio_data/"
-    R_cfgs = glob.glob("experiment_configs/ratio_configs/*")
-    R_cfgs = [load_cfg_from_file(x) for x in R_cfgs]
-    R_cfgs = filter_cfgs(R_outdir, R_cfgs)
-    R_cfgs = R_cfgs[1:]
-    print(list(x["name"] for x in R_cfgs))
-    for cfg in R_cfgs:
-        succeeded = False
-        while not succeeded:
-            shutdown_and_launch(cfg)
-            succeeded = run_tf_and_download_files(100, cfg, done=check_if_reached_epochs_for_ratio, outdir=R_outdir)
-
 if __name__ == "__main__":
     run_experiments()
