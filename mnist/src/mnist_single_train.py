@@ -75,38 +75,38 @@ def main(unused_args):
     grads = opt.compute_gradients(total_loss)
     train_op = opt.apply_gradients(grads, global_step=global_step)
 
-  # Helper function to evaluate on training set
-  def model_evaluate(sess):
+    # Helper function to evaluate on training set
+    def model_evaluate(sess):
 
-    num_examples = dataset.num_examples
+      num_examples = dataset.num_examples
 
-    tf.logging.info("Evaluating model on training set with num examples %d..." % num_examples)
-    sys.stdout.flush()
-
-    # This simply makes sure that we are evaluating on the training set
-    assert(num_examples == 60000)
-
-    # Make sure we are using a batchsize a multiple of number of examples
-    assert(num_examples % FLAGS.evaluate_batch_size == 0)
-    num_iter = int(num_examples / FLAGS.evaluate_batch_size)
-    acc, loss = 0, 0
-
-    for i in range(num_iter):
-      feed_dict = mnist.fill_feed_dict(dataset, images, labels, FLAGS.evaluate_batch_size)
-      acc_p, loss_p = sess.run(
-        [val_acc, total_loss], feed_dict=feed_dict)
-
-      tf.logging.info("%d of %d" % (i, num_iter))
+      tf.logging.info("Evaluating model on training set with num examples %d..." % num_examples)
       sys.stdout.flush()
 
-      acc += acc_p * FLAGS.evaluate_batch_size
-      loss += loss_p
+      # This simply makes sure that we are evaluating on the training set
+      assert(num_examples == 60000)
 
-    tf.logging.info("Done evaluating...")
+      # Make sure we are using a batchsize a multiple of number of examples
+      assert(num_examples % FLAGS.evaluate_batch_size == 0)
+      num_iter = int(num_examples / FLAGS.evaluate_batch_size)
+      acc, loss = 0, 0
 
-    # Compute precision @ 1.
-    acc /= float(num_examples)
-    return acc, loss
+      for i in range(num_iter):
+        feed_dict = mnist.fill_feed_dict(dataset, images, labels, FLAGS.evaluate_batch_size)
+        acc_p, loss_p = sess.run(
+          [val_acc, total_loss], feed_dict=feed_dict)
+
+        tf.logging.info("%d of %d" % (i, num_iter))
+        sys.stdout.flush()
+
+        acc += acc_p * FLAGS.evaluate_batch_size
+        loss += loss_p
+
+      tf.logging.info("Done evaluating...")
+
+      # Compute precision @ 1.
+      acc /= float(num_examples)
+      return acc, loss
 
     with tf.train.MonitoredTrainingSession(
             checkpoint_dir=FLAGS.train_dir,
