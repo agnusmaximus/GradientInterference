@@ -28,11 +28,24 @@ tf.logging.set_verbosity(tf.logging.INFO)
 
 FLAGS = tf.app.flags.FLAGS
 
+# Training defines
 tf.app.flags.DEFINE_string('train_dir', '/tmp/mnist_train', 'Directory where to write event logs and checkpoint.')
 tf.app.flags.DEFINE_boolean('should_evaluate', False, 'Whether Chief should do evaluation per epoch.')
 tf.app.flags.DEFINE_integer('evaluate_batch_size', 1000, 'Batchsize for evaluation')
 tf.app.flags.DEFINE_integer('batch_size', 64, 'Batchsize for training')
 tf.app.flags.DEFINE_float('learning_rate', 0.1, 'Constant learning rate.')
+
+# Distributed defines
+tf.app.flags.DEFINE_string('job_name', '', 'One of "ps", "worker"')
+tf.app.flags.DEFINE_string('ps_hosts', '',
+                           """Comma-separated list of hostname:port for the """
+                           """parameter server jobs. e.g. """
+                           """'machine1:2222,machine2:1111,machine2:2222'""")
+tf.app.flags.DEFINE_string('worker_hosts', '',
+                           """Comma-separated list of hostname:port for the """
+                           """worker jobs. e.g. """
+                           """'machine1:2222,machine2:1111,machine2:2222'""")
+
 
 def train(target, dataset, cluster_spec):
   num_workers = len(cluster_spec.as_dict()['worker'])
