@@ -133,10 +133,7 @@ def main(unused_args):
     train_op = opt.apply_gradients(grads, global_step=global_step)
 
     # Helper function to load feed dictionary
-    def get_feed_dict(batch_size, fractional_dataset_index=-1):
-      if fractional_dataset_index != -1:
-        get_feed_dict.fractional_dataset_index = fractional_dataset_index
-
+    def get_feed_dict(batch_size):
       if FLAGS.use_fractional_dataset:
         images_real, labels_real, next_index = get_next_fractional_batch(fractional_images, fractional_labels,
                                                                          get_feed_dict.fractional_dataset_index,
@@ -147,6 +144,7 @@ def main(unused_args):
         return {images : images_real, labels: labels_real}
       else:
         return mnist.fill_feed_dict(dataset, images, labels, batch_size)
+
     # Initialize static variable of feed dict to 0
     get_feed_dict.fractional_dataset_index = 0
 
@@ -167,7 +165,7 @@ def main(unused_args):
       acc, loss = 0, 0
 
       for i in range(num_iter):
-        feed_dict = mnist.fill_feed_dict(dataset, images, labels, FLAGS.evaluate_batch_size)
+        feed_dict = get_feed_dict(FLAGS.evaluate_batch_size)
         acc_p, loss_p = sess.run(
           [val_acc, total_loss], feed_dict=feed_dict)
 
@@ -201,7 +199,7 @@ def main(unused_args):
                 t_evaluate_end = time.time()
                 evaluate_times.append(t_evaluate_end-t_evaluate_start)
             cur_epoch_track = max(cur_epoch_track, new_epoch_track)
-            feed_dict = mnist.fill_feed_dict(dataset, images, labels, FLAGS.batch_size)
+            feed_dict = get_feed_dict(FLAGS.batch_size)
             mon_sess.run([train_op], feed_dict=feed_dict)
             cur_iteration += 1
             n_examples_processed += FLAGS.batch_size
