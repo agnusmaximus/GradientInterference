@@ -212,6 +212,7 @@ def train():
         get_feed_dict.fractional_dataset_index = next_index
         assert(images_real.shape[0] == batch_size)
         assert(labels_real.shape[0] == batch_size)
+        print(images_real.shape, label_real.shape)
         return {images : images_real, labels: labels_real}
     get_feed_dict.fractional_dataset_index = 0
 
