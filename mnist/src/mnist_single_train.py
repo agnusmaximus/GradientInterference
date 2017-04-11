@@ -59,8 +59,8 @@ def load_fractional_repeated_data(dataset, r=2):
   all_images, all_labels = dataset.next_batch(dataset.num_examples)
 
   # We take a fraction of each
-  images_fractional = all_images[:dataset.num_examples / r]
-  labels_fractional = all_labels[:dataset.num_examples / r]
+  images_fractional = all_images[:int(dataset.num_examples / r)]
+  labels_fractional = all_labels[:int(dataset.num_examples / r)]
 
   # We tile each fractional set r times
   images_final = np.tile(images_fractional, r)
