@@ -51,6 +51,7 @@ np.set_printoptions(threshold=np.nan)
 # S_r = [(s1, ... s_n/r), (s1, ... s_n/r), .... (s1, ... s_n/r) ],
 # where (s1, ... s_n/r) is appearing r times
 def load_fractional_repeated_data(dataset, r=2):
+
   # First we assert we are using mnist training
   assert(dataset.num_examples == 60000)
 
@@ -76,6 +77,17 @@ def load_fractional_repeated_data(dataset, r=2):
   images_first_segment = images_final[:int(dataset.num_examples/r)]
   images_second_segment = images_final[int(dataset.num_examples/r):2*int(dataset.num_examples/r)]
   assert(np.linalg.norm(images_first_segment - images_second_segment) == 0)
+
+  # Also sanity check label segments
+  labels_first_segment = labels_final[:int(dataset.num_examples/r)]
+  labels_second_segment = labels_fina[int(dataset.num_examples/r):2*int(dataset.num_examples/r)]
+  assert(np.linalg.norm(labels_first_segment-labels_second_segment) == 0)
+
+  # Full sanity check to make sure that the original data is not repeated
+  images_first_segment = all_images[:int(dataset.num_examples/r)]
+  images_second_segment = all_images[int(dataset.num_examples/r):2*int(dataset.num_examples/r)]
+  assert(np.linalg.norm(images_first_segment - images_second_segment) != 0)
+
   return images_final, labels_final
 
 def get_next_fractional_batch(fractional_images, fractional_labels, cur_index, batch_size):
