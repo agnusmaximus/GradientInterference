@@ -73,14 +73,14 @@ def load_fractional_repeated_data(dataset, r=2):
   # Just as a sanity check let's compare image segments
   images_first_segment = images_final[:int(dataset.num_examples/r)]
   images_second_segment = images_final[int(dataset.num_examples/r):2*int(dataset.num_examples/r)]
-  assert(np.linalg.norm(images_first_segment - images.second_segment) == 0)
+  assert(np.linalg.norm(images_first_segment - images_second_segment) == 0)
 
   return images_final, labels_final
 
 def main(unused_args):
     print("Loading dataset")
     dataset = mnist_data.load_mnist().train
-    load_fractional_repeated_data(dataset)
+    fractional_imags, fractional_labels = load_fractional_repeated_data(dataset)
     print("Done loading dataset")
 
     FLAGS = tf.app.flags.FLAGS
