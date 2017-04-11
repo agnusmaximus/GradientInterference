@@ -201,7 +201,7 @@ def train():
         labels = tf.placeholder(tf.int32, shape=(None,))
         logits = cifar10.inference(images)
         loss_op = cifar10.loss(logits, labels, scope_name)
-        train_op = cifar10.train(loss, scope_name)
+        train_op = cifar10.train(loss_op, scope_name)
         top_k_op = tf.nn.in_top_k(logits, labels, 1)
 
     # Helper function to load feed dictionary
