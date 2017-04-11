@@ -40,6 +40,8 @@ from scipy.ndimage.filters import gaussian_filter
 #SOURCE_URL = 'http://yann.lecun.com/exdb/mnist/'
 SOURCE_URL = 'https://s3.amazonaws.com/lasagne/recipes/datasets/mnist/'
 
+np.seed(0)
+
 class DataSet(object):
 
   def __init__(self,
