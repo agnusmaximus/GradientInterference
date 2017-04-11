@@ -137,8 +137,8 @@ def inference(images, train=True):
   hidden = tf.nn.relu(tf.matmul(reshape, fc1_weights) + fc1_biases)
   # Add a 50% dropout during training only. Dropout also scales
   # activations such that no rescaling is needed at evaluation time.
-  if train:
-      hidden = tf.nn.dropout(hidden, 0.5, seed=SEED)
+  #if train:
+  #    hidden = tf.nn.dropout(hidden, 0.5, seed=SEED)
 
   #reg = (tf.nn.l2_loss(fc1_weights) + tf.nn.l2_loss(fc1_biases) +
   #       tf.nn.l2_loss(fc2_weights) + tf.nn.l2_loss(fc2_biases))
