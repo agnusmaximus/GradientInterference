@@ -154,6 +154,8 @@ def train():
     assert(len(variables_1) == len(variables_2))
 
     images_raw, labels_raw, images_test_raw, labels_test_raw = load_cifar_data_raw()
+    assert(images_raw.shape[0] == cifar10.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
+    assert(images_test_raw.shape[0] == cifar10.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL)
 
     with tf.Session() as mon_sess:
 
