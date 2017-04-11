@@ -148,7 +148,6 @@ def train(target, dataset, cluster_spec):
     acc /= float(num_examples)
     return acc, loss
 
-
   evaluate_times = []
   n_examples_processed = 0
 

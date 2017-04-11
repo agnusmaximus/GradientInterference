@@ -33,42 +33,17 @@ tf.app.flags.DEFINE_string('train_dir', '/tmp/imagenet_train',
                            """Directory where to write event logs """
                            """and checkpoint.""")
 tf.app.flags.DEFINE_integer('batch_size', 128, 'Batch size.')
-tf.app.flags.DEFINE_float('initial_learning_rate', 0.1,
-                          'Initial learning rate.')
+tf.app.flags.DEFINE_float('learning_rate', 0.1,
+                          'Learning rate.')
 tf.app.flags.DEFINE_float('learning_rate_decay_factor', 1,
                           'Learning rate decay factor.')
 tf.app.flags.DEFINE_integer('evaluate_batchsize', 1000,
                            """Batchsize for evaluation""")
-tf.app.flags.DEFINE_float('num_epochs_per_decay', 350.0,
-                          'Epochs after which learning rate decays.')
+tf.app.flags.DEFINE_integer('checkpoint_save_secs', 60*10,
+                           """Seconds between checkpoint saving""")
+
 
 np.set_printoptions(threshold=np.nan)
-
-def model_evaluate(sess, dataset, images, labels, batch_size, val_acc, val_loss):
-  tf.logging.info("Evaluating model...")
-  num_examples = dataset.num_examples
-  num_iter = int(math.ceil(num_examples / batch_size))
-  acc, loss = 0, 0
-
-  step = 0
-
-  while step < num_iter:
-    feed_dict = mnist.fill_feed_dict(dataset, images, labels, batch_size)
-    acc_p, loss_p = sess.run(
-      [val_acc, val_loss], feed_dict=feed_dict)
-
-    #tf.logging.info("%d of %d" % (step, num_iter))
-    sys.stdout.flush()
-
-    acc += acc_p * batch_size
-    loss += loss_p
-    step += 1
-
-  tf.logging.info("Done evaluating...")
-
-  # Compute precision @ 1.
-  acc /= float(num_examples)
-  return acc, loss
 
 def main(unused_args):
     print("Loading dataset")
@@ -79,42 +54,63 @@ def main(unused_args):
 
     global_step = tf.Variable(0, name="global_step", trainable=False)
 
-
-    # Calculate the learning rate schedule.
-    num_batches_per_epoch = (dataset.num_examples / FLAGS.batch_size)
-
-    # Decay steps need to be divided by the number of replicas to aggregate.
-    # This was the old decay schedule. Don't want this since it decays too fast with a fixed learning rate.
-    decay_steps = int(num_batches_per_epoch * FLAGS.num_epochs_per_decay)
-
-    # Decay the learning rate exponentially based on the number of steps.
-    lr = tf.train.exponential_decay(FLAGS.initial_learning_rate,
-                                    global_step,
-                                    decay_steps,
-                                    FLAGS.learning_rate_decay_factor,
-                                    staircase=True)
-
+    # Placeholders for inputs
     images, labels = mnist.placeholder_inputs(FLAGS.batch_size)
 
     # Number of classes in the Dataset label set plus 1.
     # Label 0 is reserved for an (unused) background class.
     logits = mnist.inference(images, train=True)
 
+    # Accuracy validation
     val_acc = tf.reduce_sum(mnist.evaluation(logits, labels)) / tf.constant(FLAGS.evaluate_batchsize)
 
     # Add classification loss.
     total_loss = mnist.loss(logits, labels)
 
     # Create an optimizer that performs gradient descent.
+    lr = tf.constant(FLAGS.learning_rate)
     opt = tf.train.GradientDescentOptimizer(lr)
 
+    # Compute gradients and apply it
     grads = opt.compute_gradients(total_loss)
     train_op = opt.apply_gradients(grads, global_step=global_step)
 
-    checkpoint_save_secs = 60 * 5
+  # Helper function to evaluate on training set
+  def model_evaluate(sess):
+
+    num_examples = dataset.num_examples
+
+    tf.logging.info("Evaluating model on training set with num examples %d..." % num_examples)
+    sys.stdout.flush()
+
+    # This simply makes sure that we are evaluating on the training set
+    assert(num_examples == 60000)
+
+    # Make sure we are using a batchsize a multiple of number of examples
+    assert(num_examples % FLAGS.evaluate_batch_size == 0)
+    num_iter = int(num_examples / FLAGS.evaluate_batch_size)
+    acc, loss = 0, 0
+
+    for i in range(num_iter):
+      feed_dict = mnist.fill_feed_dict(dataset, images, labels, FLAGS.evaluate_batch_size)
+      acc_p, loss_p = sess.run(
+        [val_acc, total_loss], feed_dict=feed_dict)
+
+      tf.logging.info("%d of %d" % (i, num_iter))
+      sys.stdout.flush()
+
+      acc += acc_p * FLAGS.evaluate_batch_size
+      loss += loss_p
+
+    tf.logging.info("Done evaluating...")
+
+    # Compute precision @ 1.
+    acc /= float(num_examples)
+    return acc, loss
+
     with tf.train.MonitoredTrainingSession(
             checkpoint_dir=FLAGS.train_dir,
-            save_checkpoint_secs=checkpoint_save_secs) as mon_sess:
+            save_checkpoint_secs=FLAGS.checkpoint_save_secs) as mon_sess:
         n_examples_processed = 0
         cur_iteration = 0
         evaluate_times = []
@@ -125,7 +121,7 @@ def main(unused_args):
             if new_epoch_track == cur_epoch_track + 1 or cur_iteration == 0:
                 tf.logging.info("Evaluating...")
                 t_evaluate_start = time.time()
-                acc, loss = model_evaluate(mon_sess, dataset, images, labels, FLAGS.evaluate_batchsize, val_acc, total_loss)
+                acc, loss = model_evaluate(mon_sess)
                 tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times), new_epoch_float, acc, loss))
                 t_evaluate_end = time.time()
                 evaluate_times.append(t_evaluate_end-t_evaluate_start)
