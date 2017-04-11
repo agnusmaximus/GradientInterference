@@ -94,10 +94,12 @@ def get_next_fractional_batch(fractional_images, fractional_labels, cur_index, b
     wraparound_images = fractional_images[:next_index]
     wraparound_labels = fractional_labels[:next_index]
 
-  print(next_batch_images.shape)
-  print(wraparound_images.shape)
-  images_final = np.stack((next_batch_images, wraparound_images), axis=0)
-  labels_final = np.stack((next_batch_labels, wraparound_labels), axis=0)
+  assert(wraparound_images.shape[0] == wraparound_labels.shape[0])
+  if wraparound_images.shape[0] != 0:
+    print(next_batch_images.shape)
+    print(wraparound_images.shape)
+    images_final = np.stack((next_batch_images, wraparound_images), axis=0)
+    labels_final = np.stack((next_batch_labels, wraparound_labels), axis=0)
 
   assert(labels_final.shape[0] == batch_size)
   assert(images_final.shape[0] == batch_size)
