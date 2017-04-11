@@ -60,13 +60,7 @@ IMAGE_SIZE = cifar10_input.IMAGE_SIZE
 NUM_CLASSES = cifar10_input.NUM_CLASSES
 NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
 NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
-
-
-# Constants describing the training process.
-MOVING_AVERAGE_DECAY = 0.9999     # The decay to use for the moving average.
-NUM_EPOCHS_PER_DECAY = 350.0      # Epochs after which learning rate decays.
-LEARNING_RATE_DECAY_FACTOR = 1  # Learning rate decay factor.
-INITIAL_LEARNING_RATE = 0.0001       # Initial learning rate.
+NUM_CHANNELS = 3
 
 # If a model is trained with multiple GPUs, prefix all Op names with tower_name
 # to differentiate the operations. Note that this prefix is removed from the
@@ -332,17 +326,10 @@ def train(total_loss, scope_name):
   Returns:
     train_op: op for training.
   """
-  # Variables that affect learning rate.
-  num_batches_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / FLAGS.batch_size
-  decay_steps = int(num_batches_per_epoch * NUM_EPOCHS_PER_DECAY)
-
-  # Generate moving averages of all losses and associated summaries.
-  loss_averages_op = _add_loss_summaries(total_loss)
 
   # Compute gradients.
-  with tf.control_dependencies([loss_averages_op]):
-    opt = tf.train.GradientDescentOptimizer(INITIAL_LEARNING_RATE)
-    grads = opt.compute_gradients(total_loss)
+  opt = tf.train.GradientDescentOptimizer(FLAGS.learning_rate)
+  grads = opt.compute_gradients(total_loss)
 
   # Apply gradients.
   apply_gradient_op = opt.apply_gradients(grads)

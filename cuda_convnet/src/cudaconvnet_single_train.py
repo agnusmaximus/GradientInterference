@@ -64,8 +64,12 @@ tf.app.flags.DEFINE_boolean('log_device_placement', False,
                             """Whether to log device placement.""")
 tf.app.flags.DEFINE_integer('log_frequency', 10,
                             """How often to log results to the console.""")
+tf.app.flags.DEFINE_integer('dataset_fraction', 2,
+                            """Fraction of dataset to use for fractional repeated dataset""")
 tf.app.flags.DEFINE_boolean('test_load_dumped_data_files', True,
                             """Whether to test saving of data files""")
+tf.app.flags.DEFINE_float('learning_rate', .0001,
+                            """Constant learning rate""")
 
 def unpickle(file):
     fo = open(file, 'rb')
@@ -106,245 +110,171 @@ def load_cifar_data_raw():
 
     return tuple([np.array(x) for x in [train_images, train_labels, test_images, test_labels]])
 
-def next_batch_indices(target_batch_size, n_elements, cur_index, exclude_index=-1, swap_index=-1):
-    indices = list(range(cur_index, min(n_elements, cur_index + target_batch_size)))
-    next_index = cur_index + target_batch_size
-    if exclude_index in indices:
-        indices.remove(exclude_index)
-    indices = [exclude_index if x == swap_index else x for x in indices]
-    while next_index < n_elements and len(indices) < target_batch_size:
-        indices.append(cur_index)
-        next_index += 1
-    if next_index >= n_elements:
-        next_index = 0
-    return indices, next_index
+# We keep 1/r of the data, and let the data be
+# S_r = [(s1, ... s_n/r), (s1, ... s_n/r), .... (s1, ... s_n/r) ],
+# where (s1, ... s_n/r) is appearing r times
+def load_fractional_repeated_data(all_images, all_labels, r=2):
 
-def next_batch(target_batch_size, images, labels, cur_index, exclude_index=-1, swap_index=-1):
-    indices, next_index = next_batch_indices(target_batch_size, len(images), cur_index, exclude_index, swap_index)
-    assert(len(indices) != 0)
-    return images[indices], labels[indices], next_index
+  # First we assert we are using mnist training
+  assert(all_images.shape[0] == 50000)
 
+  # We assert that the number of examples is divisible by r
+  assert(all_images.shape[0] % r == 0)
+
+  num_examples = all_images.shape[0]
+
+  # We take a fraction of each
+  images_fractional = all_images[:int(num_examples / r)]
+  labels_fractional = all_labels[:int(num_examples / r)]
+
+  # We tile each fractional set r times
+  images_final = np.tile(images_fractional, (r, 1, 1, 1))
+  labels_final = np.tile(labels_fractional, r)
+  print(images_final.shape)
+  print(labels_final.shape)
+  assert(images_final.shape == (num_examples, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, cifar10.NUM_CHANNELS))
+  assert(labels_final.shape == (num_examples,))
+
+  # Just as a sanity check let's compare image segments
+  if r != 1:
+    images_first_segment = images_final[:int(num_examples/r)]
+    images_second_segment = images_final[int(num_examples/r):2*int(num_examples/r)]
+    assert(np.linalg.norm(images_first_segment - images_second_segment) == 0)
+
+    # Also sanity check label segments
+    labels_first_segment = labels_final[:int(num_examples/r)]
+    labels_second_segment = labels_final[int(num_examples/r):2*int(num_examples/r)]
+    assert(np.linalg.norm(labels_first_segment-labels_second_segment) == 0)
+
+    # Full sanity check to make sure that the original data is not repeated
+    images_first_segment = all_images[:int(num_examples/r)]
+    images_second_segment = all_images[int(num_examples/r):2*int(num_examples/r)]
+    assert(np.linalg.norm(images_first_segment - images_second_segment) != 0)
+
+  return images_final, labels_final
+
+def get_next_fractional_batch(fractional_images, fractional_labels, cur_index, batch_size):
+  print("Getting next batch from fractional repeated dataset")
+  start = cur_index
+  end = min(cur_index+batch_size, fractional_labels.shape[0])
+  next_index = end
+  next_batch_images = fractional_images[start:end]
+  next_batch_labels = fractional_labels[start:end]
+
+  # Wrap around
+  wraparound_images = np.array([])
+  wraparound_labels = np.array([])
+  if end-start < batch_size:
+    next_index = batch_size-(end-start)
+    wraparound_images = fractional_images[:next_index]
+    wraparound_labels = fractional_labels[:next_index]
+
+  assert(wraparound_images.shape[0] == wraparound_labels.shape[0])
+  if wraparound_images.shape[0] != 0:
+    print(next_batch_images.shape)
+    print(wraparound_images.shape)
+    next_batch_images = np.vstack((next_batch_images, wraparound_images))
+    next_batch_labels = np.hstack((next_batch_labels, wraparound_labels))
+
+  assert(next_batch_images.shape[0] == batch_size)
+  assert(next_batch_labels.shape[0] == batch_size)
+
+  return next_batch_images, next_batch_labels, next_index % fractional_labels.shape[0]
 
 def train():
-  """Train CIFAR-10 for a number of steps."""
-  with tf.Graph().as_default():
-    #global_step = tf.contrib.framework.get_or_create_global_step()
-    scope_1, scope_2 = "parameters_1", "parameters_2"
+    """Train CIFAR-10 for a number of steps."""
 
+    # Load data
+    print("Loading data...")
+    images_train_raw, labels_train_raw, images_test_raw, labels_test_raw = load_cifar_data_raw()
+    print("Done.")
+
+    # Load fractional data on train
+    print("Loading fractional data...")
+    images_fractional_train, labels_fractional_train = load_fractional_repeated_data(images_train_raw, labels_train_raw, r=FLAGS.dataset_fraction)
+    print("Done.")
+
+    # Build the model
+    scope_name = "parameters_1"
     with tf.variable_scope(scope_1):
-        #images_1, labels_1 = cifar10.inputs(False)
-        images_1 = tf.placeholder(tf.float32, shape=(None, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, 3))
-        labels_1 = tf.placeholder(tf.int32, shape=(None,))
-        logits_1 = cifar10.inference(images_1)
-        loss_1 = cifar10.loss(logits_1, labels_1, scope_1)
-        train_op_1 = cifar10.train(loss_1, scope_1)
-        top_k_op_1 = tf.nn.in_top_k(logits_1, labels_1, 1)
+        images = tf.placeholder(tf.float32, shape=(None, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, cifar10.NUM_CHANNELS))
+        labels = tf.placeholder(tf.int32, shape=(None,))
+        logits = cifar10.inference(images)
+        loss = cifar10.loss(logits, labels, scope_name)
+        train_op = cifar10.train(loss, scope_name)
+        top_k_op = tf.nn.in_top_k(logits, labels, 1)
 
-    with tf.variable_scope(scope_2):
-        #images_2, labels_2 = cifar10.inputs(False)
-        images_2 = tf.placeholder(tf.float32, shape=(None, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, 3))
-        labels_2 = tf.placeholder(tf.int32, shape=(None,))
-        logits_2 = cifar10.inference(images_2)
-        loss_2 = cifar10.loss(logits_2, labels_2, scope_2)
-        train_op_2 = cifar10.train(loss_2, scope_2)
-        top_k_op_2 = tf.nn.in_top_k(logits_2, labels_2, 1)
+    # Helper function to load feed dictionary
+    def get_feed_dict(batch_size):
+        images_real, labels_real, next_index = get_next_fractional_batch(images_fractional_train, labels_fractional_train,
+                                                                         get_feed_dict.fractional_dataset_index,
+                                                                         batch_size)
+        get_feed_dict.fractional_dataset_index = next_index
+        assert(images_real.shape[0] == batch_size)
+        assert(labels_real.shape[0] == batch_size)
+        return {images : images_real, labels: labels_real}
+    get_feed_dict.fractional_dataset_index = 0
 
-    variables_1 = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope="parameters_1")
-    variables_2 = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope="parameters_2")
-    assert(len(variables_1) == len(variables_2))
+    # Helper function to evaluate on training set
+    def model_evaluate(sess):
 
-    images_test_raw, labels_test_raw, images_raw, labels_raw = load_cifar_data_raw()
+      num_examples = images_fractional_train.shape[0]
 
-    with tf.Session() as mon_sess:
+      tf.logging.info("Evaluating model on training set with num examples %d..." % num_examples)
+      sys.stdout.flush()
+
+      # This simply makes sure that we are evaluating on the training set
+      assert(num_examples == cifar10.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
+
+      # Make sure we are using a batchsize a multiple of number of examples
+      assert(num_examples % FLAGS.evaluate_batch_size == 0)
+      num_iter = int(num_examples / FLAGS.evaluate_batch_size)
+      acc, loss = 0, 0
+
+      for i in range(num_iter):
+        feed_dict = get_feed_dict(FLAGS.evaluate_batch_size)
+        acc_p, loss_p = sess.run(
+            [top_k_op, loss], feed_dict=feed_dict)
+
+        tf.logging.info("%d of %d" % (i, num_iter))
+        sys.stdout.flush()
+
+        acc += np.sum(acc_p)
+        loss += loss_p
+
+      tf.logging.info("Done evaluating...")
+
+      # Compute precision @ 1.
+      acc /= float(num_examples)
+      return acc, loss
+
+    with tf.Session() as sess:
 
       tf.initialize_all_variables().run()
-      tf.train.start_queue_runners(sess=mon_sess)
+      tf.train.start_queue_runners(sess=sess)
 
-      images_raw, labels_raw = np.array(images_raw), np.array(labels_raw)
-      images_test_raw, labels_test_raw = np.array(images_test_raw), np.array(labels_test_raw)
-
-      # First we make sure the parameters of the two models are the same.
-      print("Making sure models have the same initial value...")
-      for i in range(len(variables_1)):
-          v1 = variables_1[i]
-          v2 = variables_2[i]
-          shape1 = v1.get_shape().as_list()
-          shape2 = v2.get_shape().as_list()
-          if shape1 != shape2:
-              print("Error shapes are not the same: ", shape1, shape2)
-          assert(shape1 == shape2)
-
-          images_fake = np.zeros((FLAGS.batch_size, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, 3))
-          labels_fake = np.zeros((FLAGS.batch_size,))
-          fd_fake = {images_1 : images_fake,
-                     labels_1 : labels_fake,
-                     images_2 : images_fake,
-                     labels_2 : labels_fake}
-          v1, v2 = mon_sess.run([v1, v2], feed_dict=fd_fake)
-          v1, v2 = v1.flatten(), v2.flatten()
-          if np.linalg.norm(v1) != 0:
-              v1 = v1 / np.linalg.norm(v1)
-          if np.linalg.norm(v2) != 0:
-              v2 = v2 / np.linalg.norm(v2)
-          diff = np.linalg.norm(v1-v2)
-          print("Difference between variable weights: %f" % diff)
-          assert(diff < 1e-7)
-      print("Done")
-
-      epoch = 0
-      n_perfect = 0
-
-      # Exclude index refers to the index of the example to exclude.
-      # Swap index refers to the index of the example to swap with the example excluded.
-      exclude_index, swap_index = 0, 1
-
-      while True:
-
-        # Aggregate all parameters
-        model_1_agg_variables = {}
-        model_2_agg_variables = {}
-        all_variables = {}
-        for i in range(len(variables_1)):
-            images_fake = np.zeros((FLAGS.batch_size, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, 3))
-            labels_fake = np.zeros((FLAGS.batch_size,))
-            fd_fake = {images_1 : images_fake,
-                       labels_1 : labels_fake,
-                       images_2 : images_fake,
-                       labels_2 : labels_fake}
-            v1, v2 = variables_1[i], variables_2[i]
-            name_v1, name_v2 = v1.name, v2.name
-            v1, v2 = mon_sess.run([v1, v2], feed_dict=fd_fake)
-
-            # Save all parameter weights
-            all_variables["model1/" + name_v1] = v1
-            all_variables["model2/" + name_v2] = v2
-
-            v1, v2 = v1.flatten(), v2.flatten()
-
-            if "conv" in variables_1[i].name:
-                agg_name = variables_1[i].name.split("/")[-2]
-                if "all" not in model_1_agg_variables:
-                    model_1_agg_variables["all"] = np.array([])
-                if "all" not in model_2_agg_variables:
-                    model_2_agg_variables["all"] = np.array([])
-                if agg_name not in model_1_agg_variables:
-                    model_1_agg_variables[agg_name] = np.array([])
-                if agg_name not in model_2_agg_variables:
-                    model_2_agg_variables[agg_name] = np.array([])
-                model_1_agg_variables[agg_name] = np.hstack([model_1_agg_variables[agg_name], v1])
-                model_2_agg_variables[agg_name] = np.hstack([model_2_agg_variables[agg_name], v2])
-                model_1_agg_variables["all"] = np.hstack([model_1_agg_variables[agg_name], v1])
-                model_2_agg_variables["all"] = np.hstack([model_2_agg_variables[agg_name], v2])
-
-        # Save all variables
-        output_file_name = "parameter_difference_batchsize_%d_epoch_%d_save" % (FLAGS.batch_size, epoch)
-        output_file = open(output_file_name, "wb")
-        cPickle.dump(all_variables, output_file)
-        output_file.close()
-
-        # Test the saved values
-        if FLAGS.test_load_dumped_data_files:
-            input_file = open(output_file_name, "rb")
-            print("Testing whether loaded variables succeeded...")
-            all_variables_loaded = cPickle.load(input_file)
-            input_file.close()
-            for k,v in all_variables_loaded.items():
-                assert(k in all_variables)
-                assert(np.all(np.equal(all_variables[k].flatten(), all_variables_loaded[k].flatten())))
-            print("Success!")
-
-        # Find parameter differences
-        layer_diffs = []
-        for layer_name, layer in model_1_agg_variables.items():
-            v1, v2 = model_1_agg_variables[layer_name], model_2_agg_variables[layer_name]
-            #if np.linalg.norm(v1) != 0:
-            #    v1 = np.linalg.norm(v1)
-            #if np.linalg.norm(v2) != 0:
-            #    v2 = np.linalg.norm(v2)
-            diff = np.linalg.norm(v1-v2)
-            layer_diffs.append((layer_name, diff))
-        print("Layer differences: ", (epoch, layer_diffs))
-
-        # Evaluate on test data
-        print("Evaluating on test...")
-        true_count_1, true_count_2 = 0, 0
-        cur_index = 0
-        for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL//FLAGS.eval_batchsize):
-            #print("%d of %d" % (i, cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL//FLAGS.eval_batchsize))
-
-            images_eval_real, labels_eval_real, cur_index = next_batch(FLAGS.eval_batchsize, images_test_raw, labels_test_raw, cur_index)
-            fd = {images_1 : images_eval_real,
-                  labels_1 : labels_eval_real,
-                  images_2 : images_eval_real,
-                  labels_2 : labels_eval_real}
-            p1, p2 = mon_sess.run([top_k_op_1, top_k_op_2], feed_dict=fd)
-            true_count_1 += np.sum(p1)
-            true_count_2 += np.sum(p2)
-
-        precision_test_1 = true_count_1 / float(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL)
-        precision_test_2 = true_count_2 / float(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL)
-        print("Done")
-
-        # Evaluate on train data
-        print("Evaluating on train...")
-        true_count_1, true_count_2 = 0, 0
-        cur_index = 0
-        for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN//FLAGS.eval_batchsize):
-            #print("%d of %d" % (i, cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN//FLAGS.eval_batchsize))
-            images_eval_real, labels_eval_real, cur_index = next_batch(FLAGS.eval_batchsize, images_raw, labels_raw, cur_index)
-            fd = {images_1 : images_eval_real,
-                  labels_1 : labels_eval_real,
-                  images_2 : images_eval_real,
-                  labels_2 : labels_eval_real}
-            p1, p2 = mon_sess.run([top_k_op_1, top_k_op_2], feed_dict=fd)
-            true_count_1 += np.sum(p1)
-            true_count_2 += np.sum(p2)
-
-        precision_train_1 = true_count_1 / float(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
-        precision_train_2 = true_count_2 / float(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
-
-        output_file_name = "parameter_difference_batchsize_%d_epoch_%d_train_test_error" % (FLAGS.batch_size, epoch)
-        output_file = open(output_file_name, "w")
-        cPickle.dump([precision_train_1, precision_train_2, precision_test_1, precision_test_2], output_file)
-        output_file.close()
-
-        if precision_train_1 >= .999 or precision_train_2 >= .999:
-            n_perfect += 1
-            if n_perfect >= 10:
-                break
-        print("Done")
-
-        # Print all the data related to figures 3 and 4 of https://arxiv.org/pdf/1509.01240.pdf
-        print("Layer distances: ", layer_diffs)
-        print("Epoch: %f TrainError1: %f TrainError2: %f TestError1: %f TestError2: %f" % (epoch, 1-precision_train_1, 1-precision_train_2, 1-precision_test_1, 1-precision_test_2))
-
-        # Optimize
-        cur_index = 0
-        for i in range(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN // FLAGS.batch_size + 1):
-            images_real_1, labels_real_1, next_index = next_batch(FLAGS.batch_size, images_raw,
-                                                                  labels_raw, cur_index,
-                                                                  exclude_index=exclude_index)
-            images_real_2, labels_real_2, next_index = next_batch(FLAGS.batch_size, images_raw,
-                                                                  labels_raw, cur_index,
-                                                                  exclude_index=exclude_index,
-                                                                  swap_index=swap_index)
-
-            cur_index = next_index
-
-            fd = {images_1 : images_real_1,
-                  labels_1 : labels_real_1,
-                  images_2 : images_real_2,
-                  labels_2 : labels_real_2}
-
-            mon_sess.run([train_op_1, train_op_2], feed_dict=fd)
-            l1, l2 = mon_sess.run([loss_1, loss_2], feed_dict=fd)
-
-            if i % 100 == 0:
-                epoch_cur = epoch + i * FLAGS.batch_size / float(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
-                print("Epoch: %f Losses: %f %f" % (epoch_cur, l1, l2))
-
-        epoch += 1
-
+      n_examples_processed = 0
+      cur_iteration = 0
+      evaluate_times = []
+      cur_epoch_track = 0
+      last_epoch_evaluated = 0
+      num_examples = images_fractional_train.shape[0]
+      while not mon_sess.should_stop():
+        new_epoch_float = n_examples_processed / float(num_examples)
+        new_epoch_track = int(new_epoch_float)
+        if (new_epoch_track - cur_epoch_track >= 1) or cur_iteration == 0:
+            last_epoch_evaluated = new_epoch_float
+            tf.logging.info("Evaluating...")
+            t_evaluate_start = time.time()
+            acc, loss = model_evaluate(mon_sess)
+            tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times), new_epoch_float, acc, loss))
+            t_evaluate_end = time.time()
+            evaluate_times.append(t_evaluate_end-t_evaluate_start)
+        cur_epoch_track = max(cur_epoch_track, new_epoch_track)
+        feed_dict = get_feed_dict(FLAGS.batch_size)
+        mon_sess.run([train_op], feed_dict=feed_dict)
+        cur_iteration += 1
+        n_examples_processed += FLAGS.batch_size
 
 def main(argv=None):  # pylint: disable=unused-argument
   cifar10.maybe_download_and_extract()
