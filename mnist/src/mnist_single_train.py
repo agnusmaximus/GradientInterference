@@ -98,13 +98,13 @@ def get_next_fractional_batch(fractional_images, fractional_labels, cur_index, b
   if wraparound_images.shape[0] != 0:
     print(next_batch_images.shape)
     print(wraparound_images.shape)
-    images_final = np.stack((next_batch_images, wraparound_images), axis=0)
-    labels_final = np.stack((next_batch_labels, wraparound_labels), axis=0)
+    next_batch_images = np.stack((next_batch_images, wraparound_images), axis=0)
+    next_batch_labels = np.stack((next_batch_labels, wraparound_labels), axis=0)
 
-  assert(labels_final.shape[0] == batch_size)
-  assert(images_final.shape[0] == batch_size)
+  assert(next_batch_images.shape[0] == batch_size)
+  assert(next_batch_labels.shape[0] == batch_size)
 
-  return images_final, labels_final, next_index
+  return next_batch_images, next_batch_labels, next_index
 
 def main(unused_args):
     print("Loading dataset")
