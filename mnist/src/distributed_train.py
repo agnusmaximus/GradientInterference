@@ -150,6 +150,7 @@ def train(target, dataset, cluster_spec):
 
   evaluate_times = []
   is_first_iteration = True
+  n_examples_processed = 0
 
   # Cur epoch track describes (from this worker's perspective) the current epoch.
   cur_epoch_track = 0
