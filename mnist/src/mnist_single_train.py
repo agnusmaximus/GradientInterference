@@ -80,7 +80,7 @@ def load_fractional_repeated_data(dataset, r=2):
 
   # Also sanity check label segments
   labels_first_segment = labels_final[:int(dataset.num_examples/r)]
-  labels_second_segment = labels_fina[int(dataset.num_examples/r):2*int(dataset.num_examples/r)]
+  labels_second_segment = labels_final[int(dataset.num_examples/r):2*int(dataset.num_examples/r)]
   assert(np.linalg.norm(labels_first_segment-labels_second_segment) == 0)
 
   # Full sanity check to make sure that the original data is not repeated
