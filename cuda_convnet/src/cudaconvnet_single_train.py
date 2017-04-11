@@ -196,7 +196,7 @@ def train():
 
     # Build the model
     scope_name = "parameters_1"
-    with tf.variable_scope(scope_1):
+    with tf.variable_scope(scope_name):
         images = tf.placeholder(tf.float32, shape=(None, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, cifar10.NUM_CHANNELS))
         labels = tf.placeholder(tf.int32, shape=(None,))
         logits = cifar10.inference(images)
