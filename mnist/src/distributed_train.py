@@ -33,6 +33,7 @@ tf.app.flags.DEFINE_string('train_dir', '/tmp/mnist_train', 'Directory where to 
 tf.app.flags.DEFINE_boolean('should_evaluate', False, 'Whether Chief should do evaluation per epoch.')
 tf.app.flags.DEFINE_integer('evaluate_batch_size', 1000, 'Batchsize for evaluation')
 tf.app.flags.DEFINE_integer('batch_size', 64, 'Batchsize for training')
+tf.app.flags.DEFINE_integer('checkpoint_save_secs', 60*5, 'Time interval between checkpoint saving')
 tf.app.flags.DEFINE_float('learning_rate', 0.1, 'Constant learning rate.')
 
 # Distributed defines
@@ -157,7 +158,7 @@ def train(target, dataset, cluster_spec):
       master=target, is_chief=is_chief,
       hooks=[sync_replicas_hook],
       checkpoint_dir=FLAGS.train_dir,
-      save_checkpoint_secs=checkpoint_save_secs) as mon_sess:
+      save_checkpoint_secs=FLAGS.checkpoint_save_secs) as mon_sess:
     while not mon_sess.should_stop():
 
       # Compute current epoch and cast to integer
