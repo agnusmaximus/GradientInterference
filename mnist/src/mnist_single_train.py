@@ -98,8 +98,8 @@ def get_next_fractional_batch(fractional_images, fractional_labels, cur_index, b
   if wraparound_images.shape[0] != 0:
     print(next_batch_images.shape)
     print(wraparound_images.shape)
-    next_batch_images = np.stack((next_batch_images, wraparound_images), axis=0)
-    next_batch_labels = np.stack((next_batch_labels, wraparound_labels), axis=0)
+    next_batch_images = np.vstack((next_batch_images, wraparound_images))
+    next_batch_labels = np.vstack((next_batch_labels, wraparound_labels))
 
   assert(next_batch_images.shape[0] == batch_size)
   assert(next_batch_labels.shape[0] == batch_size)
