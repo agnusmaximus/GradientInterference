@@ -76,7 +76,7 @@ def train(target, dataset, cluster_spec):
     logits = mnist.inference(images, train=True)
 
     # Validation accuracy operation
-    val_acc = tf.reduce_sum(mnist.evaluation(logits, labels)) / tf.constant(FLAGS.evaluate_batchsize)
+    val_acc = tf.reduce_sum(mnist.evaluation(logits, labels)) / tf.constant(FLAGS.evaluate_batch_size)
 
     # Add classification loss.
     total_loss = mnist.loss(logits, labels)
