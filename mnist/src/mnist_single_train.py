@@ -214,7 +214,7 @@ def main(unused_args):
             new_epoch_track = int(new_epoch_float)
             #if new_epoch_track == cur_epoch_track + 1 or cur_iteration == 0:
             if cur_epoch_float - last_epoch_evaluated >= .2 or cur_iteration == 0:
-                last_epoch_evaluated = cur_epoch_float
+                last_epoch_evaluated = new_epoch_float
                 tf.logging.info("Evaluating...")
                 t_evaluate_start = time.time()
                 acc, loss = model_evaluate(mon_sess)
