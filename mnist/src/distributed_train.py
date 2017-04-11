@@ -200,7 +200,7 @@ def train(target, dataset, cluster_spec):
       # Update current epoch
       cur_epoch_track = max(cur_epoch_track, new_epoch_track)
 
-      tf.logging.info("Epoch: %d" % int(cur_epoch_track))
+      tf.logging.info("Epoch: %f" % cur_epoch_float)
 
       # Distributed training
       feed_dict = mnist.fill_feed_dict(dataset, images, labels, FLAGS.batch_size)
