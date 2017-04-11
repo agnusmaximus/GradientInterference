@@ -136,7 +136,7 @@ def main(unused_args):
     logits = mnist.inference(images, train=True)
 
     # Accuracy validation
-    val_acc = tf.reduce_sum(mnist.evaluation(logits, labels)) / tf.constant(FLAGS.evaluate_batch_size)
+    val_acc = tf.reduce_sum(mnist.evaluation(logits, labels))
 
     # Add classification loss.
     total_loss = mnist.loss(logits, labels)
@@ -189,7 +189,7 @@ def main(unused_args):
         tf.logging.info("%d of %d" % (i, num_iter))
         sys.stdout.flush()
 
-        acc += acc_p * FLAGS.evaluate_batch_size
+        acc += acc_p
         loss += loss_p
 
       tf.logging.info("Done evaluating...")
