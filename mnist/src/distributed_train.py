@@ -30,8 +30,8 @@ FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_string('train_dir', '/tmp/mnist_train', 'Directory where to write event logs and checkpoint.')
 tf.app.flags.DEFINE_boolean('should_evaluate', False, 'Whether Chief should do evaluation per epoch.')
-tf.app.flags.DEFINE_integer('evaluate_batch_size', 'Batchsize for evaluation')
-tf.app.flags.DEFINE_integer('batch_size', 'Batchsize for training')
+tf.app.flags.DEFINE_integer('evaluate_batch_size', 1000, 'Batchsize for evaluation')
+tf.app.flags.DEFINE_integer('batch_size', 64, 'Batchsize for training')
 tf.app.flags.DEFINE_float('learning_rate', 0.1, 'Constant learning rate.')
 
 def train(target, dataset, cluster_spec):
