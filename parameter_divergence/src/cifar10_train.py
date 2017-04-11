@@ -153,15 +153,12 @@ def train():
     variables_2 = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope="parameters_2")
     assert(len(variables_1) == len(variables_2))
 
-    images_test_raw, labels_test_raw, images_raw, labels_raw = load_cifar_data_raw()
+    images_raw, labels_raw, images_test_raw, labels_test_raw = load_cifar_data_raw()
 
     with tf.Session() as mon_sess:
 
       tf.initialize_all_variables().run()
       tf.train.start_queue_runners(sess=mon_sess)
-
-      images_raw, labels_raw = np.array(images_raw), np.array(labels_raw)
-      images_test_raw, labels_test_raw = np.array(images_test_raw), np.array(labels_test_raw)
 
       # First we make sure the parameters of the two models are the same.
       print("Making sure models have the same initial value...")
