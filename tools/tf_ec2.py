@@ -1028,7 +1028,7 @@ def tf_ec2_run(argv, configuration):
 
         # The evaluator requires a special command to continually evaluate accuracy on validation data.
         # We also launch the tensorboard on it.
-        assert(len(machine_assignments["evaluator"]) == 1)
+        #assert(len(machine_assignments["evaluator"]) == 1)
         command_machine_assignments["evaluator"] = {"instance" : machine_assignments["evaluator"][0],
                                                     "commands" : list(configuration["pre_commands"]) + list(configuration["evaluate_commands"])}
 
