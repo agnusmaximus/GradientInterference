@@ -153,6 +153,7 @@ def train(target, dataset, cluster_spec):
 
   # Cur epoch track describes (from this worker's perspective) the current epoch.
   cur_epoch_track = 0
+  first_iteration = True
 
   with tf.train.MonitoredTrainingSession(
       master=target, is_chief=is_chief,
@@ -165,19 +166,11 @@ def train(target, dataset, cluster_spec):
       new_epoch_float = n_examples_processed / float(dataset.num_examples)
       new_epoch_track = int(new_epoch_float)
 
-      tf.logging.info("Master evaluating...")
-      sys.stdout.flush()
-
-
       # For distributed training, we want to block other workers from continuing if the master is evaluating.
       mon_sess.run([workers_block_if_necessary_op])
 
-      tf.logging.info("Master evaluating...")
-      sys.stdout.flush()
-
-
       # On each epoch (or the first), evaluate on training data
-      if FLAGS.should_evaluate and FLAGS.task_id == 0 and (new_epoch_track == cur_epoch_track+1):
+      if FLAGS.should_evaluate and FLAGS.task_id == 0 and (new_epoch_track == cur_epoch_track+1 or first_iteration):
 
         # Block workers
         mon_sess.run([block_workers_op])
@@ -208,8 +201,10 @@ def train(target, dataset, cluster_spec):
       tf.logging.info("Epoch: %d" % int(cur_epoch_track))
 
       # Distributed training
-      feed_dict = mnist.fill_feed_dict(dataset, images, labels, batchsize_to_use)
+      feed_dict = mnist.fill_feed_dict(dataset, images, labels, FLAGS.batch_size)
       loss_value  = mon_sess.run([train_op], feed_dict=feed_dict)
       n_examples_processed += FLAGS.batch_size * num_workers
 
       assert not np.isnan(loss_value), 'Model diverged with loss = NaN'
+
+      first_iteration = False
