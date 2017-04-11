@@ -40,8 +40,6 @@ from scipy.ndimage.filters import gaussian_filter
 #SOURCE_URL = 'http://yann.lecun.com/exdb/mnist/'
 SOURCE_URL = 'https://s3.amazonaws.com/lasagne/recipes/datasets/mnist/'
 
-numpy.random.seed(0)
-
 class DataSet(object):
 
   def __init__(self,
@@ -82,6 +80,7 @@ class DataSet(object):
 
     # Shuffle the data
     perm = numpy.arange(self._num_examples)
+    numpy.random.seed(0)
     numpy.random.shuffle(perm)
     self._images = self._images[perm]
     self._labels = self._labels[perm]
