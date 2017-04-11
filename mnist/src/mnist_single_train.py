@@ -55,11 +55,25 @@ def load_fractional_repeated_data(dataset, r=2):
   # We assert that the number of examples is divisible by r
   assert(dataset.num_examples % r == 0)
 
+  # We pop all 60,000 elements from the dataset
+  all_images, all_labels = dataset.next_batch(dataset.num_examples)
 
+  # We take a fraction of each
+  images_fractional = all_images[:dataset.num_examples / r]
+  labels_fractional = all_labels[:dataset.num_examples / r]
+
+  # We tile each fractional set r times
+  images_final = np.tile(images_fractional, r)
+  labels_final = np.tile(labels_fractional, r)
+  assert(images_final.shape == (dataset.num_examples, IMAGE_SIZE, IMAGE_SIZE, NUM_CHANNELS))
+  assert(labels_final.shape == (dataset.num_examples,))
+
+  return images_final, labels_final
 
 def main(unused_args):
     print("Loading dataset")
     dataset = mnist_data.load_mnist().train
+    load_fractional_repeated_data(dataset)
     print("Done loading dataset")
 
     FLAGS = tf.app.flags.FLAGS
