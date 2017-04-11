@@ -121,12 +121,12 @@ def get_next_fractional_batch(fractional_images, fractional_labels, cur_index, b
   return next_batch_images, next_batch_labels, next_index % fractional_labels.shape[0]
 
 def main(unused_args):
+    FLAGS = tf.app.flags.FLAGS
+
     print("Loading dataset")
     dataset = mnist_data.load_mnist().train
     fractional_images, fractional_labels = load_fractional_repeated_data(dataset, r=FLAGS.dataset_fraction)
     print("Done loading dataset")
-
-    FLAGS = tf.app.flags.FLAGS
 
     global_step = tf.Variable(0, name="global_step", trainable=False)
 

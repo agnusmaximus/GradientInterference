@@ -11,7 +11,7 @@ if not os.path.exists(time_to_accuracy_directory):
     os.makedirs(time_to_accuracy_directory)
 
 def get_app_name(fname):
-    return fname.split("_")[4]
+    return fname.findall("gradient_interference_([A-Za-z]+)_.*", fname)[0]
 
 def extract_data(fname):
     f = open(fname, "r")
@@ -28,7 +28,7 @@ def extract_data(fname):
     return data
 
 def get_batchsize(fname):
-    return int(fname.split("_")[-4].split("=")[-1])
+    return fname.findall(".*batchsize=([0-9]+)")[0]
 
 def extract_time_to_accuracy(data, target):
     max_accuracy = 0
