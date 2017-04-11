@@ -76,19 +76,20 @@ def load_fractional_repeated_data(dataset, r=2):
   assert(labels_final.shape == (dataset.num_examples,))
 
   # Just as a sanity check let's compare image segments
-  images_first_segment = images_final[:int(dataset.num_examples/r)]
-  images_second_segment = images_final[int(dataset.num_examples/r):2*int(dataset.num_examples/r)]
-  assert(np.linalg.norm(images_first_segment - images_second_segment) == 0)
+  if r != 1:
+    images_first_segment = images_final[:int(dataset.num_examples/r)]
+    images_second_segment = images_final[int(dataset.num_examples/r):2*int(dataset.num_examples/r)]
+    assert(np.linalg.norm(images_first_segment - images_second_segment) == 0)
 
-  # Also sanity check label segments
-  labels_first_segment = labels_final[:int(dataset.num_examples/r)]
-  labels_second_segment = labels_final[int(dataset.num_examples/r):2*int(dataset.num_examples/r)]
-  assert(np.linalg.norm(labels_first_segment-labels_second_segment) == 0)
+    # Also sanity check label segments
+    labels_first_segment = labels_final[:int(dataset.num_examples/r)]
+    labels_second_segment = labels_final[int(dataset.num_examples/r):2*int(dataset.num_examples/r)]
+    assert(np.linalg.norm(labels_first_segment-labels_second_segment) == 0)
 
-  # Full sanity check to make sure that the original data is not repeated
-  images_first_segment = all_images[:int(dataset.num_examples/r)]
-  images_second_segment = all_images[int(dataset.num_examples/r):2*int(dataset.num_examples/r)]
-  assert(np.linalg.norm(images_first_segment - images_second_segment) != 0)
+    # Full sanity check to make sure that the original data is not repeated
+    images_first_segment = all_images[:int(dataset.num_examples/r)]
+    images_second_segment = all_images[int(dataset.num_examples/r):2*int(dataset.num_examples/r)]
+    assert(np.linalg.norm(images_first_segment - images_second_segment) != 0)
 
   return images_final, labels_final
 
