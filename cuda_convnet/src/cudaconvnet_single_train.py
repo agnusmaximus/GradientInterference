@@ -125,7 +125,7 @@ def load_repeated_in_full_data(all_images, all_labels, r=2):
     # Sanity check
     if r > 1:
         images_first_segment = repeated_images[:all_images.shape[0]]
-        images_second_segment = repeated_images[all_images_shape[0]:all_images_shape[0]*2]
+        images_second_segment = repeated_images[all_images.shape[0]:all_images.shape[0]*2]
         assert(np.linalg.norm(images_first_segment-images_second_segment) == 0)
 
     return repeated_images, repeated_labels
