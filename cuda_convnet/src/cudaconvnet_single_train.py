@@ -247,7 +247,10 @@ def train():
       sys.stdout.flush()
 
       # This simply makes sure that we are evaluating on the training set
-      assert(num_examples == cifar10.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
+      if FLAGS.replicate_data_in_full:
+          assert(num_examples == cifar10.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN * FLAGS.dataset_replication_factor)
+      else:
+          assert(num_examples == cifar10.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
 
       # Make sure we are using a batchsize a multiple of number of examples
       assert(num_examples % FLAGS.evaluate_batch_size == 0)
