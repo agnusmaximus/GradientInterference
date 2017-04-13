@@ -193,7 +193,7 @@ def plot_train_test_errors(all_models, all_train_test_errors):
         return errors
 
     for batchsize in all_models.keys():
-        epoch_differences = extract_epoch_differences(all_models[batchsize], use_normalized_distance=False)
+        epoch_differences = extract_epoch_differences(all_models[batchsize], use_normalized_distance=True)
         train_errors = extract_errors(all_train_test_errors[batchsize], key=0)
         test_errors = extract_errors(all_train_test_errors[batchsize], key=1)
 
@@ -212,8 +212,8 @@ def plot_train_test_errors(all_models, all_train_test_errors):
         plt.xlabel("Epoch")
         plt.ylabel("")
         plt.legend(loc="upper right", fontsize=7)
-        plt.title("Train vs test vs parameter difference batchsize %d non normalized" % int(batchsize))
-        plt.savefig("%s/TrainTestParameterDifferencesNonNormalized%d.png" % (parameter_divergence_directory, int(batchsize)))
+        plt.title("Train vs test vs parameter difference batchsize %d normalized" % int(batchsize))
+        plt.savefig("%s/TrainTestParameterDifferencesNormalized%d.png" % (parameter_divergence_directory, int(batchsize)))
 
 def plot_train_test_losses(all_models, all_train_test_losses):
 
@@ -253,12 +253,12 @@ def plot_train_test_losses(all_models, all_train_test_losses):
 
 if __name__ == "__main__":
     # [batchsize][epoch] contains
-    result_directory = "./experiment_results/parameter_divergence/raw_parameter_data_with_errors/"
+    result_directory = "./experiment_results/parameter_divergence/raw_parameter_data_with_errors_bugfixed/"
     train_test_errors = load_train_test_errors(result_directory)
-    train_test_losses = load_train_test_losses(result_directory)
+    #train_test_losses = load_train_test_losses(result_directory)
     models = load_all_models_all_batches(result_directory)
     plot_all_batchsize_all_non_normalized_dists(models)
     plot_all_parameter_diffs_compare_normalized_dist_and_dist(models)
     plot_all_parameter_diffs(models)
     plot_train_test_errors(models, train_test_errors)
-    plot_train_test_losses(models, train_test_losses)
+    #plot_train_test_losses(models, train_test_losses)
