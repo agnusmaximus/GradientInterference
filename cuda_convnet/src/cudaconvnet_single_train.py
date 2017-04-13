@@ -209,7 +209,7 @@ def save_model(sess, all_variables, epoch):
     for variable in all_variables:
         v = sess.run([variable])[0]
         variables_materialized[variable.name] = v
-    output_file = get_run_directory() + "/model_epoch=%d" % epoch
+    output_file_name = get_run_directory() + "/model_epoch=%d" % epoch
     print("Saving model to %s" % output_file)
     output_file = open(output_file_name, "wb")
     cPickle.dump(variables_materialized, output_file)
