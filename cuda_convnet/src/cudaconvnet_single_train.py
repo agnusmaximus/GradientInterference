@@ -68,6 +68,8 @@ tf.app.flags.DEFINE_boolean("replicate_data_in_full", False,
 tf.app.flags.DEFINE_integer('dataset_replication_factor', 2,
                             'Number of times to replicate data. Only used if replicate_data_in_full is set to true')
 tf.app.flags.DEFINE_string('shared_filesystem_directory', '', 'Shared filesystem directory to write saved models')
+tf.app.flags.DEFINE_boolean("test_load_dumped_data_files", True,
+                            'Sanity check data files')
 
 def unpickle(file):
     fo = open(file, 'rb')
@@ -219,10 +221,22 @@ def save_model(sess, all_variables, epoch):
         sys.stdout.flush()
         v = sess.run([variable])[0]
         variables_materialized[variable.name] = v
+
     output_file = open(output_file_name, "wb")
     cPickle.dump(variables_materialized, output_file)
     output_file.close()
     print("Done.")
+
+    # Test the saved values
+    if FLAGS.test_load_dumped_data_files:
+        input_file = open(output_file_name, "rb")
+        print("Testing whether loaded variables succeeded...")
+        all_variables_loaded = cPickle.load(input_file)
+        input_file.close()
+        for k,v in all_variables_loaded.items():
+            assert(k in variables_materialized)
+            assert(np.all(np.equal(variables_materialized[k].flatten(), all_variables_loaded[k].flatten())))
+        print("Success!")
 
 def train():
     """Train CIFAR-10 for a number of steps."""
