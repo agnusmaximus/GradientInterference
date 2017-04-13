@@ -116,7 +116,7 @@ def load_cifar_data_raw():
     return tuple([np.array(x) for x in [train_images, train_labels, test_images, test_labels]])
 
 # We replicate the data (in full) r times and return it
-def load_repeated_data(all_images, all_labels, r=2):
+def load_repeated_in_full_data(all_images, all_labels, r=2):
     assert(all_images.shape[0] == 50000)
     repeated_images = np.tile(all_images, (r, 1, 1, 1))
     repeated_labels = np.tile(all_labels, r)
@@ -211,7 +211,7 @@ def train():
         print("Loading replicated in full data...")
         print("Done.")
         # We call the following "fractional", but the entire data is actually replicated in full
-        images_fractional_train, labels_fractional_train = load_fractional_repeated_data(images_train_raw, labels_train_raw, r=FLAGS.dataset_fraction)
+        images_fractional_train, labels_fractional_train = load_repeated_in_full_data(images_train_raw, labels_train_raw, r=FLAGS.dataset_replication_factor)
     else:
         print("Loading fractional data...")
         images_fractional_train, labels_fractional_train = load_fractional_repeated_data(images_train_raw, labels_train_raw, r=FLAGS.dataset_fraction)
