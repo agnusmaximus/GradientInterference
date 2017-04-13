@@ -71,6 +71,11 @@ tf.app.flags.DEFINE_boolean('test_load_dumped_data_files', True,
 tf.app.flags.DEFINE_float('learning_rate', .0001,
                             """Constant learning rate""")
 
+tf.app.flags.DEFINE_boolean("replicate_data_in_full", False,
+                            'Whether to use training data replicated in full')
+tf.app.flags.DEFINE_integer('dataset_replication_factor', 2,
+                            'Number of times to replicate data. Only used if replicate_data_in_full is set to true')
+
 def unpickle(file):
     fo = open(file, 'rb')
     dict = cPickle.load(fo)
@@ -109,6 +114,21 @@ def load_cifar_data_raw():
     print("Done")
 
     return tuple([np.array(x) for x in [train_images, train_labels, test_images, test_labels]])
+
+# We replicate the data (in full) r times and return it
+def load_repeated_data(all_images, all_labels, r=2):
+    assert(all_images.shape[0] == 50000)
+    repeated_images = np.tile(all_images, (r, 1, 1, 1))
+    repeated_labels = np.tile(all_labels, r)
+    assert(repeated_images.shape[0] == 50000*r)
+
+    # Sanity check
+    if r > 1:
+        images_first_segment = repeated_images[:all_images.shape[0]]
+        images_second_segment = repeated_images[all_images_shape[0]:all_images_shape[0]*2]
+        assert(np.linalg.norm(images_first_segment-images_second_segment) == 0)
+
+    return repeated_images, repeated_labels
 
 # We keep 1/r of the data, and let the data be
 # S_r = [(s1, ... s_n/r), (s1, ... s_n/r), .... (s1, ... s_n/r) ],
@@ -187,9 +207,15 @@ def train():
     print("Done.")
 
     # Load fractional data on train
-    print("Loading fractional data...")
-    images_fractional_train, labels_fractional_train = load_fractional_repeated_data(images_train_raw, labels_train_raw, r=FLAGS.dataset_fraction)
-    print("Done.")
+    if FLAGS.replicate_data_in_full:
+        print("Loading replicated in full data...")
+        print("Done.")
+        # We call the following "fractional", but the entire data is actually replicated in full
+        images_fractional_train, labels_fractional_train = load_fractional_repeated_data(images_train_raw, labels_train_raw, r=FLAGS.dataset_fraction)
+    else:
+        print("Loading fractional data...")
+        images_fractional_train, labels_fractional_train = load_fractional_repeated_data(images_train_raw, labels_train_raw, r=FLAGS.dataset_fraction)
+        print("Done.")
 
     # Build the model
     scope_name = "parameters_1"
