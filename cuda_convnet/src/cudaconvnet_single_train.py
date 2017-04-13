@@ -193,6 +193,7 @@ def get_next_fractional_batch(fractional_images, fractional_labels, cur_index, b
 def get_run_name():
     # The run name is just the concatenation of all the TF flags for this run.
     name = "_".join([str(k)+"="+str(v) for k,v in FLAGS.__flags.items()])
+    name = name.replace('"','\\"')
     return name
 
 def get_run_directory():
