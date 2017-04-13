@@ -214,6 +214,7 @@ def save_model(sess, all_variables, epoch):
     output_file = open(output_file_name, "wb")
     cPickle.dump(variables_materialized, output_file)
     output_file.close()
+    print("Done.")
 
 def train():
     """Train CIFAR-10 for a number of steps."""
