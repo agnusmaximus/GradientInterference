@@ -56,25 +56,17 @@ FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string('train_dir', '/tmp/cifar10_train',
                            """Directory where to write event logs """
                            """and checkpoint.""")
-tf.app.flags.DEFINE_integer('max_steps', 1000000,
-                            """Number of batches to run.""")
 tf.app.flags.DEFINE_integer('evaluate_batch_size', 1000,
                             """Number of batches to run.""")
-tf.app.flags.DEFINE_boolean('log_device_placement', False,
-                            """Whether to log device placement.""")
-tf.app.flags.DEFINE_integer('log_frequency', 10,
-                            """How often to log results to the console.""")
 tf.app.flags.DEFINE_integer('dataset_fraction', 2,
                             """Fraction of dataset to use for fractional repeated dataset""")
-tf.app.flags.DEFINE_boolean('test_load_dumped_data_files', True,
-                            """Whether to test saving of data files""")
 tf.app.flags.DEFINE_float('learning_rate', .0001,
                             """Constant learning rate""")
-
 tf.app.flags.DEFINE_boolean("replicate_data_in_full", False,
                             'Whether to use training data replicated in full')
 tf.app.flags.DEFINE_integer('dataset_replication_factor', 2,
                             'Number of times to replicate data. Only used if replicate_data_in_full is set to true')
+tf.app.flags.DEFINE_string('shared_filesystem_directory', '', 'Shared filesystem directory to write saved models')
 
 def unpickle(file):
     fo = open(file, 'rb')
@@ -198,6 +190,31 @@ def get_next_fractional_batch(fractional_images, fractional_labels, cur_index, b
 
   return next_batch_images, next_batch_labels, next_index % fractional_labels.shape[0]
 
+def get_run_name():
+    # The run name is just the concatenation of all the TF flags for this run.
+    name = "_".join([str(k)+"="+str(v) for k,v in FLAGS.__flags.items()])
+    return name
+
+def get_run_directory():
+    return FLAGS.shared_filesystem_directory + "/" + get_run_name()
+
+def create_run_directory_if_not_exists():
+    name = get_run_name()
+    if not os.path.exists(get_run_directory()):
+        os.makedirs(get_run_directory())
+
+def save_model(sess, all_variables, epoch):
+    create_run_directory_if_not_exists()
+    variables_materialized = {}
+    for variable in all_variables:
+        v = sess.run([variable])[0]
+        variables_materialized[variable.name] = v
+    output_file = get_run_directory() + "/model_epoch=%d" % epoch
+    print("Saving model to %s" % output_file)
+    output_file = open(output_file_name, "wb")
+    cPickle.dump(variables_materialized, output_file)
+    output_file.close()
+
 def train():
     """Train CIFAR-10 for a number of steps."""
 
@@ -226,6 +243,9 @@ def train():
         loss_op = cifar10.loss(logits, labels, scope_name)
         train_op = cifar10.train(loss_op, scope_name)
         top_k_op = tf.nn.in_top_k(logits, labels, 1)
+
+    # We keep track of all variables of the model for saving
+    model_variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=scope_name)
 
     # Helper function to load feed dictionary
     def get_feed_dict(batch_size):
@@ -300,6 +320,8 @@ def train():
             sys.stdout.flush()
             t_evaluate_end = time.time()
             evaluate_times.append(t_evaluate_end-t_evaluate_start)
+            save_model(sess, variables, new_epoch_track)
+
         cur_epoch_track = max(cur_epoch_track, new_epoch_track)
         feed_dict = get_feed_dict(FLAGS.batch_size)
         sess.run([train_op], feed_dict=feed_dict)
@@ -307,6 +329,7 @@ def train():
         n_examples_processed += FLAGS.batch_size
 
 def main(argv=None):  # pylint: disable=unused-argument
+  assert(FLAGS.shared_filesystem_directory != '')
   cifar10.maybe_download_and_extract()
   if tf.gfile.Exists(FLAGS.train_dir):
     tf.gfile.DeleteRecursively(FLAGS.train_dir)
