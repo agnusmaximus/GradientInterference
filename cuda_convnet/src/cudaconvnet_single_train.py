@@ -194,6 +194,7 @@ def get_run_name():
     # The run name is just the concatenation of all the TF flags for this run.
     name = "_".join([str(k)+"="+str(v) for k,v in FLAGS.__flags.items()])
     name = name.replace('"','')
+    print(name)
     return name
 
 def get_run_directory():
