@@ -207,12 +207,15 @@ def create_run_directory_if_not_exists():
 
 def save_model(sess, all_variables, epoch):
     create_run_directory_if_not_exists()
+    print("Saving model to %s" % output_file_name)
+    sys.stdout.flush()
     variables_materialized = {}
     for variable in all_variables:
+        print("Materializing variables...")
+        sys.stdout.flush()
         v = sess.run([variable])[0]
         variables_materialized[variable.name] = v
     output_file_name = get_run_directory() + "/model_epoch=%d" % epoch
-    print("Saving model to %s" % output_file_name)
     output_file = open(output_file_name, "wb")
     cPickle.dump(variables_materialized, output_file)
     output_file.close()
