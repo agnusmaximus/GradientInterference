@@ -39,6 +39,7 @@ from __future__ import print_function
 from datetime import datetime
 from PIL import Image
 import time
+import subprocess
 import numpy as np
 import os
 import sys
@@ -190,11 +191,13 @@ def get_next_fractional_batch(fractional_images, fractional_labels, cur_index, b
 
   return next_batch_images, next_batch_labels, next_index % fractional_labels.shape[0]
 
+def get_machine_max_filename_length():
+    return int(subprocess.check_output("getconf NAME_MAX /", shell=True).strip())
+
 def get_run_name():
     # The run name is just the concatenation of all the TF flags for this run.
     name = "_".join([str(k)+"="+str(v) for k,v in FLAGS.__flags.items() if type(v) != type("")])
-    print("YO: ", name)
-    sys.stdout.flush()
+    assert(len(name) < get_machine_max_filename_length())
     return name
 
 def get_run_directory():
