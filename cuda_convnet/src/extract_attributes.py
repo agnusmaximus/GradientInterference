@@ -72,6 +72,7 @@ def extract_basic_stats(model_variables_materialized, run_flags, is_last_epoch):
         images = tf.placeholder(tf.float32, shape=(None, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, cifar10.NUM_CHANNELS))
         labels = tf.placeholder(tf.int32, shape=(None,))
         logits = cifar10.inference(images)
+        squared_loss_op = tf.norm(logits - tf.one_hot(labels, logits.get_shape()[1]))**2
         loss_op = cifar10.loss(logits, labels, scope_name)
         train_op = cifar10.train(loss_op, scope_name)
         top_k_op = tf.nn.in_top_k(logits, labels, 1)
@@ -100,10 +101,14 @@ def extract_basic_stats(model_variables_materialized, run_flags, is_last_epoch):
 
       # Compute training accuracy
       total_acc = 0
+      total_loss = 0
+      total_squared_loss = 0
       num_examples = images_fractional_train.shape[0]
       for i in range(0, num_examples, FLAGS.evaluate_batch_size):
           fd = get_feed_dict(FLAGS.evaluate_batch_size, images_fractional_train, labels_fractional_train, images, labels)
           total_acc += np.sum(sess.run([top_k_op], feed_dict=fd)[0])
+          total_loss += sess.run([loss_op], feed_dict=fd)[0]
+          total_squared_loss += sess.run([squared_loss_op], feed_dict=fd)[0]
       total_acc /= float(num_examples)
       print(total_acc)
       
@@ -111,4 +116,4 @@ def extract_basic_stats(model_variables_materialized, run_flags, is_last_epoch):
       if is_last_epoch:
           assert(total_acc >= .995)
 
-      return {"training_accuracy" : total_acc}
+      return {"training_accuracy" : total_acc, "loss" : total_loss, "squared_loss" : total_squared_loss}
