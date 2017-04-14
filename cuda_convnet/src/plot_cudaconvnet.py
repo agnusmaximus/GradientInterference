@@ -53,7 +53,7 @@ def extract_all_models(run_directory):
 
 if __name__=="__main__":
     if len(sys.argv) < 2:
-        print("Usage: python plot_cudaconvnet.py model_dir")
+        print("Usage: python plot_cudaconvnet.py model_dir [sanity_check]")
         print("We expect model_dir to contain directories of runs that each contain models saved for each epoch.")
         print("The directories in model_dir should have name that is the concatentation of flags of the particular run.")
         print("Example: ")
@@ -68,10 +68,12 @@ if __name__=="__main__":
         print("---> ...")
         sys.exit(0)
 
+    sanity_check = True if len(sys.argv) == 3 else False
+
     # Get the run directory
     all_runs_directory = sys.argv[1]
 
-    # all_runs has k = run_name, v = {"config_flags" : flags, "models" : {k = epoch, v = attributes of model}}
+    # all_runs has form {k = run_name, v = {"config_flags" : flags, "models" : {epoch : {"model_variables" : model_variables, "training accuracy" : train_accuracy ... }}
     all_runs = {}
     
     # First extract all the flags from the directory names
@@ -83,17 +85,30 @@ if __name__=="__main__":
 
     # Compute an estimate of the number of models to load...
     num_models_to_load = 0
-    for crd in glob.glob(all_runs_directory + "/*"):
+    for index, crd in enumerate(glob.glob(all_runs_directory + "/*")):
+        if sanity_check and index >= 2:
+            break
         num_models_to_load += len(glob.glob(crd + "/*"))
 
     # For each run extract all the models from the run directory
     num_models_loaded = 0
-    for cur_run_directory in glob.glob(all_runs_directory + "/*"):
+    for index, cur_run_directory in enumerate(glob.glob(all_runs_directory + "/*")):
+        if sanity_check and index >= 2:
+            break
         print("Loaded %d of %d models" % (num_models_loaded, num_models_to_load))
         k = extract_run_name(cur_run_directory)
         all_runs[k]["models"] = extract_all_models(cur_run_directory)
-        num_models_loaded += len(glob.glob(cur_run_directory + "/*"))
+        num_models_loaded += len(glob.glob(cur_run_directory + "/*"))        
 
-    # For each run
-
+    # For each saved model of each epoch of each run, we extract attributes corresponding to the
+    # following dictionary. The function takes as input the model variables.
+    attribute_name_function_pairs = {
+        "training_accuracy" : extract_training_accuracy
+    }
+    for run_name, run_models in all_runs.items():
+        for epoch, model_attributes in run_models["models"].items():
+            for attr_name, attr_func in attribute_name_function_pairs.items():
+                pass
+                #extract_attribute_and_mutate_model(model_attributes, attr_name, attr_func)
+    
     
