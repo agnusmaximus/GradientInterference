@@ -2,6 +2,7 @@ import sys
 import glob
 import cPickle
 import re
+from extract_attributes import *
 
 def extract_run_name(run_dir_name):
     # Expect run_dir_name of the form
@@ -41,7 +42,7 @@ def extract_model_variables_from_model_filepath(model_filepath):
     return variables_materialized
 
 # Return a dict
-# {k = epoch, {"model_variables" : v = variables of model of epoch}}
+# {k = epoch : v = {"model_variables" : v = variables of model of epoch}}
 def extract_all_models(run_directory):
     epoch_models = {}
     for model_filepath in glob.glob(run_directory + "/*"):
@@ -50,6 +51,12 @@ def extract_all_models(run_directory):
         assert(epoch not in epoch_models.items())
         epoch_models[epoch] = {"model_variables" : model_variables}
     return epoch_models
+
+def extract_attribute_and_mutate_model(model_attributes, attr_name, attr_function):
+    assert("model_variables" in model_attributes.keys())
+    assert(attr_name not in model_attributes.keys())
+    attr_value = attr_function(model_attributes["model_variables"])
+    model_attributes[attr_name] = attr_value
 
 if __name__=="__main__":
     if len(sys.argv) < 2:
@@ -75,9 +82,14 @@ if __name__=="__main__":
 
     # all_runs has form {k = run_name, v = {"config_flags" : flags, "models" : {epoch : {"model_variables" : model_variables, "training accuracy" : train_accuracy ... }}
     all_runs = {}
+
+    run_directories_compilation = glob.glob(all_runs_directory + "/*")
+    run_directories_compilation.sort(key=lambda x : len(glob.glob(x + "/*")))
+    if sanity_check:
+        run_directories_compilation = run_directories_compilation[:2]
     
     # First extract all the flags from the directory names
-    for cur_run_directory in glob.glob(all_runs_directory + "/*"):
+    for cur_run_directory in run_directories_compilation:
         k = extract_run_name(cur_run_directory)
         v = extract_config_flags_from_run_name(k)
         assert(k not in all_runs.items())
@@ -85,16 +97,12 @@ if __name__=="__main__":
 
     # Compute an estimate of the number of models to load...
     num_models_to_load = 0
-    for index, crd in enumerate(glob.glob(all_runs_directory + "/*")):
-        if sanity_check and index >= 2:
-            break
+    for crd in run_directories_compilation:
         num_models_to_load += len(glob.glob(crd + "/*"))
 
     # For each run extract all the models from the run directory
     num_models_loaded = 0
-    for index, cur_run_directory in enumerate(glob.glob(all_runs_directory + "/*")):
-        if sanity_check and index >= 2:
-            break
+    for cur_run_directory in run_directories_compilation:
         print("Loaded %d of %d models" % (num_models_loaded, num_models_to_load))
         k = extract_run_name(cur_run_directory)
         all_runs[k]["models"] = extract_all_models(cur_run_directory)
@@ -103,12 +111,14 @@ if __name__=="__main__":
     # For each saved model of each epoch of each run, we extract attributes corresponding to the
     # following dictionary. The function takes as input the model variables.
     attribute_name_function_pairs = {
+        "test_name_function_pair " : test_name_function_pair,
         "training_accuracy" : extract_training_accuracy
     }
     for run_name, run_models in all_runs.items():
         for epoch, model_attributes in run_models["models"].items():
+            # Remember, model_attributes is of the form {"model_variables" : variables, attr_name : attr_value, ... }
+            # attr_name : attr_value pairs are added by the following extract_attribute_and_mutate_model call
             for attr_name, attr_func in attribute_name_function_pairs.items():
-                pass
-                #extract_attribute_and_mutate_model(model_attributes, attr_name, attr_func)
-    
+                extract_attribute_and_mutate_model(model_attributes, attr_name, attr_func)
+                
     
