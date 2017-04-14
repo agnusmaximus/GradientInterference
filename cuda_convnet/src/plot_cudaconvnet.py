@@ -117,6 +117,7 @@ if __name__=="__main__":
 
     run_directories_compilation = glob.glob(all_runs_directory + "/*")
     run_directories_compilation.sort(key=lambda x : len(glob.glob(x + "/*")))
+
     if sanity_check:
         run_directories_compilation = run_directories_compilation[:2]
 
@@ -128,16 +129,24 @@ if __name__=="__main__":
         k = extract_run_name(cur_run_directory)
         v = extract_config_flags_from_run_name(k)
         assert(k not in all_runs.items())
-        all_runs[k] = {"config_flags" : v}
+        all_runs[k] = {"config_flags" : v, "path" : cur_run_directory}
+
+    # If sanity check, choose only a few select runs
+    #if sanity_check:
+    #all_runs = get_runs_with_flags(all_runs, 
+    # [{"replicate_data_in_full" : True, "dataset_replication_factor" : 2, "batch_size": 16}, 
+    #                                {"replicate_data_in_full" : False, "dataset_fraction" : 1, "batch_size" : 16}])
 
     # Compute an estimate of the number of models to load...
     num_models_to_load = 0
-    for crd in run_directories_compilation:
+    for run_name, run_specs in all_runs.items():
+        crd = run_specs["path"]
         num_models_to_load += len(glob.glob(crd + "/*"))
 
     # For each run extract all the models from the run directory
     num_models_loaded = 0
-    for cur_run_directory in run_directories_compilation:
+    for run_name, run_specs in all_runs.items():
+        cur_run_directory = run_specs["path"]
         print("Loaded %d of %d models" % (num_models_loaded, num_models_to_load))
         k = extract_run_name(cur_run_directory)
         all_runs[k]["models"] = extract_all_models(cur_run_directory)
@@ -159,7 +168,8 @@ if __name__=="__main__":
     # Plot x=epoch, y=cross_entropy_training_loss
     # -----------------------------------------------------------------------------------------------------------------
     plt.cla()
-    filtered_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : True, "dataset_replication_factor" : 2}, {"replicate_data_in_full" : False, "dataset_fraction" : 1}])
+    #filtered_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : True, "dataset_replication_factor" : 2}, {"replicate_data_in_full" : False, "dataset_fraction" : 1}])
+    filtered_runs = all_runs
     for run_name, run_models in filtered_runs.items():
         epochs = [int(x["epoch"]) for epoch, x in run_models["models"].items()]
         cross_entropy_training_losses = [float(x["cross_entropy_training_loss"]) for epoch, x in run_models["models"].items()]
@@ -174,7 +184,8 @@ if __name__=="__main__":
     # Plot x=epoch, y=squared_training_loss
     # -----------------------------------------------------------------------------------------------------------------
     plt.cla()
-    filtered_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : True, "dataset_replication_factor" : 2}, {"replicate_data_in_full" : False, "dataset_fraction" : 1}])
+    #filtered_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : True, "dataset_replication_factor" : 2}, {"replicate_data_in_full" : False, "dataset_fraction" : 1}])
+    filtered_runs = all_runs
     for run_name, run_models in filtered_runs.items():
         epochs = [int(x["epoch"]) for epoch, x in run_models["models"].items()]
         cross_entropy_training_losses = [float(x["squared_training_loss"]) for epoch, x in run_models["models"].items()]

@@ -72,7 +72,7 @@ def extract_basic_stats(model_variables_materialized, run_flags, is_last_epoch):
         images = tf.placeholder(tf.float32, shape=(None, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, cifar10.NUM_CHANNELS))
         labels = tf.placeholder(tf.int32, shape=(None,))
         logits = cifar10.inference(images)
-        squared_loss_op = tf.norm(logits - tf.one_hot(labels, logits.get_shape()[1]))**2
+        squared_loss_op = tf.norm(tf.nn.softmax(logits) - tf.one_hot(labels, logits.get_shape()[1], axis=-1))**2
         loss_op = cifar10.loss(logits, labels, scope_name)
         train_op = cifar10.train(loss_op, scope_name)
         top_k_op = tf.nn.in_top_k(logits, labels, 1)
@@ -110,7 +110,8 @@ def extract_basic_stats(model_variables_materialized, run_flags, is_last_epoch):
           total_loss += sess.run([loss_op], feed_dict=fd)[0]
           total_squared_loss += sess.run([squared_loss_op], feed_dict=fd)[0]
       total_acc /= float(num_examples)
-      print(total_acc)
+      total_squared_loss /= float(num_examples)
+      print("Accuracy: %f, Loss: %f, Squared Loss: %f" % (total_acc, total_loss, total_squared_loss))
       
       # Sanity check
       if is_last_epoch:
