@@ -52,10 +52,10 @@ def extract_all_models(run_directory):
         epoch_models[epoch] = {"model_variables" : model_variables}
     return epoch_models
 
-def extract_attribute_and_mutate_model(model_attributes, attr_name, attr_function, run_flags):
+def extract_attribute_and_mutate_model(model_attributes, attr_name, attr_function, run_flags, is_last_epoch):
     assert("model_variables" in model_attributes.keys())
     assert(attr_name not in model_attributes.keys())
-    attr_value = attr_function(model_attributes["model_variables"], run_flags)
+    attr_value = attr_function(model_attributes["model_variables"], run_flags, is_last_epoch)
     model_attributes[attr_name] = attr_value
 
 if __name__=="__main__":
@@ -87,6 +87,9 @@ if __name__=="__main__":
     run_directories_compilation.sort(key=lambda x : len(glob.glob(x + "/*")))
     if sanity_check:
         run_directories_compilation = run_directories_compilation[:2]
+
+    print("Processing on directories:")
+    print(run_directories_compilation)    
     
     # First extract all the flags from the directory names
     for cur_run_directory in run_directories_compilation:
@@ -119,6 +122,7 @@ if __name__=="__main__":
             # Remember, model_attributes is of the form {"model_variables" : variables, attr_name : attr_value, ... }
             # attr_name : attr_value pairs are added by the following extract_attribute_and_mutate_model call
             for attr_name, attr_func in attribute_name_function_pairs.items():
-                extract_attribute_and_mutate_model(model_attributes, attr_name, attr_func, run_models["config_flags"])
+                is_last_epoch = int(epoch) == len(run_models["models"].items())
+                extract_attribute_and_mutate_model(model_attributes, attr_name, attr_func, run_models["config_flags"], is_last_epoch)
                 
     

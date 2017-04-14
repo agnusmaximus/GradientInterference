@@ -5,6 +5,10 @@ import cifar10
 
 FLAGS = tf.app.flags.FLAGS
 
+# Basic test for code
+def test_name_function_pair(model, run_flags, not_used):
+    return 0
+
 # Function to set tf flags (FLAGS) to have same value as run_flags
 def override_and_set_tf_flags(run_flags):
     tf_flags = FLAGS.__flags
@@ -20,9 +24,6 @@ def override_and_set_tf_flags(run_flags):
             expected_value = eval(run_flags[k])
             assert(actual_value == expected_value)
 
-def test_name_function_pair(model, run_flags):
-    return 0
-
 # Helper function to load feed dictionary
 def get_feed_dict(batch_size, images_materialized, labels_materialized, images_pl, labels_pl):
     images_real, labels_real, next_index = get_next_fractional_batch(images_materialized, labels_materialized,
@@ -33,7 +34,7 @@ def get_feed_dict(batch_size, images_materialized, labels_materialized, images_p
     assert(labels_real.shape[0] == batch_size)
     return {images_pl : images_real, labels_pl: labels_real}
 
-def extract_training_accuracy(model_variables_materialized, run_flags):
+def extract_training_accuracy(model_variables_materialized, run_flags, is_last_epoch):
 
     # We try to download data if not already downloaded
     cifar10.maybe_download_and_extract()
@@ -96,17 +97,15 @@ def extract_training_accuracy(model_variables_materialized, run_flags):
 
       # Compute training accuracy
       total_acc = 0
-      for i in range(0, cifar10.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN, FLAGS.evaluate_batch_size):
+      num_examples = images_fractional_train.shape[0]
+      for i in range(0, num_examples, FLAGS.evaluate_batch_size):
           fd = get_feed_dict(FLAGS.evaluate_batch_size, images_fractional_train, labels_fractional_train, images, labels)
           total_acc += np.sum(sess.run([top_k_op], feed_dict=fd)[0])
-      total_acc /= float(cifar10.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
+      total_acc /= float(num_examples)
       print(total_acc)
       
+      # Sanity check
+      if is_last_epoch:
+          assert(total_acc >= .995)
 
-      
-
-      
-    
-    
-    
-    
+      return total_acc
