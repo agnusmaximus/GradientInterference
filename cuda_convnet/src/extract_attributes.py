@@ -23,6 +23,16 @@ def override_and_set_tf_flags(run_flags):
 def test_name_function_pair(model, run_flags):
     return 0
 
+# Helper function to load feed dictionary
+def get_feed_dict(batch_size, images_materialized, labels_materialized, images_pl, labels_pl):
+    images_real, labels_real, next_index = get_next_fractional_batch(images_materialized, labels_materialized,
+                                                                     get_feed_dict.fractional_dataset_index,
+                                                                     batch_size)
+    get_feed_dict.fractional_dataset_index = next_index
+    assert(images_real.shape[0] == batch_size)
+    assert(labels_real.shape[0] == batch_size)
+    return {images_pl : images_real, labels_pl: labels_real}
+
 def extract_training_accuracy(model_variables_materialized, run_flags):
 
     # We try to download data if not already downloaded
@@ -38,6 +48,17 @@ def extract_training_accuracy(model_variables_materialized, run_flags):
     
     # Load data
     images_train_raw, labels_train_raw, images_test_raw, labels_test_raw = load_cifar_data_raw()
+
+    # Load fractional data on train
+    if FLAGS.replicate_data_in_full:
+        print("Loading replicated in full data...")
+        print("Done.")
+        # We call the following "fractional", but the entire data is actually replicated in full
+        images_fractional_train, labels_fractional_train = load_repeated_in_full_data(images_train_raw, labels_train_raw, r=FLAGS.dataset_replication_factor)
+    else:
+        print("Loading fractional data...")
+        images_fractional_train, labels_fractional_train = load_fractional_repeated_data(images_train_raw, labels_train_raw, r=FLAGS.dataset_fraction)
+        print("Done.")
 
     tf.reset_default_graph()
 
@@ -59,7 +80,7 @@ def extract_training_accuracy(model_variables_materialized, run_flags):
     load_model_ops = []
     for variable in model_variables:
         assert(variable.name in model_variables_materialized.keys())
-        placeholder = tf.placeholder(variable.dtype, shape=variable.shape)
+        placeholder = tf.placeholder(variable.dtype, shape=variable.get_shape())
         placeholder_and_materialized_values[placeholder] = model_variables_materialized[variable.name]
         load_model_ops.append(tf.assign(variable, placeholder))
 
@@ -68,7 +89,21 @@ def extract_training_accuracy(model_variables_materialized, run_flags):
       tf.train.start_queue_runners(sess=sess)
 
       # Load model from materialized values
-      sess.run([load_model_ops])
+      sess.run([load_model_ops], feed_dict=placeholder_and_materialized_values)
+
+      # Reset index of dataset
+      get_feed_dict.fractional_dataset_index = 0
+
+      # Compute training accuracy
+      total_acc = 0
+      for i in range(0, cifar10.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN, FLAGS.evaluate_batch_size):
+          fd = get_feed_dict(FLAGS.evaluate_batch_size, images_fractional_train, labels_fractional_train, images, labels)
+          total_acc += np.sum(sess.run([top_k_op], feed_dict=fd)[0])
+      total_acc /= float(cifar10.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
+      print(total_acc)
+      
+
+      
 
       
     
