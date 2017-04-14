@@ -116,4 +116,4 @@ def extract_basic_stats(model_variables_materialized, run_flags, is_last_epoch):
       if is_last_epoch:
           assert(total_acc >= .995)
 
-      return {"training_accuracy" : total_acc, "loss" : total_loss, "squared_loss" : total_squared_loss}
+      return {"training_accuracy" : total_acc, "cross_entropy_training_loss" : total_loss, "squared_training_loss" : total_squared_loss}

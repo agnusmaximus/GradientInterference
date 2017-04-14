@@ -1,5 +1,6 @@
 import sys
 import glob
+import matplotlib.pyplot as plt
 import cPickle
 import re
 from extract_attributes import *
@@ -41,6 +42,20 @@ def extract_model_variables_from_model_filepath(model_filepath):
     f.close()
     return variables_materialized
 
+def extract_salient_name(model):
+    name = ""
+    batchsize = eval(model["config_flags"]["batch_size"])
+    name += "batchsize=%d" % batchsize
+    is_full_replicated = eval(model["config_flags"]["replicate_data_in_full"])
+    if is_full_replicated:
+        num_full_replications = eval(model["config_flags"]["dataset_replication_factor"])
+        name += "_fullyreplicated=%d" % num_full_replications
+    else:
+        # Fractional replicated
+        fraction = eval(model["config_flags"]["dataset_fraction"])
+        name += "_datasetfraction=%d" % fraction
+    return name
+
 # Return a dict
 # {k = epoch : v = {"model_variables" : v = variables of model of epoch}}
 def extract_all_models(run_directory):
@@ -49,7 +64,7 @@ def extract_all_models(run_directory):
         epoch = extract_epoch_from_model_filepath(model_filepath)
         model_variables = extract_model_variables_from_model_filepath(model_filepath)
         assert(epoch not in epoch_models.items())
-        epoch_models[epoch] = {"model_variables" : model_variables}
+        epoch_models[epoch] = {"model_variables" : model_variables, "epoch" : int(epoch)}
     return epoch_models
 
 def extract_attribute_and_mutate_model(extraction_function, run_flags, is_last_epoch):
@@ -122,5 +137,24 @@ if __name__=="__main__":
             is_last_epoch = int(epoch) == len(run_models["models"].items())
             for extraction_method in extraction_methods:
                 extract_attribute_and_mutate_model(extraction_method, run_models["config_flags"], is_last_epoch)
+    
+    # Unfortunately the following is not very generalizable, so we have different plotting code for different plots.
+    # -----------------------------------------------------------------------------------------------------------------
+    # Plot x=epoch, y=cross_entropy_training_loss
+    for run_name, run_model in all_runs.items():
+        epochs = [x["epoch"] for x in run_model["models"].items()]
+        cross_entropy_training_losses = [x["cross_entropy_training_loss"] for x in run_model["models"].items()]
+        label = extract_salient_name(run_model)
+        plt.plot(epochs, cross_entropy_training_losses, label=label)
+    plt.title("Epoch Vs CrossEntropyTrainingLoss")
+    plt.xlabel("Epoch")
+    plt.ylabel("CrossEntropyTrainingLoss")
+    plt.legend(loc="upper right")
+    plt.savefig("EpochVsCrossEntropyTrainingLoss.png")
+
+    # Plot x=epoch, y=squared_training_loss
+
+    # Plot x=batch_size, y=time_to_reach_.995 error
+    
                 
     
