@@ -1,11 +1,16 @@
 import matplotlib
 matplotlib.use('Agg')
 import sys
+import tensorflow as tf
 import glob
 import matplotlib.pyplot as plt
 import cPickle
 import re
 from extract_attributes import *
+
+tf.app.flags.DEFINE_boolean("sanity_check", False, "sanity_check")
+tf.app.flags.DEFINE_string("cache_file", "", "cache_file")
+tf.app.flags.DEFINE_boolean("cache_computation", True, "cache_computation")
 
 def extract_run_name(run_dir_name):
     # Expect run_dir_name of the form
@@ -91,8 +96,10 @@ def get_runs_with_flags(total_runs, to_match):
     return result
 
 if __name__=="__main__":
+    FLAGS = tf.app.flags.FLAGS
+
     if len(sys.argv) < 2:
-        print("Usage: python plot_cudaconvnet.py model_dir [sanity_check]")
+        print("Usage: python plot_cudaconvnet.py model_dir [flags]")
         print("We expect model_dir to contain directories of runs that each contain models saved for each epoch.")
         print("The directories in model_dir should have name that is the concatentation of flags of the particular run.")
         print("Example: ")
@@ -107,7 +114,7 @@ if __name__=="__main__":
         print("---> ...")
         sys.exit(0)
 
-    sanity_check = True if len(sys.argv) == 3 else False
+    sanity_check = FLAGS.sanity_check
 
     # Get the run directory
     all_runs_directory = sys.argv[1]
@@ -115,53 +122,65 @@ if __name__=="__main__":
     # all_runs has form {k = run_name, v = {"config_flags" : flags, "models" : {epoch : {"model_variables" : model_variables, "training accuracy" : train_accuracy ... }}
     all_runs = {}
 
-    run_directories_compilation = glob.glob(all_runs_directory + "/*")
-    run_directories_compilation.sort(key=lambda x : len(glob.glob(x + "/*")))
+    if FLAGS.cache_file == "":
+        run_directories_compilation = glob.glob(all_runs_directory + "/*")
+        run_directories_compilation.sort(key=lambda x : len(glob.glob(x + "/*")))
 
-    if sanity_check:
-        run_directories_compilation = run_directories_compilation[:2]
+        if sanity_check:
+            run_directories_compilation = run_directories_compilation[:2]
 
-    print("Processing on directories:")
-    print(run_directories_compilation)    
-    
-    # First extract all the flags from the directory names
-    for cur_run_directory in run_directories_compilation:
-        k = extract_run_name(cur_run_directory)
-        v = extract_config_flags_from_run_name(k)
-        assert(k not in all_runs.items())
-        all_runs[k] = {"config_flags" : v, "path" : cur_run_directory}
+        print("Processing on directories:")
+        print(run_directories_compilation)    
 
-    # If sanity check, choose only a few select runs
-    #if sanity_check:
-    #all_runs = get_runs_with_flags(all_runs, 
-    # [{"replicate_data_in_full" : True, "dataset_replication_factor" : 2, "batch_size": 16}, 
-    #                                {"replicate_data_in_full" : False, "dataset_fraction" : 1, "batch_size" : 16}])
+        # First extract all the flags from the directory names
+        for cur_run_directory in run_directories_compilation:
+            k = extract_run_name(cur_run_directory)
+            v = extract_config_flags_from_run_name(k)
+            assert(k not in all_runs.items())
+            all_runs[k] = {"config_flags" : v, "path" : cur_run_directory}
 
-    # Compute an estimate of the number of models to load...
-    num_models_to_load = 0
-    for run_name, run_specs in all_runs.items():
-        crd = run_specs["path"]
-        num_models_to_load += len(glob.glob(crd + "/*"))
+        # If sanity check, choose only a few select runs
+        #if sanity_check:
+        #all_runs = get_runs_with_flags(all_runs, 
+        # [{"replicate_data_in_full" : True, "dataset_replication_factor" : 2, "batch_size": 16}, 
+        #                                {"replicate_data_in_full" : False, "dataset_fraction" : 1, "batch_size" : 16}])
 
-    # For each run extract all the models from the run directory
-    num_models_loaded = 0
-    for run_name, run_specs in all_runs.items():
-        cur_run_directory = run_specs["path"]
-        print("Loaded %d of %d models" % (num_models_loaded, num_models_to_load))
-        k = extract_run_name(cur_run_directory)
-        all_runs[k]["models"] = extract_all_models(cur_run_directory)
-        num_models_loaded += len(glob.glob(cur_run_directory + "/*"))        
+        # Compute an estimate of the number of models to load...
+        num_models_to_load = 0
+        for run_name, run_specs in all_runs.items():
+            crd = run_specs["path"]
+            num_models_to_load += len(glob.glob(crd + "/*"))
 
-    # For each saved model of each epoch of each run, we extract attributes like
-    # training accuracy, loss, etc...
-    extraction_methods = [extraction_sanity_check, extract_basic_stats]
-    for run_name, run_models in all_runs.items():
-        for epoch, model_attributes in run_models["models"].items():
-            # Remember, model_attributes is of the form {"model_variables" : variables, attr_name : attr_value, ... }
-            # attr_name : attr_value pairs are added by the following extract_attribute_and_mutate_model call
-            is_last_epoch = int(epoch) == len(run_models["models"].items())
-            for extraction_method in extraction_methods:
-                extract_attribute_and_mutate_model(extraction_method, run_models["config_flags"], is_last_epoch)
+        # For each run extract all the models from the run directory
+        num_models_loaded = 0
+        for run_name, run_specs in all_runs.items():
+            cur_run_directory = run_specs["path"]
+            print("Loaded %d of %d models" % (num_models_loaded, num_models_to_load))
+            k = extract_run_name(cur_run_directory)
+            all_runs[k]["models"] = extract_all_models(cur_run_directory)
+            num_models_loaded += len(glob.glob(cur_run_directory + "/*"))        
+
+        # For each saved model of each epoch of each run, we extract attributes like
+        # training accuracy, loss, etc...
+        extraction_methods = [extraction_sanity_check, extract_basic_stats]
+        for run_name, run_models in all_runs.items():
+            for epoch, model_attributes in run_models["models"].items():
+                # Remember, model_attributes is of the form {"model_variables" : variables, attr_name : attr_value, ... }
+                # attr_name : attr_value pairs are added by the following extract_attribute_and_mutate_model call
+                is_last_epoch = int(epoch) == len(run_models["models"].items())
+                for extraction_method in extraction_methods:
+                    extract_attribute_and_mutate_model(extraction_method, run_models["config_flags"], is_last_epoch)
+
+        # Let's cache everything...
+        if FLAGS.cache_computation:
+            name = "plot_cuda_convnet_cache" + str(time.time())
+            f = open(name, "wb")
+            cPickle.dump(all_runs, f)
+            f.close()
+    else:
+        f = open(FLAGS.cache_file, "rb")
+        all_runs = cPickle.load(f)
+        f.closE()
     
     # Unfortunately the following is not very generalizable, so we have different plotting code for different plots.
     # -----------------------------------------------------------------------------------------------------------------
@@ -201,7 +220,7 @@ if __name__=="__main__":
     # -----------------------------------------------------------------------------------------------------------------
     plt.cla()
     twice_replicated_data_in_full_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : True, "dataset_replication_factor" : 2}])
-    full_data_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : False, "dataset_fraction" : 1}])
+    full_data_runs = geft_runs_with_flags(all_runs, [{"replicate_data_in_full" : False, "dataset_fraction" : 1}])
     quarter_data_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : False, "dataset_fraction" : 4}])
     
     # This will fail on sanity check...

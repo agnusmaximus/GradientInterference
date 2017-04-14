@@ -111,6 +111,7 @@ def extract_basic_stats(model_variables_materialized, run_flags, is_last_epoch):
           total_squared_loss += sess.run([squared_loss_op], feed_dict=fd)[0]
       total_acc /= float(num_examples)
       total_squared_loss /= float(num_examples)
+      total_loss /= float(num_examples)
       print("Accuracy: %f, Loss: %f, Squared Loss: %f" % (total_acc, total_loss, total_squared_loss))
       
       # Sanity check
