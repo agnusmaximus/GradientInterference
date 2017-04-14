@@ -79,13 +79,13 @@ def extract_attribute_and_mutate_model(extraction_function, run_flags, is_last_e
 def get_runs_with_flags(total_runs, to_match):
     result = {}
     for flags_to_match in to_match:
-        for run_name, run_models in total_runs:
+        for run_name, run_models in total_runs.items():
             run_flags = run_models["config_flags"]
             match = True
             for k,v in flags_to_match.items():
                 assert(k in run_flags.keys())
-                if eval(run_flags[k]) != eval(flags_to_match[k]):
-                    match = Falsed
+                if eval(str(run_flags[k])) != eval(str(flags_to_match[k])):
+                    match = False
             if match:
                 result[run_name] = run_models
     return result
@@ -158,7 +158,8 @@ if __name__=="__main__":
     # -----------------------------------------------------------------------------------------------------------------
     # Plot x=epoch, y=cross_entropy_training_loss
     # -----------------------------------------------------------------------------------------------------------------
-    filtered_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : True}, {"replicate_data_in_full" : False, "dataset_fraction" : 1}])
+    plt.cla()
+    filtered_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : True, "dataset_replication_factor" : 2}, {"replicate_data_in_full" : False, "dataset_fraction" : 1}])
     for run_name, run_models in filtered_runs.items():
         epochs = [int(x["epoch"]) for epoch, x in run_models["models"].items()]
         cross_entropy_training_losses = [float(x["cross_entropy_training_loss"]) for epoch, x in run_models["models"].items()]
@@ -172,7 +173,8 @@ if __name__=="__main__":
 
     # Plot x=epoch, y=squared_training_loss
     # -----------------------------------------------------------------------------------------------------------------
-    filtered_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : True}, {"replicate_data_in_full" : False, "dataset_fraction" : 1}])
+    plt.cla()
+    filtered_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : True, "dataset_replication_factor" : 2}, {"replicate_data_in_full" : False, "dataset_fraction" : 1}])
     for run_name, run_models in filtered_runs.items():
         epochs = [int(x["epoch"]) for epoch, x in run_models["models"].items()]
         cross_entropy_training_losses = [float(x["squared_training_loss"]) for epoch, x in run_models["models"].items()]
@@ -186,7 +188,11 @@ if __name__=="__main__":
 
     # Plot x=batch_size, y=time_to_reach_.995 error
     # -----------------------------------------------------------------------------------------------------------------
-    for run_name, run_models in all_runs.items():
-        pass
-                
+    plt.cla()
+    twice_replicated_data_in_full_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : True, "dataset_replication_factor" : 2}])
+    full_data_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : False, "dataset_fraction" : 1}])
+    quarter_data_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : False, "dataset_fraction" : 4}])
     
+    # This will fail on sanity check...
+    assert(len(twice_replicated_data_in_full_runs) == len(full_data_runs))
+    assert(len(full_data_runs) == len(quarter_data_runs))
