@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import sys
 import glob
 import matplotlib.pyplot as plt
@@ -74,6 +76,20 @@ def extract_attribute_and_mutate_model(extraction_function, run_flags, is_last_e
         assert(k not in model_attributes.keys())
         model_attributes[k] = v
 
+def get_runs_with_flags(total_runs, to_match):
+    result = {}
+    for flags_to_match in to_match:
+        for run_name, run_models in total_runs:
+            run_flags = run_models["config_flags"]
+            match = True
+            for k,v in flags_to_match.items():
+                assert(k in run_flags.keys())
+                if eval(run_flags[k]) != eval(flags_to_match[k]):
+                    match = Falsed
+            if match:
+                result[run_name] = run_models
+    return result
+
 if __name__=="__main__":
     if len(sys.argv) < 2:
         print("Usage: python plot_cudaconvnet.py model_dir [sanity_check]")
@@ -141,10 +157,12 @@ if __name__=="__main__":
     # Unfortunately the following is not very generalizable, so we have different plotting code for different plots.
     # -----------------------------------------------------------------------------------------------------------------
     # Plot x=epoch, y=cross_entropy_training_loss
-    for run_name, run_model in all_runs.items():
-        epochs = [x["epoch"] for x in run_model["models"].items()]
-        cross_entropy_training_losses = [x["cross_entropy_training_loss"] for x in run_model["models"].items()]
-        label = extract_salient_name(run_model)
+    # -----------------------------------------------------------------------------------------------------------------
+    filtered_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : True}, {"replicate_data_in_full" : False, "dataset_fraction" : 1}])
+    for run_name, run_models in filtered_runs.items():
+        epochs = [int(x["epoch"]) for epoch, x in run_models["models"].items()]
+        cross_entropy_training_losses = [float(x["cross_entropy_training_loss"]) for epoch, x in run_models["models"].items()]
+        label = extract_salient_name(run_models)
         plt.plot(epochs, cross_entropy_training_losses, label=label)
     plt.title("Epoch Vs CrossEntropyTrainingLoss")
     plt.xlabel("Epoch")
@@ -153,8 +171,22 @@ if __name__=="__main__":
     plt.savefig("EpochVsCrossEntropyTrainingLoss.png")
 
     # Plot x=epoch, y=squared_training_loss
+    # -----------------------------------------------------------------------------------------------------------------
+    filtered_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : True}, {"replicate_data_in_full" : False, "dataset_fraction" : 1}])
+    for run_name, run_models in filtered_runs.items():
+        epochs = [int(x["epoch"]) for epoch, x in run_models["models"].items()]
+        cross_entropy_training_losses = [float(x["squared_training_loss"]) for epoch, x in run_models["models"].items()]
+        label = extract_salient_name(run_models)
+        plt.plot(epochs, cross_entropy_training_losses, label=label)
+    plt.title("Epoch Vs SquaredTrainingLoss")
+    plt.xlabel("Epoch")
+    plt.ylabel("SquaredTrainingLoss")
+    plt.legend(loc="upper right")
+    plt.savefig("EpochVsSquaredTrainingLoss.png")
 
     # Plot x=batch_size, y=time_to_reach_.995 error
-    
+    # -----------------------------------------------------------------------------------------------------------------
+    for run_name, run_models in all_runs.items():
+        pass
                 
     
