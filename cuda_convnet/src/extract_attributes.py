@@ -6,8 +6,8 @@ import cifar10
 FLAGS = tf.app.flags.FLAGS
 
 # Basic test for code
-def test_name_function_pair(model, run_flags, not_used):
-    return 0
+def extraction_sanity_check(model, run_flags, not_used):
+    return {"test" : 0}
 
 # Function to set tf flags (FLAGS) to have same value as run_flags
 def override_and_set_tf_flags(run_flags):
@@ -34,7 +34,10 @@ def get_feed_dict(batch_size, images_materialized, labels_materialized, images_p
     assert(labels_real.shape[0] == batch_size)
     return {images_pl : images_real, labels_pl: labels_real}
 
-def extract_training_accuracy(model_variables_materialized, run_flags, is_last_epoch):
+# Extract basic model stats like
+# - training accuracy
+# - loss
+def extract_basic_stats(model_variables_materialized, run_flags, is_last_epoch):
 
     # We try to download data if not already downloaded
     cifar10.maybe_download_and_extract()
@@ -108,4 +111,4 @@ def extract_training_accuracy(model_variables_materialized, run_flags, is_last_e
       if is_last_epoch:
           assert(total_acc >= .995)
 
-      return total_acc
+      return {"training_accuracy" : total_acc}

@@ -52,11 +52,12 @@ def extract_all_models(run_directory):
         epoch_models[epoch] = {"model_variables" : model_variables}
     return epoch_models
 
-def extract_attribute_and_mutate_model(model_attributes, attr_name, attr_function, run_flags, is_last_epoch):
+def extract_attribute_and_mutate_model(extraction_function, run_flags, is_last_epoch):
     assert("model_variables" in model_attributes.keys())
-    assert(attr_name not in model_attributes.keys())
-    attr_value = attr_function(model_attributes["model_variables"], run_flags, is_last_epoch)
-    model_attributes[attr_name] = attr_value
+    kv_pairs = extraction_function(model_attributes["model_variables"], run_flags, is_last_epoch)
+    for k,v in kv_pairs.items():
+        assert(k not in model_attributes.keys())
+        model_attributes[k] = v
 
 if __name__=="__main__":
     if len(sys.argv) < 2:
@@ -111,18 +112,15 @@ if __name__=="__main__":
         all_runs[k]["models"] = extract_all_models(cur_run_directory)
         num_models_loaded += len(glob.glob(cur_run_directory + "/*"))        
 
-    # For each saved model of each epoch of each run, we extract attributes corresponding to the
-    # following dictionary. The function takes as input the model variables.
-    attribute_name_function_pairs = {
-        "test_name_function_pair " : test_name_function_pair,
-        "training_accuracy" : extract_training_accuracy
-    }
+    # For each saved model of each epoch of each run, we extract attributes like
+    # training accuracy, loss, etc...
+    extraction_methods = [extraction_sanity_check, extract_basic_stats]
     for run_name, run_models in all_runs.items():
         for epoch, model_attributes in run_models["models"].items():
             # Remember, model_attributes is of the form {"model_variables" : variables, attr_name : attr_value, ... }
             # attr_name : attr_value pairs are added by the following extract_attribute_and_mutate_model call
-            for attr_name, attr_func in attribute_name_function_pairs.items():
-                is_last_epoch = int(epoch) == len(run_models["models"].items())
-                extract_attribute_and_mutate_model(model_attributes, attr_name, attr_func, run_models["config_flags"], is_last_epoch)
+            is_last_epoch = int(epoch) == len(run_models["models"].items())
+            for extraction_method in extraction_methods:
+                extract_attribute_and_mutate_model(extraction_method, run_models["config_flags"], is_last_epoch)
                 
     
