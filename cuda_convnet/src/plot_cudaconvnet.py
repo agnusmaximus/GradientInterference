@@ -135,6 +135,43 @@ def extract_extremest_values(runs_list, extremest_function, opposite_extremest_f
     grouped_values = [extremest_function(x) for x in values]
     return opposite_extremest_function(grouped_values)
 
+def extract_run_values(run, extraction_ops):
+    vals = []
+    for run_name, run_specs in run.items():
+        item = [extraction_op(run_specs) for extraction_op in extraction_ops]
+        vals.append(item)
+    return vals
+
+def plot_batchsize_vs_epochs_to_key(runs_segregation, key, extremest_function, opposite_extremest_function):
+    
+    plt.cla()
+    
+    for i, (k, runs) in enumerate(runs_segregation.items()):
+        # This may fail on sanity check...
+        assert(len(runs) == len(runs_segregation[k]))
+
+    # Extract extremest training accuracy of achieved by all runs
+    target_value = extract_extremest_values([v for k,v in runs_segregation.items()], extremest_function, opposite_extremest_function, key)
+
+    for runs_name, runs in runs_segregation.items():
+        batchsize_and_epochs_to_target = \
+            extract_run_values(runs,
+                               [lambda run_specs : run_specs["config_flags"]["batch_size"],
+                                lambda run_specs : [epoch for epoch, model_attributes in run_specs["models"].items() if extremest_function(model_attributes[key], 
+                                                                                                                                           target_value) == model_attributes[key]][0]])
+
+        batchsize_and_epochs_to_target.sort(key=lambda x : int(x[0]))
+        batchsizes = [int(x[0]) for x in batchsize_and_epochs_to_target]
+        epochs = [float(x[1]) for x in batchsize_and_epochs_to_target]
+        plt.plot(batchsizes, epochs, label=runs_name)
+
+    plt.xlabel("Batchsize")
+    plt.ylabel("Epochs to %s %f" % (key, target_value))
+    plt.legend(loc="upper left")
+    plt.title("Batchsive Vs Epochs To %s %f" % (key, target_value))
+    plt.savefig("BatchsizeVsEpochsTo%s=%f.png" % (key, target_value))
+
+
 if __name__=="__main__":
     FLAGS = tf.app.flags.FLAGS
 
@@ -271,46 +308,20 @@ if __name__=="__main__":
     twice_replicated_data_in_full_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : True, "dataset_replication_factor" : 2}])
     full_data_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : False, "dataset_fraction" : 1}])
     quarter_data_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : False, "dataset_fraction" : 4}])
+
+    plot_batchsize_vs_epochs_to_key({"full_data_replicated_2" : twice_replicated_data_in_full_runs,
+                                     "full" : full_data_runs,
+                                     "quarter" : quarter_data_runs}, 
+                                    "training_accuracy", max, min)
+    plot_batchsize_vs_epochs_to_key({"full_data_replicated_2" : twice_replicated_data_in_full_runs,
+                                     "full" : full_data_runs,
+                                     "quarter" : quarter_data_runs}, 
+                                    "squared_training_loss", min, max)
+    plot_batchsize_vs_epochs_to_key({"full_data_replicated_2" : twice_replicated_data_in_full_runs,
+                                     "full" : full_data_runs,
+                                     "quarter" : quarter_data_runs}, 
+                                    "cross_entropy_training_loss", min, max)
     
-    # This may fail on sanity check...
-    assert(len(twice_replicated_data_in_full_runs) == len(full_data_runs))
-    assert(len(full_data_runs) == len(quarter_data_runs))
-    assert(len(full_data_runs) != 0)
-
-    # Extract highest training accuracy of achieved by all runs
-    target_acc = extract_extremest_values([twice_replicated_data_in_full_runs,
-                                           full_data_runs,
-                                           quarter_data_runs],
-                                          max, min, "training_accuracy")
-
-    batchsize_and_epochs_to_accuracy_repfull = \
-               extract_run_values(twice_replicated_data_in_full_runs, 
-                                  [lambda run_specs : run_specs["config_flags"]["batch_size"],
-                                   lambda run_specs : [epoch for epoch, model_attributes in run_specs["models"].items() if model_attributes["training_accuracy"] >= target_acc][0]])
-    batchsize_and_epochs_to_accuracy_full = \
-               extract_run_values(full_data_runs,
-                                  [lambda run_specs : run_specs["config_flags"]["batch_size"],
-                                   lambda run_specs : [epoch for epoch, model_attributes in run_specs["models"].items() if model_attributes["training_accuracy"] >= target_acc][0]])
-    batchsize_and_epochs_to_accuracy_quarter = \
-               extract_run_values(quarter_data_runs,
-                                  [lambda run_specs : run_specs["config_flags"]["batch_size"],
-                                   lambda run_specs : [epoch for epoch, model_attributes in run_specs["models"].items() if model_attributes["training_accuracy"] >= target_acc][0]])
-    batchsize_and_epochs_to_accuracy_repfull.sort(key=lambda x : int(x[0]))
-    batchsize_and_epochs_to_accuracy_full.sort(key=lambda x : int(x[0]))
-    batchsize_and_epochs_to_accuracy_quarter.sort(key=lambda x : int(x[0]))
-    batchsizes_repfull = [int(x[0]) for x in batchsize_and_epochs_to_accuracy_repfull]
-    batchsizes_full = [int(x[0]) for x in batchsize_and_epochs_to_accuracy_full]
-    batchsizes_quarter = [int(x[0]) for x in batchsize_and_epochs_to_accuracy_quarter]
-    epochs_to_accuracy_repfull = [float(x[1]) for x in batchsize_and_epochs_to_accuracy_repfull]
-    epochs_to_accuracy_full = [float(x[1]) for x in batchsize_and_epochs_to_accuracy_full]
-    epochs_to_accuracy_quarter = [float(x[1]) for x in batchsize_and_epochs_to_accuracy_quarter]
-    plt.plot(batchsizes_repfull, epochs_to_accuracy_repfull, label="ReplicatedFullx2")
-    plt.plot(batchsizes_full, epochs_to_accuracy_full, label="FullDataset")
-    plt.plot(batchsizes_quarter, epochs_to_accuracy_quarter, label="QuarterDataset")
-    plt.xlabel("Batchsize")
-    plt.ylabel("Epochs to accuracy %f" % target_acc)
-    plt.legend(loc="upper left")
-    plt.savefig("BatchsizeVsEpochsToAccuracy.png")
 
     
                              
