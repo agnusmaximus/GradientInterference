@@ -95,6 +95,45 @@ def get_runs_with_flags(total_runs, to_match):
                 result[run_name] = run_models
     return result
 
+# Given a list of runs, extract value specified by "key" that is
+# attained by all runs in the run_list, but that is extreme as specified by
+# extremest_function (like min or max)
+#
+# The way this works is for example, say we want to find the maximum accuracy 
+# attained by all models:
+#
+# batchsize=128
+# epoch 1 - .08
+# epoch 2 - .99
+# epoch 3 - 1
+#
+# batchsize=256
+# epoch 1 - .08
+# epoch 2 - .50
+# epoch 3 - .88
+#
+# We group values by run (batchsize=128 and batchsize=256), take the extremest_function
+# of these values
+#
+# batchsize=128 -> 1
+# batchsize=256 -> .88
+#
+# Now across the runs, we take the opposite_extremest_function of these values
+# -> .88
+#
+# Training accuracy .88 is the maximum accuracy achieved by all runs
+#
+def extract_extremest_values(runs_list, extremest_function, opposite_extremest_function, key):
+    values = []
+    for runs in runs_list:
+        for run_name, run_models in runs:
+            values.append([])
+            for epoch, model_epoch in run_models["models"].items():
+                values[-1].append(float(model_epoch[key]))
+    
+    grouped_values = [extremest_function(x) for x in values]
+    return opposite_extremest_function(grouped_values)
+
 if __name__=="__main__":
     FLAGS = tf.app.flags.FLAGS
 
@@ -130,7 +169,6 @@ if __name__=="__main__":
             run_directories_compilation = run_directories_compilation[:2]
 
         print("Processing on directories:")
-        print(run_directories_compilation)    
 
         # First extract all the flags from the directory names
         for cur_run_directory in run_directories_compilation:
@@ -180,15 +218,15 @@ if __name__=="__main__":
     else:
         f = open(FLAGS.cache_file, "rb")
         all_runs = cPickle.load(f)
-        f.closE()
+        f.close()
     
     # Unfortunately the following is not very generalizable, so we have different plotting code for different plots.
     # -----------------------------------------------------------------------------------------------------------------
     # Plot x=epoch, y=cross_entropy_training_loss
     # -----------------------------------------------------------------------------------------------------------------
     plt.cla()
-    #filtered_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : True, "dataset_replication_factor" : 2}, {"replicate_data_in_full" : False, "dataset_fraction" : 1}])
-    filtered_runs = all_runs
+    filtered_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : True, "dataset_replication_factor" : 2}, 
+                                                   {"replicate_data_in_full" : False, "dataset_fraction" : 1}])
     for run_name, run_models in filtered_runs.items():
         epochs = [int(x["epoch"]) for epoch, x in run_models["models"].items()]
         cross_entropy_training_losses = [float(x["cross_entropy_training_loss"]) for epoch, x in run_models["models"].items()]
@@ -203,8 +241,8 @@ if __name__=="__main__":
     # Plot x=epoch, y=squared_training_loss
     # -----------------------------------------------------------------------------------------------------------------
     plt.cla()
-    #filtered_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : True, "dataset_replication_factor" : 2}, {"replicate_data_in_full" : False, "dataset_fraction" : 1}])
-    filtered_runs = all_runs
+    filtered_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : True, "dataset_replication_factor" : 2}, 
+                                                   {"replicate_data_in_full" : False, "dataset_fraction" : 1}])
     for run_name, run_models in filtered_runs.items():
         epochs = [int(x["epoch"]) for epoch, x in run_models["models"].items()]
         cross_entropy_training_losses = [float(x["squared_training_loss"]) for epoch, x in run_models["models"].items()]
@@ -220,9 +258,17 @@ if __name__=="__main__":
     # -----------------------------------------------------------------------------------------------------------------
     plt.cla()
     twice_replicated_data_in_full_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : True, "dataset_replication_factor" : 2}])
-    full_data_runs = geft_runs_with_flags(all_runs, [{"replicate_data_in_full" : False, "dataset_fraction" : 1}])
+    full_data_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : False, "dataset_fraction" : 1}])
     quarter_data_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : False, "dataset_fraction" : 4}])
     
-    # This will fail on sanity check...
+    # This may fail on sanity check...
     assert(len(twice_replicated_data_in_full_runs) == len(full_data_runs))
     assert(len(full_data_runs) == len(quarter_data_runs))
+    assert(len(full_data_runs) != 0)
+
+    # Extract highest training accuracy of achieved by all runs
+    extract_extremest_values([twice_replicated_data_in_full_runs,
+                              full_data_runs,
+                              quarter_data_runs],
+                             max, min, "training_accuracy")
+                             
