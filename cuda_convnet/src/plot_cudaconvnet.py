@@ -52,10 +52,10 @@ def extract_all_models(run_directory):
         epoch_models[epoch] = {"model_variables" : model_variables}
     return epoch_models
 
-def extract_attribute_and_mutate_model(model_attributes, attr_name, attr_function):
+def extract_attribute_and_mutate_model(model_attributes, attr_name, attr_function, run_flags):
     assert("model_variables" in model_attributes.keys())
     assert(attr_name not in model_attributes.keys())
-    attr_value = attr_function(model_attributes["model_variables"])
+    attr_value = attr_function(model_attributes["model_variables"], run_flags)
     model_attributes[attr_name] = attr_value
 
 if __name__=="__main__":
@@ -119,6 +119,6 @@ if __name__=="__main__":
             # Remember, model_attributes is of the form {"model_variables" : variables, attr_name : attr_value, ... }
             # attr_name : attr_value pairs are added by the following extract_attribute_and_mutate_model call
             for attr_name, attr_func in attribute_name_function_pairs.items():
-                extract_attribute_and_mutate_model(model_attributes, attr_name, attr_func)
+                extract_attribute_and_mutate_model(model_attributes, attr_name, attr_func, run_models["config_flags"])
                 
     
