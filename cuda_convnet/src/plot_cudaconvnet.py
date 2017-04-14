@@ -307,20 +307,20 @@ if __name__=="__main__":
     plt.cla()
     twice_replicated_data_in_full_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : True, "dataset_replication_factor" : 2}])
     full_data_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : False, "dataset_fraction" : 1}])
+    half_data_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : False, "dataset_fraction" : 2}])
     quarter_data_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : False, "dataset_fraction" : 4}])
+    eighth_data_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : False, "dataset_fraction" : 8}])
 
-    plot_batchsize_vs_epochs_to_key({"full_data_replicated_2" : twice_replicated_data_in_full_runs,
-                                     "full" : full_data_runs,
-                                     "quarter" : quarter_data_runs}, 
-                                    "training_accuracy", max, min)
-    plot_batchsize_vs_epochs_to_key({"full_data_replicated_2" : twice_replicated_data_in_full_runs,
-                                     "full" : full_data_runs,
-                                     "quarter" : quarter_data_runs}, 
-                                    "squared_training_loss", min, max)
-    plot_batchsize_vs_epochs_to_key({"full_data_replicated_2" : twice_replicated_data_in_full_runs,
-                                     "full" : full_data_runs,
-                                     "quarter" : quarter_data_runs}, 
-                                    "cross_entropy_training_loss", min, max)
+    to_plot = \
+              {"full_data_replicated_2" : twice_replicated_data_in_full_runs,
+               "full" : full_data_runs,
+               "quarter" : quarter_data_runs,
+               "half" : half_data_runs,
+               "eigth" : eighth_data_runs}
+
+    plot_batchsize_vs_epochs_to_key(to_plot, "training_accuracy", max, min)
+    plot_batchsize_vs_epochs_to_key(to_plot, "squared_training_loss", min, max)
+    plot_batchsize_vs_epochs_to_key(to_plot, "cross_entropy_training_loss", min, max)
     
 
     
