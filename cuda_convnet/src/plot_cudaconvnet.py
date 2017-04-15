@@ -9,7 +9,7 @@ import re
 from extract_attributes import *
 
 tf.app.flags.DEFINE_boolean("sanity_check", False, "sanity_check")
-tf.app.flags.DEFINE_string("cache_file", "", "cache_file")
+tf.app.flags.DEFINE_string("cache_files", "", "list of cache_files to load")
 tf.app.flags.DEFINE_boolean("cache_lite", False, "cache_lite")
 tf.app.flags.DEFINE_boolean("cache_computation", True, "cache_computation")
 
@@ -199,7 +199,7 @@ if __name__=="__main__":
     # all_runs has form {k = run_name, v = {"config_flags" : flags, "models" : {epoch : {"model_variables" : model_variables, "training accuracy" : train_accuracy ... }}
     all_runs = {}
 
-    if FLAGS.cache_file == "":
+    if FLAGS.cache_files == "":
         run_directories_compilation = glob.glob(all_runs_directory + "/*")
         run_directories_compilation.sort(key=lambda x : len(glob.glob(x + "/*")))
 
@@ -254,9 +254,13 @@ if __name__=="__main__":
             cPickle.dump(all_runs, f)
             f.close()
     else:
-        f = open(FLAGS.cache_file, "rb")
-        all_runs = cPickle.load(f)
-        f.close()
+        all_runs = {}
+        cache_filenames = FLAGS.cache_files.strip().split(",")
+        for fname in cache_filenames:
+            f = open(fname, "rb")
+            runs = cPickle.load(f)
+            all_runs = dict(all_runs.items() + runs.items())
+            f.close()
 
     # Lite caching for faster loading
     if FLAGS.cache_lite:
