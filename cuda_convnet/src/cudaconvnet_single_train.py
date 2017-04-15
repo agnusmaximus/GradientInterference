@@ -262,7 +262,7 @@ def train():
     with tf.variable_scope(scope_name):
         images = tf.placeholder(tf.float32, shape=(None, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, cifar10.NUM_CHANNELS))
         labels = tf.placeholder(tf.int32, shape=(None,))
-        logits = cifar10.inference(images, dropout=FLAGS.dropout)
+        logits = cifar10.inference(images, use_dropout=FLAGS.dropout)
         loss_op = cifar10.loss(logits, labels, scope_name)
         train_op = cifar10.train(loss_op, scope_name)
         top_k_op = tf.nn.in_top_k(logits, labels, 1)
