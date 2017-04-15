@@ -262,7 +262,7 @@ def train():
     with tf.variable_scope(scope_name):
         images = tf.placeholder(tf.float32, shape=(None, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, cifar10.NUM_CHANNELS))
         labels = tf.placeholder(tf.int32, shape=(None,))
-        logits = cifar10.inference(images)
+        logits = cifar10.inference(images, dropout=FLAGS.dropout)
         loss_op = cifar10.loss(logits, labels, scope_name)
         train_op = cifar10.train(loss_op, scope_name)
         top_k_op = tf.nn.in_top_k(logits, labels, 1)
@@ -302,6 +302,13 @@ def train():
 
       for i in range(num_iter):
         feed_dict = get_feed_dict(FLAGS.evaluate_batch_size)
+
+        if FLAGS.dropout:
+            # We need to 0 out the dropout weights to prevent incorrect answers
+            dropouts = tf.get_collection(DROPOUTS)
+            for prob in cifar10.DROPOUTS:
+                feed_dict[prob] = 0.0
+
         acc_p, loss_p = sess.run(
             [top_k_op, loss_op], feed_dict=feed_dict)
 
