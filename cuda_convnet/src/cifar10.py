@@ -199,7 +199,7 @@ def dropout(tensor_in, prob, name=None):
       tf.add_to_collection(DROPOUTS, prob)
       return tf.nn.dropout(tensor_in, prob, seed=0)
 
-def inference(images, dropout=False):
+def inference(images, use_dropout=False):
   """Build the CIFAR-10 model. Cuda convnet variant.
   Args:
     images: Images returned from distorted_inputs() or inputs().
@@ -223,7 +223,7 @@ def inference(images, dropout=False):
     conv1 = tf.nn.relu(pre_activation, name=scope.name)
 
     # Apply dropout
-    if dropout:
+    if use_dropout:
       conv1 = dropout(conv1, .5)
 
     _activation_summary(conv1)
@@ -247,7 +247,7 @@ def inference(images, dropout=False):
     conv2 = tf.nn.relu(pre_activation, name=scope.name)
 
     # Apply dropout
-    if dropout:
+    if use_dropout:
       conv2 = dropout(conv2, .5)
 
     _activation_summary(conv2)
@@ -272,7 +272,7 @@ def inference(images, dropout=False):
     local3 = tf.nn.relu(tf.matmul(reshape, weights) + biases, name=scope.name)
 
     # Apply dropout
-    if dropout:
+    if use_dropout:
       local3 = dropout(local3, .5)
 
     _activation_summary(local3)
@@ -285,7 +285,7 @@ def inference(images, dropout=False):
     local4 = tf.nn.relu(tf.matmul(local3, weights) + biases, name=scope.name)
 
     # Apply dropout
-    if dropout:
+    if use_dropout:
       local4 = dropout(local4, .5)
 
     _activation_summary(local4)
