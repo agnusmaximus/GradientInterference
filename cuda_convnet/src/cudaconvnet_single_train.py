@@ -305,11 +305,11 @@ def train():
       for i in range(num_iter):
         feed_dict = get_feed_dict(FLAGS.evaluate_batch_size)
 
-        #if FLAGS.dropout:
+        if FLAGS.dropout:
             # We need to 0 out the dropout weights to prevent incorrect answers
-        #    dropouts = tf.get_collection(cifar10.DROPOUTS)
-        #    for prob in dropouts:
-        #        feed_dict[prob] = 0.0
+            dropouts = tf.get_collection(cifar10.DROPOUTS)
+            for prob in dropouts:
+                feed_dict[prob] = 1.0
 
         acc_p, loss_p = sess.run(
             [top_k_op, loss_op], feed_dict=feed_dict)
