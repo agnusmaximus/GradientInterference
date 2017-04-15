@@ -70,6 +70,8 @@ tf.app.flags.DEFINE_integer('dataset_replication_factor', 2,
 tf.app.flags.DEFINE_string('shared_filesystem_directory', '', 'Shared filesystem directory to write saved models')
 tf.app.flags.DEFINE_boolean("test_load_dumped_data_files", True,
                             'Sanity check data files')
+tf.app.flags.DEFINE_boolean("dropout", False,
+                            'Whether to use dropout')
 
 def unpickle(file):
     fo = open(file, 'rb')
