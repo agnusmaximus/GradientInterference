@@ -308,6 +308,7 @@ def train():
         if FLAGS.dropout:
             # We need to 0 out the dropout weights to prevent incorrect answers
             dropouts = tf.get_collection(cifar10.DROPOUTS)
+            print("YOOO", dropouts)
             for prob in dropouts:
                 feed_dict[prob] = 0.0
 
