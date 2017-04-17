@@ -9,7 +9,7 @@ import re
 from extract_attributes import *
 
 tf.app.flags.DEFINE_boolean("sanity_check", False, "sanity_check")
-tf.app.flags.DEFINE_string("cache_file", "", "cache_file")
+tf.app.flags.DEFINE_string("cache_files", "", "list of cache_files to load")
 tf.app.flags.DEFINE_boolean("cache_lite", False, "cache_lite")
 tf.app.flags.DEFINE_boolean("cache_computation", True, "cache_computation")
 
@@ -53,6 +53,8 @@ def extract_model_variables_from_model_filepath(model_filepath):
 def extract_salient_name(model):
     name = ""
     batchsize = eval(model["config_flags"]["batch_size"])
+    if "dropout" in model["config_flags"] and model["config_flags"]["dropout"] == True:
+        name += "dropout_"
     name += "batchsize=%d" % batchsize
     is_full_replicated = eval(model["config_flags"]["replicate_data_in_full"])
     if is_full_replicated:
@@ -89,7 +91,9 @@ def get_runs_with_flags(total_runs, to_match):
             run_flags = run_models["config_flags"]
             match = True
             for k,v in flags_to_match.items():
-                assert(k in run_flags.keys())
+                if k not in run_flags.keys():
+                    match = False
+                    continue
                 if eval(str(run_flags[k])) != eval(str(flags_to_match[k])):
                     match = False
             if match:
@@ -199,7 +203,7 @@ if __name__=="__main__":
     # all_runs has form {k = run_name, v = {"config_flags" : flags, "models" : {epoch : {"model_variables" : model_variables, "training accuracy" : train_accuracy ... }}
     all_runs = {}
 
-    if FLAGS.cache_file == "":
+    if FLAGS.cache_files == "":
         run_directories_compilation = glob.glob(all_runs_directory + "/*")
         run_directories_compilation.sort(key=lambda x : len(glob.glob(x + "/*")))
 
@@ -213,6 +217,8 @@ if __name__=="__main__":
             k = extract_run_name(cur_run_directory)
             v = extract_config_flags_from_run_name(k)
             assert(k not in all_runs.items())
+            if len(glob.glob(cur_run_directory + "/*")) >= 100:
+                continue
             all_runs[k] = {"config_flags" : v, "path" : cur_run_directory}
 
         # If sanity check, choose only a few select runs
@@ -254,9 +260,13 @@ if __name__=="__main__":
             cPickle.dump(all_runs, f)
             f.close()
     else:
-        f = open(FLAGS.cache_file, "rb")
-        all_runs = cPickle.load(f)
-        f.close()
+        all_runs = {}
+        cache_filenames = FLAGS.cache_files.strip().split(",")
+        for fname in cache_filenames:
+            f = open(fname, "rb")
+            runs = cPickle.load(f)
+            all_runs = dict(all_runs.items() + runs.items())
+            f.close()
 
     # Lite caching for faster loading
     if FLAGS.cache_lite:
@@ -310,13 +320,16 @@ if __name__=="__main__":
     half_data_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : False, "dataset_fraction" : 2}])
     quarter_data_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : False, "dataset_fraction" : 4}])
     eighth_data_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : False, "dataset_fraction" : 8}])
+    dropout_runs = get_runs_with_flags(all_runs, [{"dropout" : "True"}])
 
     to_plot = \
-              {"full_data_replicated_2" : twice_replicated_data_in_full_runs,
+              {#"full_data_replicated_2" : twice_replicated_data_in_full_runs,
                "full" : full_data_runs,
-               "quarter" : quarter_data_runs,
-               "half" : half_data_runs,
-               "eigth" : eighth_data_runs}
+               #"quarter" : quarter_data_runs,
+               #"half" : half_data_runs,
+               #"eigth" : eighth_data_runs,
+               #"dropout" : dropout_runs
+              }
 
     plot_batchsize_vs_epochs_to_key(to_plot, "training_accuracy", max, min)
     plot_batchsize_vs_epochs_to_key(to_plot, "squared_training_loss", min, max)
