@@ -226,7 +226,7 @@ def inference(images, use_dropout=False):
 
     # Apply dropout
     if use_dropout:
-      conv1 = dropout(conv1, .5)
+      conv1 = dropout(conv1, .1)
 
     _activation_summary(conv1)
 
@@ -250,7 +250,7 @@ def inference(images, use_dropout=False):
 
     # Apply dropout
     if use_dropout:
-      conv2 = dropout(conv2, .5)
+      conv2 = dropout(conv2, .1)
 
     _activation_summary(conv2)
 
@@ -275,7 +275,7 @@ def inference(images, use_dropout=False):
 
     # Apply dropout
     if use_dropout:
-      local3 = dropout(local3, .5)
+      local3 = dropout(local3, .1)
 
     _activation_summary(local3)
 
@@ -288,7 +288,7 @@ def inference(images, use_dropout=False):
 
     # Apply dropout
     if use_dropout:
-      local4 = dropout(local4, .5)
+      local4 = dropout(local4, .1)
 
     _activation_summary(local4)
 
