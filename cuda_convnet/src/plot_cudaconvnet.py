@@ -53,6 +53,8 @@ def extract_model_variables_from_model_filepath(model_filepath):
 def extract_salient_name(model):
     name = ""
     batchsize = eval(model["config_flags"]["batch_size"])
+    if "dropout" in model["config_flags"] and model["config_flags"]["dropout"] == True:
+        name += "dropout_"
     name += "batchsize=%d" % batchsize
     is_full_replicated = eval(model["config_flags"]["replicate_data_in_full"])
     if is_full_replicated:
@@ -89,7 +91,9 @@ def get_runs_with_flags(total_runs, to_match):
             run_flags = run_models["config_flags"]
             match = True
             for k,v in flags_to_match.items():
-                assert(k in run_flags.keys())
+                if k not in run_flags.keys():
+                    match = False
+                    continue
                 if eval(str(run_flags[k])) != eval(str(flags_to_match[k])):
                     match = False
             if match:
@@ -213,6 +217,8 @@ if __name__=="__main__":
             k = extract_run_name(cur_run_directory)
             v = extract_config_flags_from_run_name(k)
             assert(k not in all_runs.items())
+            if len(glob.glob(cur_run_directory + "/*")) >= 100:
+                continue
             all_runs[k] = {"config_flags" : v, "path" : cur_run_directory}
 
         # If sanity check, choose only a few select runs
@@ -314,13 +320,16 @@ if __name__=="__main__":
     half_data_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : False, "dataset_fraction" : 2}])
     quarter_data_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : False, "dataset_fraction" : 4}])
     eighth_data_runs = get_runs_with_flags(all_runs, [{"replicate_data_in_full" : False, "dataset_fraction" : 8}])
+    dropout_runs = get_runs_with_flags(all_runs, [{"dropout" : "True"}])
 
     to_plot = \
-              {"full_data_replicated_2" : twice_replicated_data_in_full_runs,
+              {#"full_data_replicated_2" : twice_replicated_data_in_full_runs,
                "full" : full_data_runs,
-               "quarter" : quarter_data_runs,
-               "half" : half_data_runs,
-               "eigth" : eighth_data_runs}
+               #"quarter" : quarter_data_runs,
+               #"half" : half_data_runs,
+               #"eigth" : eighth_data_runs,
+               #"dropout" : dropout_runs
+              }
 
     plot_batchsize_vs_epochs_to_key(to_plot, "training_accuracy", max, min)
     plot_batchsize_vs_epochs_to_key(to_plot, "squared_training_loss", min, max)
