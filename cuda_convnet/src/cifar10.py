@@ -199,7 +199,7 @@ def dropout(tensor_in, prob, name=None):
       tf.add_to_collection(DROPOUTS, prob)
 
       # Descale
-      return tf.scalar_mul(prob, tf.nn.dropout(tensor_in, prob, seed=0))
+      return tf.nn.dropout(tensor_in, prob, seed=0)
 
 def inference(images, use_dropout=False):
   """Build the CIFAR-10 model. Cuda convnet variant.
