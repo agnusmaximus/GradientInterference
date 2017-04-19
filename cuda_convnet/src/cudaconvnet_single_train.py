@@ -125,7 +125,9 @@ def load_repeated_in_full_data(all_images, all_labels, r=2):
         images_second_segment = repeated_images[all_images.shape[0]:all_images.shape[0]*2]
         assert(np.linalg.norm(images_first_segment-images_second_segment) == 0)
 
-    return repeated_images, repeated_labels
+    perm = np.random.permutation(len(repeated_images))
+
+    return repeated_images[perm], repeated_labels[perm]
 
 # We keep 1/r of the data, and let the data be
 # S_r = [(s1, ... s_n/r), (s1, ... s_n/r), .... (s1, ... s_n/r) ],
@@ -168,7 +170,9 @@ def load_fractional_repeated_data(all_images, all_labels, r=2):
     images_second_segment = all_images[int(num_examples/r):2*int(num_examples/r)]
     assert(np.linalg.norm(images_first_segment - images_second_segment) != 0)
 
-  return images_final, labels_final
+  perm = np.random.permutation(len(images_final))
+
+  return images_final[perm], labels_final[perm]
 
 def get_next_fractional_batch(fractional_images, fractional_labels, cur_index, batch_size):
   start = cur_index
