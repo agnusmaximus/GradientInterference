@@ -171,36 +171,6 @@ def get_next_fractional_batch(fractional_images, fractional_labels, cur_index, b
 
   return next_batch_images, next_batch_labels, next_index % fractional_labels.shape[0]
 
-def model_evaluate(sess, model, images_pl, labels_pl, inputs_dq, batchsize):
-  tf.logging.info("Evaluating model...")
-  num_iter = int(math.ceil(cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / batchsize))
-  correct_prediction, total_prediction = 0, 0
-  total_sample_count = num_iter * batchsize
-  computed_loss = 0
-  step = 0
-
-  while step < num_iter:
-    images_real, labels_real = sess.run(inputs_dq, feed_dict={images_pl:np.zeros([1, 32, 32, 3]), labels_pl: np.zeros([1, 10 if FLAGS.dataset == 'cifar10' else 100])})
-    feed_dict = {images_pl:images_real, labels_pl:labels_real}
-    (summaries, loss, predictions, truth) = sess.run(
-      [model.summaries, model.cost, model.predictions,
-       model.labels], feed_dict=feed_dict)
-
-    tf.logging.info("%d of %d" % (step, num_iter))
-
-    truth = np.argmax(truth, axis=1)
-    predictions = np.argmax(predictions, axis=1)
-    correct_prediction += np.sum(truth == predictions)
-    total_prediction += predictions.shape[0]
-    computed_loss += loss
-    step += 1
-
-  tf.logging.info("Done evaluating...")
-
-  # Compute precision @ 1.
-  precision = 1.0 * correct_prediction / total_prediction
-  return precision, computed_loss
-
 def main(unused_args):
 
     # Download data
