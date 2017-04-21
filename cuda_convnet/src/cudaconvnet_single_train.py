@@ -155,8 +155,8 @@ def load_fractional_repeated_data(all_images, all_labels, r=2):
   images_final = np.array(images_fractional)
   labels_final = np.array(labels_fractional)
   indices_to_add = [np.random.randint(0, len(images_fractional)) for i in range(all_images.shape[0]-images_final.shape[0])]
-  images_final = np.hstack([images_final] + images_fractional[indices_to_add])
-  labels_final = np.hstack([labels_final] + labels_fractional[indices_to_add])
+  images_final = np.hstack([images_final,images_fractional[indices_to_add]])
+  labels_final = np.hstack([labels_final,labels_fractional[indices_to_add]])
 
   print(images_final.shape)
   print(labels_final.shape)
