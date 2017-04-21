@@ -91,6 +91,12 @@ def load_cifar_data_raw():
         test_images += [(crop_center(x, IMAGE_SIZE, IMAGE_SIZE)-128.0)/255.0 for x in images]
         test_labels += [x for x in labels]
 
+    # One hot both the train labels and test labels
+    one_hot_test_labels = np.zeros((test_labels.shape[0], 10))
+    one_hot_train_labels = np.zeros((train_labels.shape[0], 10))
+    one_hot_test_labels[np.arange(test_labels.shape[0]), test_labels] = 1
+    one_hot_train_labels[np.arange(train_labels.shape[0]), train_labels] = 1
+
     print("Done")
 
     return tuple([np.array(x) for x in [train_images, train_labels, test_images, test_labels]])
