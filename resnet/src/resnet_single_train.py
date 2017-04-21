@@ -39,7 +39,7 @@ tf.app.flags.DEFINE_string('train_dir', '/tmp/imagenet_train',
                            """and checkpoint.""")
 tf.app.flags.DEFINE_float('learning_rate', 0.1,
                           'Initial learning rate.')
-tf.app.flags.DEFINE_integer('evaluate_batchsize', 1000,
+tf.app.flags.DEFINE_integer('evaluate_batch_size', 1000,
                            """Batchsize for evaluation""")
 tf.app.flags.DEFINE_boolean("replicate_data_in_full", False,
                             'Whether to use training data replicated in full')
