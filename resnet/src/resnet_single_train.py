@@ -28,6 +28,8 @@ from tensorflow.python.ops import data_flow_ops
 import cifar_input
 import resnet_model
 
+import cPickle
+
 IMAGE_SIZE = 32
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
