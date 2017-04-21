@@ -272,7 +272,7 @@ def main(unused_args):
         predictions, loss_p = sess.run(
             [predictions_op, loss_op], feed_dict=feed_dict)
 
-        truth = np.argmax(feed_dicts[labels], axis=1)
+        truth = np.argmax(feed_dict[labels], axis=1)
         predictions = np.argmax(predictions, axis=1)
 
         print("%d of %d" % (i, num_iter))
