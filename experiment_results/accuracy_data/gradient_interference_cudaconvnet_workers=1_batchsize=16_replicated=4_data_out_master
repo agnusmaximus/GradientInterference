@@ -19,7 +19,7 @@ Free memory: 11.11GiB
 I tensorflow/core/common_runtime/gpu/gpu_device.cc:906] DMA: 0 
 I tensorflow/core/common_runtime/gpu/gpu_device.cc:916] 0:   Y 
 I tensorflow/core/common_runtime/gpu/gpu_device.cc:975] Creating TensorFlow device (/gpu:0) -> (device: 0, name: Tesla K80, pci bus id: 0000:00:1e.0)
-WARNING:tensorflow:From cuda_convnet/src/cudaconvnet_single_train.py:250: initialize_all_variables (from tensorflow.python.ops.variables) is deprecated and will be removed after 2017-03-02.
+WARNING:tensorflow:From cuda_convnet/src/cudaconvnet_single_train.py:335: initialize_all_variables (from tensorflow.python.ops.variables) is deprecated and will be removed after 2017-03-02.
 Instructions for updating:
 Use `tf.global_variables_initializer` instead.
 
@@ -86,7 +86,7 @@ Evaluating model on training set with num examples 50000...
 48 of 50
 49 of 50
 Done evaluating...
-IInfo: 1492032199.594543 0.000000 0.099440 115139.900391
+IInfo: 1492642410.257583 0.000000 0.099440 115139.900879
 Evaluating...
 Evaluating model on training set with num examples 50000...
 0 of 50
@@ -140,7 +140,7 @@ Evaluating model on training set with num examples 50000...
 48 of 50
 49 of 50
 Done evaluating...
-IInfo: 1492032224.990461 1.000000 0.658560 47792.176208
+IInfo: 1492642435.891795 1.000000 0.628240 51460.636353
 Evaluating...
 Evaluating model on training set with num examples 50000...
 0 of 50
@@ -194,7 +194,7 @@ Evaluating model on training set with num examples 50000...
 48 of 50
 49 of 50
 Done evaluating...
-IInfo: 1492032250.154714 2.000000 0.793760 29113.322205
+IInfo: 1492642461.081633 2.000000 0.836000 23244.826096
 Evaluating...
 Evaluating model on training set with num examples 50000...
 0 of 50
@@ -248,7 +248,7 @@ Evaluating model on training set with num examples 50000...
 48 of 50
 49 of 50
 Done evaluating...
-IInfo: 1492032275.364683 3.000000 0.894320 15940.648575
+IInfo: 1492642486.286687 3.000000 0.972720 4267.440239
 Evaluating...
 Evaluating model on training set with num examples 50000...
 0 of 50
@@ -302,7 +302,7 @@ Evaluating model on training set with num examples 50000...
 48 of 50
 49 of 50
 Done evaluating...
-IInfo: 1492032300.554761 4.000000 0.972800 3905.918128
+IInfo: 1492642511.507163 4.000000 0.988880 1749.806439
 Evaluating...
 Evaluating model on training set with num examples 50000...
 0 of 50
@@ -356,7 +356,7 @@ Evaluating model on training set with num examples 50000...
 48 of 50
 49 of 50
 Done evaluating...
-IInfo: 1492032325.769219 5.000000 0.971600 4188.400723
+IInfo: 1492642536.747793 5.000000 0.998160 378.273222
 Evaluating...
 Evaluating model on training set with num examples 50000...
 0 of 50
@@ -410,103 +410,4 @@ Evaluating model on training set with num examples 50000...
 48 of 50
 49 of 50
 Done evaluating...
-IInfo: 1492032350.943778 6.000000 0.975440 3978.500092
-Evaluating...
-Evaluating model on training set with num examples 50000...
-0 of 50
-1 of 50
-2 of 50
-3 of 50
-4 of 50
-5 of 50
-6 of 50
-7 of 50
-8 of 50
-9 of 50
-10 of 50
-11 of 50
-12 of 50
-13 of 50
-14 of 50
-15 of 50
-16 of 50
-17 of 50
-18 of 50
-19 of 50
-20 of 50
-21 of 50
-22 of 50
-23 of 50
-24 of 50
-25 of 50
-26 of 50
-27 of 50
-28 of 50
-29 of 50
-30 of 50
-31 of 50
-32 of 50
-33 of 50
-34 of 50
-35 of 50
-36 of 50
-37 of 50
-38 of 50
-39 of 50
-40 of 50
-41 of 50
-42 of 50
-43 of 50
-44 of 50
-45 of 50
-46 of 50
-47 of 50
-48 of 50
-49 of 50
-Done evaluating...
-IInfo: 1492032376.127910 7.000000 0.998880 241.796308
-Evaluating...
-Evaluating model on training set with num examples 50000...
-0 of 50
-1 of 50
-2 of 50
-3 of 50
-4 of 50
-5 of 50
-6 of 50
-7 of 50
-8 of 50
-9 of 50
-10 of 50
-11 of 50
-12 of 50
-13 of 50
-14 of 50
-15 of 50
-16 of 50
-17 of 50
-18 of 50
-19 of 50
-20 of 50
-21 of 50
-22 of 50
-23 of 50
-24 of 50
-25 of 50
-26 of 50
-27 of 50
-28 of 50
-29 of 50
-30 of 50
-31 of 50
-32 of 50
-33 of 50
-34 of 50
-35 of 50
-36 of 50
-37 of 50
-38 of 50
-39 of 50
-40 of 50
-41 of 50
-42 of 50
+IInfo: 1492642562.003817 6.000000 1.000000 12.753414

@@ -19,7 +19,7 @@ Free memory: 11.11GiB
 I tensorflow/core/common_runtime/gpu/gpu_device.cc:906] DMA: 0 
 I tensorflow/core/common_runtime/gpu/gpu_device.cc:916] 0:   Y 
 I tensorflow/core/common_runtime/gpu/gpu_device.cc:975] Creating TensorFlow device (/gpu:0) -> (device: 0, name: Tesla K80, pci bus id: 0000:00:1e.0)
-WARNING:tensorflow:From cuda_convnet/src/cudaconvnet_single_train.py:250: initialize_all_variables (from tensorflow.python.ops.variables) is deprecated and will be removed after 2017-03-02.
+WARNING:tensorflow:From cuda_convnet/src/cudaconvnet_single_train.py:335: initialize_all_variables (from tensorflow.python.ops.variables) is deprecated and will be removed after 2017-03-02.
 Instructions for updating:
 Use `tf.global_variables_initializer` instead.
 
@@ -86,7 +86,7 @@ Evaluating model on training set with num examples 50000...
 48 of 50
 49 of 50
 Done evaluating...
-IInfo: 1492044275.811538 0.000000 0.093280 115141.720703
+IInfo: 1492670950.277100 0.000000 0.093280 115141.722900
 Evaluating...
 Evaluating model on training set with num examples 50000...
 0 of 50
@@ -140,7 +140,7 @@ Evaluating model on training set with num examples 50000...
 48 of 50
 49 of 50
 Done evaluating...
-IInfo: 1492044297.662588 1.003520 0.297760 95365.748291
+IInfo: 1492670971.915421 1.003520 0.261920 101136.039551
 Evaluating...
 Evaluating model on training set with num examples 50000...
 0 of 50
@@ -194,7 +194,7 @@ Evaluating model on training set with num examples 50000...
 48 of 50
 49 of 50
 Done evaluating...
-IInfo: 1492044318.739596 2.007040 0.442720 76066.266968
+IInfo: 1492670993.050485 2.007040 0.334400 92839.497437
 Evaluating...
 Evaluating model on training set with num examples 50000...
 0 of 50
@@ -248,7 +248,7 @@ Evaluating model on training set with num examples 50000...
 48 of 50
 49 of 50
 Done evaluating...
-IInfo: 1492044339.616208 3.000320 0.495040 68556.473755
+IInfo: 1492671013.962216 3.000320 0.419200 79024.048584
 Evaluating...
 Evaluating model on training set with num examples 50000...
 0 of 50
@@ -302,7 +302,7 @@ Evaluating model on training set with num examples 50000...
 48 of 50
 49 of 50
 Done evaluating...
-IInfo: 1492044360.707166 4.003840 0.632160 52652.760986
+IInfo: 1492671035.086852 4.003840 0.465120 74726.066650
 Evaluating...
 Evaluating model on training set with num examples 50000...
 0 of 50
@@ -356,7 +356,7 @@ Evaluating model on training set with num examples 50000...
 48 of 50
 49 of 50
 Done evaluating...
-IInfo: 1492044381.803775 5.007360 0.661280 47115.602234
+IInfo: 1492671056.226387 5.007360 0.507200 67796.380005
 Evaluating...
 Evaluating model on training set with num examples 50000...
 0 of 50
@@ -410,7 +410,7 @@ Evaluating model on training set with num examples 50000...
 48 of 50
 49 of 50
 Done evaluating...
-IInfo: 1492044402.655485 6.000640 0.712480 42061.850403
+IInfo: 1492671077.129936 6.000640 0.536160 63770.619263
 Evaluating...
 Evaluating model on training set with num examples 50000...
 0 of 50
@@ -464,7 +464,7 @@ Evaluating model on training set with num examples 50000...
 48 of 50
 49 of 50
 Done evaluating...
-IInfo: 1492044423.743114 7.004160 0.805920 26962.417389
+IInfo: 1492671098.255377 7.004160 0.573760 58741.986572
 Evaluating...
 Evaluating model on training set with num examples 50000...
 0 of 50
@@ -518,7 +518,7 @@ Evaluating model on training set with num examples 50000...
 48 of 50
 49 of 50
 Done evaluating...
-IInfo: 1492044444.819813 8.007680 0.925600 11922.629669
+IInfo: 1492671119.414254 8.007680 0.607360 55424.355408
 Evaluating...
 Evaluating model on training set with num examples 50000...
 0 of 50
@@ -572,7 +572,7 @@ Evaluating model on training set with num examples 50000...
 48 of 50
 49 of 50
 Done evaluating...
-IInfo: 1492044465.674238 9.000960 0.998400 1489.398081
+IInfo: 1492671140.332774 9.000960 0.613120 54180.762878
 Evaluating...
 Evaluating model on training set with num examples 50000...
 0 of 50
@@ -626,4 +626,598 @@ Evaluating model on training set with num examples 50000...
 48 of 50
 49 of 50
 Done evaluating...
-IInfo: 1492044486.764383 10.004480 0.999680 524.820487
+IInfo: 1492671161.470752 10.004480 0.673600 45611.432617
+Evaluating...
+Evaluating model on training set with num examples 50000...
+0 of 50
+1 of 50
+2 of 50
+3 of 50
+4 of 50
+5 of 50
+6 of 50
+7 of 50
+8 of 50
+9 of 50
+10 of 50
+11 of 50
+12 of 50
+13 of 50
+14 of 50
+15 of 50
+16 of 50
+17 of 50
+18 of 50
+19 of 50
+20 of 50
+21 of 50
+22 of 50
+23 of 50
+24 of 50
+25 of 50
+26 of 50
+27 of 50
+28 of 50
+29 of 50
+30 of 50
+31 of 50
+32 of 50
+33 of 50
+34 of 50
+35 of 50
+36 of 50
+37 of 50
+38 of 50
+39 of 50
+40 of 50
+41 of 50
+42 of 50
+43 of 50
+44 of 50
+45 of 50
+46 of 50
+47 of 50
+48 of 50
+49 of 50
+Done evaluating...
+IInfo: 1492671182.564501 11.008000 0.729920 39508.510315
+Evaluating...
+Evaluating model on training set with num examples 50000...
+0 of 50
+1 of 50
+2 of 50
+3 of 50
+4 of 50
+5 of 50
+6 of 50
+7 of 50
+8 of 50
+9 of 50
+10 of 50
+11 of 50
+12 of 50
+13 of 50
+14 of 50
+15 of 50
+16 of 50
+17 of 50
+18 of 50
+19 of 50
+20 of 50
+21 of 50
+22 of 50
+23 of 50
+24 of 50
+25 of 50
+26 of 50
+27 of 50
+28 of 50
+29 of 50
+30 of 50
+31 of 50
+32 of 50
+33 of 50
+34 of 50
+35 of 50
+36 of 50
+37 of 50
+38 of 50
+39 of 50
+40 of 50
+41 of 50
+42 of 50
+43 of 50
+44 of 50
+45 of 50
+46 of 50
+47 of 50
+48 of 50
+49 of 50
+Done evaluating...
+IInfo: 1492671203.481989 12.001280 0.643680 49648.973938
+Evaluating...
+Evaluating model on training set with num examples 50000...
+0 of 50
+1 of 50
+2 of 50
+3 of 50
+4 of 50
+5 of 50
+6 of 50
+7 of 50
+8 of 50
+9 of 50
+10 of 50
+11 of 50
+12 of 50
+13 of 50
+14 of 50
+15 of 50
+16 of 50
+17 of 50
+18 of 50
+19 of 50
+20 of 50
+21 of 50
+22 of 50
+23 of 50
+24 of 50
+25 of 50
+26 of 50
+27 of 50
+28 of 50
+29 of 50
+30 of 50
+31 of 50
+32 of 50
+33 of 50
+34 of 50
+35 of 50
+36 of 50
+37 of 50
+38 of 50
+39 of 50
+40 of 50
+41 of 50
+42 of 50
+43 of 50
+44 of 50
+45 of 50
+46 of 50
+47 of 50
+48 of 50
+49 of 50
+Done evaluating...
+IInfo: 1492671224.638870 13.004800 0.796480 30611.674438
+Evaluating...
+Evaluating model on training set with num examples 50000...
+0 of 50
+1 of 50
+2 of 50
+3 of 50
+4 of 50
+5 of 50
+6 of 50
+7 of 50
+8 of 50
+9 of 50
+10 of 50
+11 of 50
+12 of 50
+13 of 50
+14 of 50
+15 of 50
+16 of 50
+17 of 50
+18 of 50
+19 of 50
+20 of 50
+21 of 50
+22 of 50
+23 of 50
+24 of 50
+25 of 50
+26 of 50
+27 of 50
+28 of 50
+29 of 50
+30 of 50
+31 of 50
+32 of 50
+33 of 50
+34 of 50
+35 of 50
+36 of 50
+37 of 50
+38 of 50
+39 of 50
+40 of 50
+41 of 50
+42 of 50
+43 of 50
+44 of 50
+45 of 50
+46 of 50
+47 of 50
+48 of 50
+49 of 50
+Done evaluating...
+IInfo: 1492671245.769663 14.008320 0.829760 26983.070770
+Evaluating...
+Evaluating model on training set with num examples 50000...
+0 of 50
+1 of 50
+2 of 50
+3 of 50
+4 of 50
+5 of 50
+6 of 50
+7 of 50
+8 of 50
+9 of 50
+10 of 50
+11 of 50
+12 of 50
+13 of 50
+14 of 50
+15 of 50
+16 of 50
+17 of 50
+18 of 50
+19 of 50
+20 of 50
+21 of 50
+22 of 50
+23 of 50
+24 of 50
+25 of 50
+26 of 50
+27 of 50
+28 of 50
+29 of 50
+30 of 50
+31 of 50
+32 of 50
+33 of 50
+34 of 50
+35 of 50
+36 of 50
+37 of 50
+38 of 50
+39 of 50
+40 of 50
+41 of 50
+42 of 50
+43 of 50
+44 of 50
+45 of 50
+46 of 50
+47 of 50
+48 of 50
+49 of 50
+Done evaluating...
+IInfo: 1492671266.711741 15.001600 0.862560 21540.296082
+Evaluating...
+Evaluating model on training set with num examples 50000...
+0 of 50
+1 of 50
+2 of 50
+3 of 50
+4 of 50
+5 of 50
+6 of 50
+7 of 50
+8 of 50
+9 of 50
+10 of 50
+11 of 50
+12 of 50
+13 of 50
+14 of 50
+15 of 50
+16 of 50
+17 of 50
+18 of 50
+19 of 50
+20 of 50
+21 of 50
+22 of 50
+23 of 50
+24 of 50
+25 of 50
+26 of 50
+27 of 50
+28 of 50
+29 of 50
+30 of 50
+31 of 50
+32 of 50
+33 of 50
+34 of 50
+35 of 50
+36 of 50
+37 of 50
+38 of 50
+39 of 50
+40 of 50
+41 of 50
+42 of 50
+43 of 50
+44 of 50
+45 of 50
+46 of 50
+47 of 50
+48 of 50
+49 of 50
+Done evaluating...
+IInfo: 1492671287.837236 16.005120 0.909920 15798.468628
+Evaluating...
+Evaluating model on training set with num examples 50000...
+0 of 50
+1 of 50
+2 of 50
+3 of 50
+4 of 50
+5 of 50
+6 of 50
+7 of 50
+8 of 50
+9 of 50
+10 of 50
+11 of 50
+12 of 50
+13 of 50
+14 of 50
+15 of 50
+16 of 50
+17 of 50
+18 of 50
+19 of 50
+20 of 50
+21 of 50
+22 of 50
+23 of 50
+24 of 50
+25 of 50
+26 of 50
+27 of 50
+28 of 50
+29 of 50
+30 of 50
+31 of 50
+32 of 50
+33 of 50
+34 of 50
+35 of 50
+36 of 50
+37 of 50
+38 of 50
+39 of 50
+40 of 50
+41 of 50
+42 of 50
+43 of 50
+44 of 50
+45 of 50
+46 of 50
+47 of 50
+48 of 50
+49 of 50
+Done evaluating...
+IInfo: 1492671308.994864 17.008640 0.798400 44667.732727
+Evaluating...
+Evaluating model on training set with num examples 50000...
+0 of 50
+1 of 50
+2 of 50
+3 of 50
+4 of 50
+5 of 50
+6 of 50
+7 of 50
+8 of 50
+9 of 50
+10 of 50
+11 of 50
+12 of 50
+13 of 50
+14 of 50
+15 of 50
+16 of 50
+17 of 50
+18 of 50
+19 of 50
+20 of 50
+21 of 50
+22 of 50
+23 of 50
+24 of 50
+25 of 50
+26 of 50
+27 of 50
+28 of 50
+29 of 50
+30 of 50
+31 of 50
+32 of 50
+33 of 50
+34 of 50
+35 of 50
+36 of 50
+37 of 50
+38 of 50
+39 of 50
+40 of 50
+41 of 50
+42 of 50
+43 of 50
+44 of 50
+45 of 50
+46 of 50
+47 of 50
+48 of 50
+49 of 50
+Done evaluating...
+IInfo: 1492671329.908888 18.001920 0.877280 16244.795563
+Evaluating...
+Evaluating model on training set with num examples 50000...
+0 of 50
+1 of 50
+2 of 50
+3 of 50
+4 of 50
+5 of 50
+6 of 50
+7 of 50
+8 of 50
+9 of 50
+10 of 50
+11 of 50
+12 of 50
+13 of 50
+14 of 50
+15 of 50
+16 of 50
+17 of 50
+18 of 50
+19 of 50
+20 of 50
+21 of 50
+22 of 50
+23 of 50
+24 of 50
+25 of 50
+26 of 50
+27 of 50
+28 of 50
+29 of 50
+30 of 50
+31 of 50
+32 of 50
+33 of 50
+34 of 50
+35 of 50
+36 of 50
+37 of 50
+38 of 50
+39 of 50
+40 of 50
+41 of 50
+42 of 50
+43 of 50
+44 of 50
+45 of 50
+46 of 50
+47 of 50
+48 of 50
+49 of 50
+Done evaluating...
+IInfo: 1492671351.044374 19.005440 0.980640 8928.878479
+Evaluating...
+Evaluating model on training set with num examples 50000...
+0 of 50
+1 of 50
+2 of 50
+3 of 50
+4 of 50
+5 of 50
+6 of 50
+7 of 50
+8 of 50
+9 of 50
+10 of 50
+11 of 50
+12 of 50
+13 of 50
+14 of 50
+15 of 50
+16 of 50
+17 of 50
+18 of 50
+19 of 50
+20 of 50
+21 of 50
+22 of 50
+23 of 50
+24 of 50
+25 of 50
+26 of 50
+27 of 50
+28 of 50
+29 of 50
+30 of 50
+31 of 50
+32 of 50
+33 of 50
+34 of 50
+35 of 50
+36 of 50
+37 of 50
+38 of 50
+39 of 50
+40 of 50
+41 of 50
+42 of 50
+43 of 50
+44 of 50
+45 of 50
+46 of 50
+47 of 50
+48 of 50
+49 of 50
+Done evaluating...
+IInfo: 1492671372.181672 20.008960 0.919200 17492.947906
+Evaluating...
+Evaluating model on training set with num examples 50000...
+0 of 50
+1 of 50
+2 of 50
+3 of 50
+4 of 50
+5 of 50
+6 of 50
+7 of 50
+8 of 50
+9 of 50
+10 of 50
+11 of 50
+12 of 50
+13 of 50
+14 of 50
+15 of 50
+16 of 50
+17 of 50
+18 of 50
+19 of 50
+20 of 50
+21 of 50
+22 of 50
+23 of 50
+24 of 50
+25 of 50
+26 of 50
+27 of 50
+28 of 50
+29 of 50
+30 of 50
+31 of 50
+32 of 50
+33 of 50
+34 of 50
+35 of 50
+36 of 50
+37 of 50
+38 of 50
+39 of 50
+40 of 50
+41 of 50
+42 of 50
+43 of 50
+44 of 50
+45 of 50
+46 of 50
+47 of 50
+48 of 50
+49 of 50
+Done evaluating...
+IInfo: 1492671393.090421 21.002240 0.996960 3035.302670
