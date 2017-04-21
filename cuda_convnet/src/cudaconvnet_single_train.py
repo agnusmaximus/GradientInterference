@@ -138,7 +138,7 @@ def load_fractional_repeated_data(all_images, all_labels, r=2):
   assert(all_images.shape[0] == 50000)
 
   # We assert that the number of examples is divisible by r
-  assert(all_images.shape[0] % r == 0)
+  # assert(all_images.shape[0] % r == 0)
 
   num_examples = all_images.shape[0]
 
