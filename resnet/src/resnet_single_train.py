@@ -177,7 +177,7 @@ def get_next_fractional_batch(fractional_images, fractional_labels, cur_index, b
   assert(wraparound_images.shape[0] == wraparound_labels.shape[0])
   if wraparound_images.shape[0] != 0:
     next_batch_images = np.vstack((next_batch_images, wraparound_images))
-    next_batch_labels = np.hstack((next_batch_labels, wraparound_labels))
+    next_batch_labels = np.vstack((next_batch_labels, wraparound_labels))
 
   assert(next_batch_images.shape[0] == batch_size)
   assert(next_batch_labels.shape[0] == batch_size)
