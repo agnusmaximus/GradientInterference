@@ -55,6 +55,8 @@ np.set_printoptions(threshold=np.nan)
 
 FLAGS = tf.app.flags.FLAGS
 
+NUM_CLASSES = 10 if FLAGS.dataset == "cifar10" else 100
+
 def unpickle(file):
     fo = open(file, 'rb')
     dict = cPickle.load(fo)
@@ -92,10 +94,10 @@ def load_cifar_data_raw():
         test_labels += [x for x in labels]
 
     # One hot both the train labels and test labels
-    one_hot_test_labels = np.zeros((test_labels.shape[0], 10))
-    one_hot_train_labels = np.zeros((train_labels.shape[0], 10))
-    one_hot_test_labels[np.arange(test_labels.shape[0]), test_labels] = 1
-    one_hot_train_labels[np.arange(train_labels.shape[0]), train_labels] = 1
+    one_hot_test_labels = np.zeros(len(test_labels), NUM_CLASSES))
+    one_hot_train_labels = np.zeros(len(train_labels), NUM_CLASSES))
+    one_hot_test_labels[np.arange(len(test_labels)), test_labels] = 1
+    one_hot_train_labels[np.arange(len(train_labels)), train_labels] = 1
 
     print("Done")
 
