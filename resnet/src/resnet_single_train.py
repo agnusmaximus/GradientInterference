@@ -78,7 +78,7 @@ def load_cifar_data_raw():
         data = unpickle(x)
         images = data["data"].reshape((batchsize, 3, 32, 32)).transpose(0, 2, 3, 1)
         labels = np.array(data["labels"]).reshape((batchsize,))
-        train_images += [(crop_center(x, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE)-128.0)/255.0 for x in images]
+        train_images += [(crop_center(x, IMAGE_SIZE, IMAGE_SIZE)-128.0)/255.0 for x in images]
         train_labels += [x for x in labels]
 
     test_images, test_labels = [], []
@@ -86,7 +86,7 @@ def load_cifar_data_raw():
         data = unpickle(x)
         images = data["data"].reshape((batchsize, 3, 32, 32)).transpose(0, 2, 3, 1)
         labels = np.array(data["labels"]).reshape((batchsize,))
-        test_images += [(crop_center(x, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE)-128.0)/255.0 for x in images]
+        test_images += [(crop_center(x, IMAGE_SIZE, IMAGE_SIZE)-128.0)/255.0 for x in images]
         test_labels += [x for x in labels]
 
     print("Done")
@@ -141,7 +141,7 @@ def load_fractional_repeated_data(all_images, all_labels, r=2):
 
   print(images_final.shape)
   print(labels_final.shape)
-  assert(images_final.shape == (num_examples, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, cifar10.NUM_CHANNELS))
+  assert(images_final.shape == (num_examples, IMAGE_SIZE, IMAGE_SIZE, 3))
   assert(labels_final.shape == (num_examples,))
 
   perm = np.random.permutation(len(images_final))
@@ -238,9 +238,9 @@ def main(unused_args):
 
       # This simply makes sure that we are evaluating on the training set
       if FLAGS.replicate_data_in_full:
-          assert(num_examples == cifar10.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN * FLAGS.dataset_replication_factor)
+          assert(num_examples == cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN * FLAGS.dataset_replication_factor)
       else:
-          assert(num_examples == cifar10.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
+          assert(num_examples == cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
 
       # Make sure we are using a batchsize a multiple of number of examples
       assert(num_examples % FLAGS.evaluate_batch_size == 0)
@@ -252,7 +252,7 @@ def main(unused_args):
 
         if FLAGS.dropout:
             # We need to 0 out the dropout weights to prevent incorrect answers
-            dropouts = tf.get_collection(cifar10.DROPOUTS)
+            dropouts = tf.get_collection(resnet_model.DROPOUTS)
             for prob in dropouts:
                 feed_dict[prob] = 1.0
 

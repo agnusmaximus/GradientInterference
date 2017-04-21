@@ -35,6 +35,7 @@ HParams = namedtuple('HParams',
                      'num_residual_units, use_bottleneck, weight_decay_rate, '
                      'relu_leakiness, optimizer')
 
+DROPOUTS = "dropouts"
 
 class ResNet(object):
   """ResNet model."""
