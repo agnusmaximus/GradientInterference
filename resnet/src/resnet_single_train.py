@@ -196,6 +196,8 @@ def main(unused_args):
         images_fractional_train, labels_fractional_train = load_fractional_repeated_data(images_train_raw, labels_train_raw, r=FLAGS.dataset_fraction)
         print("Done.")
 
+    global_step = tf.Variable(0, name="global_step", trainable=False)
+
     hps = resnet_model.HParams(batch_size=FLAGS.batch_size,
                                num_classes=10 if FLAGS.dataset=="cifar10" else 100,
                                min_lrn_rate=0.0001,
