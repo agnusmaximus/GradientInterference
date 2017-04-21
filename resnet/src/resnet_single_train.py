@@ -272,7 +272,7 @@ def main(unused_args):
         predictions, loss_p = sess.run(
             [predictions_op, loss_op], feed_dict=feed_dict)
 
-        truth = np.argmax(truth, axis=1)
+        truth = np.argmax(predictions, axis=1)
         predictions = np.argmax(predictions, axis=1)
         acc_p += np.sum(truth == predictions)
 
