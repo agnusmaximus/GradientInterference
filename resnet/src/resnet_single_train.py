@@ -272,14 +272,13 @@ def main(unused_args):
         predictions, loss_p = sess.run(
             [predictions_op, loss_op], feed_dict=feed_dict)
 
-        truth = np.argmax(predictions, axis=1)
+        truth = np.argmax(feed_dicts[labels], axis=1)
         predictions = np.argmax(predictions, axis=1)
-        acc_p = np.sum(truth == predictions)
 
         print("%d of %d" % (i, num_iter))
         sys.stdout.flush()
 
-        acc += np.sum(acc_p)
+        acc += np.sum(truth == predictions)
         loss += loss_p
 
       print("Done evaluating...")
