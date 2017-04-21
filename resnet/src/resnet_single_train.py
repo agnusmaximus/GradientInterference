@@ -94,8 +94,8 @@ def load_cifar_data_raw():
         test_labels += [x for x in labels]
 
     # One hot both the train labels and test labels
-    one_hot_test_labels = np.zeros(len(test_labels), NUM_CLASSES)
-    one_hot_train_labels = np.zeros(len(train_labels), NUM_CLASSES)
+    one_hot_test_labels = np.zeros((len(test_labels), NUM_CLASSES))
+    one_hot_train_labels = np.zeros((len(train_labels), NUM_CLASSES))
     one_hot_test_labels[np.arange(len(test_labels)), test_labels] = 1
     one_hot_train_labels[np.arange(len(train_labels)), train_labels] = 1
 
