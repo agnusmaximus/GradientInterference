@@ -101,7 +101,7 @@ def load_cifar_data_raw():
 
     print("Done")
 
-    return tuple([np.array(x) for x in [train_images, train_labels, test_images, test_labels]])
+    return tuple([np.array(x) for x in [train_images, one_hot_train_labels, test_images, one_hot_test_labels]])
 
 # We replicate the data (in full) r times and return it
 def load_repeated_in_full_data(all_images, all_labels, r=2):
