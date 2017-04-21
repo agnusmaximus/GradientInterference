@@ -94,8 +94,8 @@ def load_cifar_data_raw():
         test_labels += [x for x in labels]
 
     # One hot both the train labels and test labels
-    one_hot_test_labels = np.zeros(len(test_labels), NUM_CLASSES))
-    one_hot_train_labels = np.zeros(len(train_labels), NUM_CLASSES))
+    one_hot_test_labels = np.zeros(len(test_labels), NUM_CLASSES)
+    one_hot_train_labels = np.zeros(len(train_labels), NUM_CLASSES)
     one_hot_test_labels[np.arange(len(test_labels)), test_labels] = 1
     one_hot_train_labels[np.arange(len(train_labels)), train_labels] = 1
 
@@ -107,7 +107,7 @@ def load_cifar_data_raw():
 def load_repeated_in_full_data(all_images, all_labels, r=2):
     assert(all_images.shape[0] == 50000)
     repeated_images = np.tile(all_images, (r, 1, 1, 1))
-    repeated_labels = np.tile(all_labels, r)
+    repeated_labels = np.tile(all_labels, (r, 1))
     assert(repeated_images.shape[0] == 50000*r)
 
     # Sanity check
@@ -147,7 +147,7 @@ def load_fractional_repeated_data(all_images, all_labels, r=2):
   labels_final = np.array(labels_fractional)
   indices_to_add = [np.random.randint(0, len(images_fractional)) for i in range(all_images.shape[0]-images_final.shape[0])]
   images_final = np.vstack([images_final,images_fractional[indices_to_add]])
-  labels_final = np.hstack([labels_final,labels_fractional[indices_to_add]])
+  labels_final = np.vstack([labels_final,labels_fractional[indices_to_add]])
 
   print(images_final.shape)
   print(labels_final.shape)
