@@ -45,7 +45,7 @@ def maybe_download_and_extract(dataset_name):
   if not os.path.exists(dest_directory):
     os.makedirs(dest_directory)
 
-  DATA_URL = 'http://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz' if dataset_name == 'cifar10' else 'http://www.cs.toronto.edu/~kriz/cifar-100-binary.tar.gz'
+  DATA_URL = 'http://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz' if dataset_name == 'cifar10' else 'http://www.cs.toronto.edu/~kriz/cifar-100-python.tar.gz'
 
   filename = DATA_URL.split('/')[-1]
   filepath = os.path.join(dest_directory, filename)
