@@ -59,7 +59,7 @@ tf.app.flags.DEFINE_string('train_dir', '/tmp/cifar10_train',
                            """and checkpoint.""")
 tf.app.flags.DEFINE_integer('evaluate_batch_size', 1000,
                             """Number of batches to run.""")
-tf.app.flags.DEFINE_integer('dataset_fraction', 2,
+tf.app.flags.DEFINE_float('dataset_fraction', 2,
                             """Fraction of dataset to use for fractional repeated dataset""")
 tf.app.flags.DEFINE_float('learning_rate', .0001,
                             """Constant learning rate""")
