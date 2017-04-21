@@ -293,7 +293,7 @@ def main(unused_args):
             if new_epoch_track == cur_epoch_track + 1 or cur_iteration == 0:
                 tf.logging.info("Evaluating...")
                 t_evaluate_start = time.time()
-                acc, loss = model_evaluate(mon_sess, model, images, labels, variable_batchsize_inputs[1000], 1000)
+                acc, loss = model_evaluate(mon_sess)
                 tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times), new_epoch_float, acc, loss))
                 t_evaluate_end = time.time()
                 evaluate_times.append(t_evaluate_end-t_evaluate_start)
