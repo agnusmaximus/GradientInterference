@@ -147,8 +147,17 @@ def load_fractional_repeated_data(all_images, all_labels, r=2):
   labels_fractional = all_labels[:int(num_examples / r)]
 
   # We tile each fractional set r times
-  images_final = np.tile(images_fractional, (r, 1, 1, 1))
-  labels_final = np.tile(labels_fractional, r)
+  # images_final = np.tile(images_fractional, (r, 1, 1, 1))
+  # labels_final = np.tile(labels_fractional, r)
+
+  # Instead of tiling each set r times, we continually add examples from the
+  # fractional set into our final set until.
+  images_final = np.array(images_fractional)
+  labels_final = np.array(labels_fractional)
+  indices_to_add = [np.random.randint(0, len(images_fractional)) for i in range(all_images.shape[0]-images_final.shape[0])]
+  images_final = np.hstack([images_final] + images_fractional[indices_to_add])
+  labels_final = np.hstack([labels_final] + labels_fractional[indices_to_add])
+
   print(images_final.shape)
   print(labels_final.shape)
   assert(images_final.shape == (num_examples, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, cifar10.NUM_CHANNELS))
