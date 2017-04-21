@@ -163,22 +163,6 @@ def load_fractional_repeated_data(all_images, all_labels, r=2):
   assert(images_final.shape == (num_examples, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, cifar10.NUM_CHANNELS))
   assert(labels_final.shape == (num_examples,))
 
-  # Just as a sanity check let's compare image segments
-  if r != 1:
-    images_first_segment = images_final[:int(num_examples/r)]
-    images_second_segment = images_final[int(num_examples/r):2*int(num_examples/r)]
-    assert(np.linalg.norm(images_first_segment - images_second_segment) == 0)
-
-    # Also sanity check label segments
-    labels_first_segment = labels_final[:int(num_examples/r)]
-    labels_second_segment = labels_final[int(num_examples/r):2*int(num_examples/r)]
-    assert(np.linalg.norm(labels_first_segment-labels_second_segment) == 0)
-
-    # Full sanity check to make sure that the original data is not repeated
-    images_first_segment = all_images[:int(num_examples/r)]
-    images_second_segment = all_images[int(num_examples/r):2*int(num_examples/r)]
-    assert(np.linalg.norm(images_first_segment - images_second_segment) != 0)
-
   perm = np.random.permutation(len(images_final))
 
   return images_final[perm], labels_final[perm]
