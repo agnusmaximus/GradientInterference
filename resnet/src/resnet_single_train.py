@@ -274,7 +274,7 @@ def main(unused_args):
 
         truth = np.argmax(predictions, axis=1)
         predictions = np.argmax(predictions, axis=1)
-        acc_p += np.sum(truth == predictions)
+        acc_p = np.sum(truth == predictions)
 
         print("%d of %d" % (i, num_iter))
         sys.stdout.flush()
