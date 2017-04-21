@@ -153,7 +153,7 @@ def load_fractional_repeated_data(all_images, all_labels, r=2):
   print(images_final.shape)
   print(labels_final.shape)
   assert(images_final.shape == (num_examples, IMAGE_SIZE, IMAGE_SIZE, 3))
-  assert(labels_final.shape == (num_examples,))
+  assert(labels_final.shape == (num_examples, NUM_CLASSES))
 
   perm = np.random.permutation(len(images_final))
 
