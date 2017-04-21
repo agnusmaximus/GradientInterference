@@ -47,6 +47,8 @@ tf.app.flags.DEFINE_integer('dataset_replication_factor', 2,
                             'Number of times to replicate data. Only used if replicate_data_in_full is set to true')
 tf.app.flags.DEFINE_boolean("dropout", False,
                             'Whether to use dropout')
+tf.app.flags.DEFINE_float('dataset_fraction', 2,
+                            """Fraction of dataset to use for fractional repeated dataset""")
 
 
 np.set_printoptions(threshold=np.nan)
