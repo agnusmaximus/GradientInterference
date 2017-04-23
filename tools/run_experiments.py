@@ -98,7 +98,7 @@ def filter_cfgs(outdir, cfgs):
     results_present = extract_results_names_from_file_names(results_present)
     return [x for x in cfgs if x["name"] not in results_present]
 
-def run_experiments():
+def run_experiments_speedup():
     print("Running experiments for speedup")
     speedup_outdir = "experiment_results/speedup_data/"
     speedup_cfgs = glob.glob("experiment_configs/speedup_configs/*")
@@ -111,9 +111,20 @@ def run_experiments():
             shutdown_and_launch(cfg)
             succeeded = run_tf_and_download_files(3, cfg, done=check_if_reached_epochs, outdir=speedup_outdir)
 
+def run_experiments_accuracy(argv):
+
+    if len(argv) != 3:
+        print("Usage: run_experiment config_dir output_dir")
+        sys.exit(0)
+
+    config_dir = sys.argv[1]
+    output_dir = sys.argv[2]
+
     print("Running experiments for accuracy")
-    accuracy_outdir = "experiment_results/accuracy_data/"
-    accuracy_cfgs = glob.glob("experiment_configs/accuracy_to_95_configs/*")
+    accuracy_outdir = output_dir + "/"
+    accuracy_cfgs = glob.glob(config_dir + "/*")
+    #accuracy_outdir = "experiment_results/accuracy_data/"
+    #accuracy_cfgs = glob.glob("experiment_configs/accuracy_to_95_configs/*")
     accuracy_cfgs = [load_cfg_from_file(x) for x in accuracy_cfgs]
     accuracy_cfgs = filter_cfgs(accuracy_outdir, accuracy_cfgs)
     print(list(x["name"] for x in accuracy_cfgs))
@@ -124,4 +135,5 @@ def run_experiments():
             succeeded = run_tf_and_download_files(.995, cfg, done=check_if_reached_accuracy, outdir=accuracy_outdir)
 
 if __name__ == "__main__":
-    run_experiments()
+    #run_experiments_speedup()
+    run_experiments_accuracy(sys.argv)
