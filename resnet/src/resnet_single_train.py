@@ -83,7 +83,7 @@ def load_cifar_data_raw():
       test_filenames = [os.path.join(datadir, 'train')]
 
     test_batchsize, train_batchsize = 10000, 10000
-    if not use_cifar10:
+    if not use_cifar_10:
       test_batchsize = 50000
     train_images, train_labels = [], []
     for x in train_filenames:
