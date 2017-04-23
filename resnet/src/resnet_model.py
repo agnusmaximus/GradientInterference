@@ -237,9 +237,9 @@ class ResNet(object):
 
     with tf.variable_scope('sub2', reuse=reuse):
       #x = self._batch_norm('bn2', x)
-      x = self._relu(x, self.hps.relu_leakiness)
       if self.use_dropout:
         x = dropout(x, .5)
+      x = self._relu(x, self.hps.relu_leakiness)
       x = self._conv('conv2', x, 3, out_filter, out_filter, [1, 1, 1, 1])
 
     with tf.variable_scope('sub_add', reuse=reuse):
