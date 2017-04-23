@@ -195,6 +195,29 @@ class ResNet(object):
       y.set_shape(x.get_shape())
       return y
 
+def dropout(tensor_in, prob, name=None):
+  """Adds dropout node and stores probability tensor into graph collection.
+
+  Args:
+  tensor_in: Input tensor.
+  prob: Float or Tensor.
+
+  Returns:
+  Tensor of the same shape of `tensor_in`.
+
+  Raises:
+  ValueError: If `keep_prob` is not in `(0, 1]`.
+  """
+  with tf.op_scope([tensor_in], name, "dropout") as name:
+    if isinstance(prob, float):
+      prob = tf.get_variable("prob", [],
+                             initializer=tf.constant_initializer(prob))
+      tf.add_to_collection(DROPOUTS, prob)
+
+      # Descale
+      return tf.nn.dropout(tensor_in, prob, seed=0)
+
+
   def _residual(self, x, in_filter, out_filter, stride,
                 activate_before_residual=False,
                 reuse=None):
@@ -225,6 +248,9 @@ class ResNet(object):
             orig_x, [[0, 0], [0, 0], [0, 0],
                      [(out_filter-in_filter)//2, (out_filter-in_filter)//2]])
       x += orig_x
+
+    if self.use_dropout:
+      x = dropout(x, .5)
 
     tf.logging.debug('image after unit %s', x.get_shape())
     return x

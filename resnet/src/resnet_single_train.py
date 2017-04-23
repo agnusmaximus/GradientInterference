@@ -265,6 +265,12 @@ def main(unused_args):
         feed_dict = get_feed_dict(FLAGS.evaluate_batch_size)
 
         if FLAGS.dropout:
+          # We need to 0 out the dropout weights to prevent incorrect answers
+          dropouts = tf.get_collection(cifar10.DROPOUTS)
+          for prob in dropouts:
+            feed_dict[prob] = 1.0
+
+        if FLAGS.dropout:
             # We need to 0 out the dropout weights to prevent incorrect answers
             dropouts = tf.get_collection(resnet_model.DROPOUTS)
             for prob in dropouts:
