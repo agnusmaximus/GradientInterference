@@ -219,7 +219,7 @@ def main(unused_args):
 
     images, labels = cifar_input.placeholder_inputs()
 
-    model = resnet_model.ResNet(hps, images, labels, "train")
+    model = resnet_model.ResNet(hps, images, labels, "train", use_dropout=FLAGS.dropout)
     model.build_graph()
 
     predictions_op, loss_op = model.predictions, model.cost

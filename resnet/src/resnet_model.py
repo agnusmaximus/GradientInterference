@@ -40,7 +40,7 @@ DROPOUTS = "dropouts"
 class ResNet(object):
   """ResNet model."""
 
-  def __init__(self, hps, images, labels, mode):
+  def __init__(self, hps, images, labels, mode, use_dropout=False):
     """ResNet constructor.
 
     Args:
@@ -50,6 +50,7 @@ class ResNet(object):
       mode: One of 'train' and 'eval'.
     """
     self.hps = hps
+    self.use_dropout = use_dropout
     self._images = images
     self.labels = labels
     self.mode = mode
@@ -112,7 +113,7 @@ class ResNet(object):
         x = res_func(x, filters[3], filters[3], self._stride_arr(1), False)
 
     with tf.variable_scope('unit_last'):
-      x = self._batch_norm('final_bn', x)
+      #x = self._batch_norm('final_bn', x)
       x = self._relu(x, self.hps.relu_leakiness)
       x = self._global_avg_pool(x)
 
@@ -206,14 +207,14 @@ class ResNet(object):
     else:
       with tf.variable_scope('residual_only_activation', reuse=reuse):
         orig_x = x
-        x = self._batch_norm('init_bn', x)
+        #x = self._batch_norm('init_bn', x)
         x = self._relu(x, self.hps.relu_leakiness)
 
     with tf.variable_scope('sub1', reuse=reuse):
       x = self._conv('conv1', x, 3, in_filter, out_filter, stride)
 
     with tf.variable_scope('sub2', reuse=reuse):
-      x = self._batch_norm('bn2', x)
+      #x = self._batch_norm('bn2', x)
       x = self._relu(x, self.hps.relu_leakiness)
       x = self._conv('conv2', x, 3, out_filter, out_filter, [1, 1, 1, 1])
 
@@ -233,25 +234,25 @@ class ResNet(object):
     """Bottleneck residual unit with 3 sub layers."""
     if activate_before_residual:
       with tf.variable_scope('common_bn_relu', reuse=reuse):
-        x = self._batch_norm('init_bn', x)
+        #x = self._batch_norm('init_bn', x)
         x = self._relu(x, self.hps.relu_leakiness)
         orig_x = x
     else:
       with tf.variable_scope('residual_bn_relu', reuse=reuse):
         orig_x = x
-        x = self._batch_norm('init_bn', x)
+        #x = self._batch_norm('init_bn', x)
         x = self._relu(x, self.hps.relu_leakiness)
 
     with tf.variable_scope('sub1', reuse=reuse):
       x = self._conv('conv1', x, 1, in_filter, out_filter/4, stride)
 
     with tf.variable_scope('sub2', reuse=reuse):
-      x = self._batch_norm('bn2', x)
+      #x = self._batch_norm('bn2', x)
       x = self._relu(x, self.hps.relu_leakiness)
       x = self._conv('conv2', x, 3, out_filter/4, out_filter/4, [1, 1, 1, 1])
 
     with tf.variable_scope('sub3', reuse=reuse):
-      x = self._batch_norm('bn3', x)
+      #x = self._batch_norm('bn3', x)
       x = self._relu(x, self.hps.relu_leakiness)
       x = self._conv('conv3', x, 1, out_filter/4, out_filter, [1, 1, 1, 1])
 
