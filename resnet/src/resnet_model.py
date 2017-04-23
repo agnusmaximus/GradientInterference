@@ -234,11 +234,15 @@ class ResNet(object):
 
     with tf.variable_scope('sub1', reuse=reuse):
       x = self._conv('conv1', x, 3, in_filter, out_filter, stride)
+      if self.use_dropout:
+        x = dropout(x, .5)
 
     with tf.variable_scope('sub2', reuse=reuse):
       #x = self._batch_norm('bn2', x)
       x = self._relu(x, self.hps.relu_leakiness)
       x = self._conv('conv2', x, 3, out_filter, out_filter, [1, 1, 1, 1])
+      if self.use_dropout:
+        x = dropout(x, .5)
 
     with tf.variable_scope('sub_add', reuse=reuse):
       if in_filter != out_filter:
@@ -247,9 +251,6 @@ class ResNet(object):
             orig_x, [[0, 0], [0, 0], [0, 0],
                      [(out_filter-in_filter)//2, (out_filter-in_filter)//2]])
       x += orig_x
-
-    if self.use_dropout:
-      x = dropout(x, .5)
 
     tf.logging.debug('image after unit %s', x.get_shape())
     return x
