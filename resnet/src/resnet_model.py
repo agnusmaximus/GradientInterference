@@ -37,6 +37,28 @@ HParams = namedtuple('HParams',
 
 DROPOUTS = "dropouts"
 
+def dropout(tensor_in, prob, name=None):
+  """Adds dropout node and stores probability tensor into graph collection.
+
+  Args:
+  tensor_in: Input tensor.
+  prob: Float or Tensor.
+
+  Returns:
+  Tensor of the same shape of `tensor_in`.
+
+  Raises:
+  ValueError: If `keep_prob` is not in `(0, 1]`.
+  """
+  with tf.op_scope([tensor_in], name, "dropout") as name:
+    if isinstance(prob, float):
+      prob = tf.get_variable("prob", [],
+                             initializer=tf.constant_initializer(prob))
+      tf.add_to_collection(DROPOUTS, prob)
+
+      # Descale
+      return tf.nn.dropout(tensor_in, prob, seed=0)
+
 class ResNet(object):
   """ResNet model."""
 
@@ -194,29 +216,6 @@ class ResNet(object):
           x, mean, variance, beta, gamma, 0.001)
       y.set_shape(x.get_shape())
       return y
-
-def dropout(tensor_in, prob, name=None):
-  """Adds dropout node and stores probability tensor into graph collection.
-
-  Args:
-  tensor_in: Input tensor.
-  prob: Float or Tensor.
-
-  Returns:
-  Tensor of the same shape of `tensor_in`.
-
-  Raises:
-  ValueError: If `keep_prob` is not in `(0, 1]`.
-  """
-  with tf.op_scope([tensor_in], name, "dropout") as name:
-    if isinstance(prob, float):
-      prob = tf.get_variable("prob", [],
-                             initializer=tf.constant_initializer(prob))
-      tf.add_to_collection(DROPOUTS, prob)
-
-      # Descale
-      return tf.nn.dropout(tensor_in, prob, seed=0)
-
 
   def _residual(self, x, in_filter, out_filter, stride,
                 activate_before_residual=False,
