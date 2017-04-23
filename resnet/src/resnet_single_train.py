@@ -71,25 +71,33 @@ def crop_center(img,cropx,cropy):
 
 def load_cifar_data_raw():
     print("Loading raw cifar10 data...")
-    name = "cifar-10" if FLAGS.dataset == "cifar10" else "cifar-100"
-    datadir = os.path.join(FLAGS.data_dir, '%s-batches-py' % name)
-    train_filenames = [os.path.join(datadir, 'data_batch_%d' % i) for i in range(1, 6)]
-    test_filenames = [os.path.join(datadir, 'test_batch')]
+    use_cifar_10 = FLAGS.dataset == "cifar10"
+    name = "cifar-10" if use_cifar_10 else "cifar-100"
+    if use_cifar_10:
+      datadir = os.path.join(FLAGS.data_dir, '%s-batches-py' % name)
+      train_filenames = [os.path.join(datadir, 'data_batch_%d' % i) for i in range(1, 6)]
+      test_filenames = [os.path.join(datadir, 'test_batch')]
+    else:
+      datadir = os.path.join(FLAGS.data_dir, '%s-python' % name)
+      train_filenames = [os.path.join(datadir, 'test')]
+      test_filenames = [os.path.join(datadir, 'train')]
 
-    batchsize = 10000
+    test_batchsize, train_batchsize = 10000, 10000
+    if not use_cifar10:
+      test_batchsize = 50000
     train_images, train_labels = [], []
     for x in train_filenames:
         data = unpickle(x)
-        images = data["data"].reshape((batchsize, 3, 32, 32)).transpose(0, 2, 3, 1)
-        labels = np.array(data["labels"]).reshape((batchsize,))
+        images = data["data"].reshape((train_batchsize, 3, 32, 32)).transpose(0, 2, 3, 1)
+        labels = np.array(data["labels"]).reshape((train_batchsize,))
         train_images += [(crop_center(x, IMAGE_SIZE, IMAGE_SIZE)-128.0)/255.0 for x in images]
         train_labels += [x for x in labels]
 
     test_images, test_labels = [], []
     for x in test_filenames:
         data = unpickle(x)
-        images = data["data"].reshape((batchsize, 3, 32, 32)).transpose(0, 2, 3, 1)
-        labels = np.array(data["labels"]).reshape((batchsize,))
+        images = data["data"].reshape((test_batchsize, 3, 32, 32)).transpose(0, 2, 3, 1)
+        labels = np.array(data["labels"]).reshape((test_batchsize,))
         test_images += [(crop_center(x, IMAGE_SIZE, IMAGE_SIZE)-128.0)/255.0 for x in images]
         test_labels += [x for x in labels]
 
