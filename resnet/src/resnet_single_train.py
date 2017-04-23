@@ -270,12 +270,6 @@ def main(unused_args):
           for prob in dropouts:
             feed_dict[prob] = 1.0
 
-        if FLAGS.dropout:
-            # We need to 0 out the dropout weights to prevent incorrect answers
-            dropouts = tf.get_collection(resnet_model.DROPOUTS)
-            for prob in dropouts:
-                feed_dict[prob] = 1.0
-
         predictions, loss_p = sess.run(
             [predictions_op, loss_op], feed_dict=feed_dict)
 
