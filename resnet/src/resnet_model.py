@@ -315,7 +315,7 @@ class ResNet(object):
   def _fully_connected(self, x, out_dim):
     """FullyConnected layer for final output."""
     print(x.get_shape()[1])
-    assert(x.get_shape()[1] == 64)
+    assert(x.get_shape()[1] == 640)
     w = tf.get_variable(
         'DW', [x.get_shape()[1], out_dim],
         initializer=tf.uniform_unit_scaling_initializer(factor=1.0),
