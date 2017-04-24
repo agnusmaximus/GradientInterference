@@ -583,7 +583,7 @@ cfg_resnet_single = Cfg({
 
     # Model configuration
     "batch_size" : "128",
-    "learning_rate" : ".002",
+    "learning_rate" : ".01",
 
     # Train command specifies how the ps/workers execute tensorflow.
     # PS_HOSTS - special string replaced with actual list of ps hosts.
