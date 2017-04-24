@@ -106,7 +106,6 @@ class ResNet(object):
     else:
       res_func = self._residual
       #filters = [16, 16, 32, 64]
-      #filters = [16, 32, 64]
       filters = [16, 32, 64]
       # Uncomment the following codes to use w28-10 wide residual network.
       # It is more memory efficient than very deep residual network and has
@@ -250,7 +249,7 @@ class ResNet(object):
         orig_x = tf.pad(
             orig_x, [[0, 0], [0, 0], [0, 0],
                      [(out_filter-in_filter)//2, (out_filter-in_filter)//2]])
-      #x += orig_x
+      x += orig_x
 
     tf.logging.debug('image after unit %s', x.get_shape())
     return x
