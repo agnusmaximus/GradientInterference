@@ -107,7 +107,7 @@ class ResNet(object):
       res_func = self._residual
       #filters = [16, 16, 32, 64]
       #filters = [16, 32, 64]
-      filters = [16, 160, 320]
+      filters = [16, 32, 64]
       # Uncomment the following codes to use w28-10 wide residual network.
       # It is more memory efficient than very deep residual network and has
       # comparably good performance.
@@ -250,7 +250,7 @@ class ResNet(object):
         orig_x = tf.pad(
             orig_x, [[0, 0], [0, 0], [0, 0],
                      [(out_filter-in_filter)//2, (out_filter-in_filter)//2]])
-      x += orig_x
+      #x += orig_x
 
     tf.logging.debug('image after unit %s', x.get_shape())
     return x
@@ -317,7 +317,7 @@ class ResNet(object):
   def _fully_connected(self, x, out_dim):
     """FullyConnected layer for final output."""
     print(x.get_shape()[1])
-    #assert(x.get_shape()[1] == 64)
+    assert(x.get_shape()[1] == 64)
     w = tf.get_variable(
         'DW', [x.get_shape()[1], out_dim],
         initializer=tf.uniform_unit_scaling_initializer(factor=1.0),
