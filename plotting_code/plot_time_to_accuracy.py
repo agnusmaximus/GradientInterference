@@ -14,11 +14,26 @@ if not os.path.exists(time_to_accuracy_directory):
 def get_app_name(fname):
     return re.findall("gradient_interference_([A-Za-z]+)_.*", fname)[0]
 
+def dropout_or_no(fname):
+    if "dropout" in fname:
+        return "_dropout"
+    else:
+        return ""
+
 def non_replicated_or_replicated(fname):
     fractional = re.findall("fractional=([0-9])+.*", fname)
-    if len(fractional) < 1:
+    replicated = re.findall("replicated=([0-9])+.*", fname)
+    repful = re.findall("repfull", fname)
+    if len(fractional) < 1 and len(replicated) < 1 and len(repful) < 1:
         return "nonreplicated"
-    return "fractional=%s" % fractional[0]
+    if len(fractional) != 0:
+        return "fractional=%s" % fractional[0]
+    if len(replicated) != 0:
+        return "fractional=%s" % replicated[0]
+    if len(repful) != 0:
+        return "repfull"
+    else:
+        return None
 
 def extract_data(fname):
     f = open(fname, "r")
@@ -81,7 +96,7 @@ def plot_epochs_to_accuracy(all_data, app_name, target_accuracy):
     assert(len(batchsizes) == len(time_to_accuracies))
     print(batchsizes)
     print(time_to_accuracies)
-    plt.plot(batchsizes, time_to_accuracies, label=app_name)
+    plt.plot(batchsizes, time_to_accuracies, label=app_name, marker="o")
     plt.xlabel("Batchsize")
     plt.legend(loc="upper left")
     plt.ylabel("Epochs to accuracy %f" % target_accuracy)
@@ -94,16 +109,27 @@ if __name__=="__main__":
 
     application_to_data = {}
     for f in files:
-        application_name = get_app_name(f) + "_" + non_replicated_or_replicated(f)
+        if non_replicated_or_replicated(f) == None:
+            continue
+        application_name = get_app_name(f) + "_" + non_replicated_or_replicated(f) + dropout_or_no(f)
+        print(application_name, f)
         if application_name not in application_to_data:
             application_to_data[application_name] = []
         application_to_data[application_name].append((get_batchsize(f), extract_data(f)))
 
     accuracy_targets = {
-        "mnist_nonreplicated" : .995,
-        "mnist_fractional=2" : .995,
+        #"mnist_nonreplicated" : .995,
+        #"mnist_fractional=2" : .995,
+        "cudaconvnet_nonreplicated" : .995,
+        #"cudaconvnet_nonreplicated_dropout" : .995,
+        "cudaconvnet_repfull" : .995,
+        "cudaconvnet_fractional=2" : .995,
+        "cudaconvnet_fractional=4" : .995,
+        "cudaconvnet_fractional=8" : .995
     }
 
     for application_name, data in application_to_data.items():
+        print(application_name)
         #plot_time_to_accuracy(data, application_name, accuracy_targets[application_name])
-        plot_epochs_to_accuracy(data, application_name, accuracy_targets[application_name])
+        if application_name in accuracy_targets.keys():
+            plot_epochs_to_accuracy(data, application_name, accuracy_targets[application_name])

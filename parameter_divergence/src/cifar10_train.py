@@ -124,7 +124,6 @@ def next_batch(target_batch_size, images, labels, cur_index, exclude_index=-1, s
     assert(len(indices) != 0)
     return images[indices], labels[indices], next_index
 
-
 def train():
   """Train CIFAR-10 for a number of steps."""
   with tf.Graph().as_default():
