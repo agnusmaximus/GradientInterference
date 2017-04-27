@@ -152,6 +152,14 @@ def run_experiments_accuracy(argv):
 def run_accuracy_single(key, work_queue, target_acc, accuracy_outdir):
     custom_key_pair_name = key.split("/")[-1].split(".")[0]
     custom_key_pair_path = key
+
+    def shutdown():
+        cfg = cfg_resnet
+        cfg["key_name"] = custom_key_pair_name
+        cfg["path_to_keyfile"] = custom_key_pair_path
+        shutdown_args = "tools/tf_ec2.py shutdown"
+        tf_ec2_run(shutdown_args.split(), cfg)
+
     print("Launched thread %s with keypair: %s" % (str(threading.current_thread()), custom_key_pair_name))
     try:
         while True:
@@ -164,12 +172,7 @@ def run_accuracy_single(key, work_queue, target_acc, accuracy_outdir):
                 succeeded = run_tf_and_download_files(target_acc, cfg, done=check_if_reached_accuracy, outdir=accuracy_outdir)
             work_queue.task_done()
     except:
-        cfg = cfg_resnet
-        cfg["key_name"] = custom_key_pair_name
-        cfg["path_to_keyfile"] = custom_key_pair_path
-        shutdown_args = "tools/tf_ec2.py shutdown"
-        tf_ec2_run(shutdown_args.split(), cfg)
-
+        shutdown()
 
 def run_experiments_accuracy_parallel(argv):
 

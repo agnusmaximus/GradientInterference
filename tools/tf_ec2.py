@@ -12,6 +12,8 @@ import time
 import json
 import os
 from scp import SCPClient
+import boto3
+import boto3.session
 
 class Cfg(dict):
 
@@ -583,7 +585,7 @@ cfg_resnet_single = Cfg({
 
     # Model configuration
     "batch_size" : "128",
-    "learning_rate" : ".001",
+    "learning_rate" : ".008",
 
     # Train command specifies how the ps/workers execute tensorflow.
     # PS_HOSTS - special string replaced with actual list of ps hosts.
@@ -832,8 +834,14 @@ cfg_lstm = Cfg({
 
 def tf_ec2_run(argv, configuration):
 
-    client = boto3.client("ec2", region_name=configuration["region"])
-    ec2 = boto3.resource("ec2", region_name=configuration["region"])
+    session = boto3.session.Session(region_name=configuration["region"])
+    ec2 = session.resource('ec2', region_name=configuration["region"])
+    client = session.client("ec2", region_name=configuration["region"])
+
+    #client1 = boto3.client("ec2", region_name=configuration["region"])
+    #ec21 = boto3.resource("ec2", region_name=configuration["region"])
+    #print("CLIENT1: ", type(client1))
+    #print("EC21: ", type(ec21))
 
     def sleep_a_bit():
         time.sleep(5)
