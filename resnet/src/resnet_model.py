@@ -136,7 +136,7 @@ class ResNet(object):
         #x = res_func(x, filters[3], filters[3], self._stride_arr(1), False)
 
     with tf.variable_scope('unit_last'):
-      #x = self._batch_norm('final_bn', x)
+      x = self._batch_norm('final_bn', x)
       x = self._relu(x, self.hps.relu_leakiness)
       x = self._global_avg_pool(x)
 
@@ -224,20 +224,20 @@ class ResNet(object):
     """Residual unit with 2 sub layers."""
     if activate_before_residual:
       with tf.variable_scope('shared_activation', reuse=reuse):
-        #x = self._batch_norm('init_bn', x)
+        x = self._batch_norm('init_bn', x)
         x = self._relu(x, self.hps.relu_leakiness)
         orig_x = x
     else:
       with tf.variable_scope('residual_only_activation', reuse=reuse):
         orig_x = x
-        #x = self._batch_norm('init_bn', x)
+        x = self._batch_norm('init_bn', x)
         x = self._relu(x, self.hps.relu_leakiness)
 
     with tf.variable_scope('sub1', reuse=reuse):
       x = self._conv('conv1', x, 3, in_filter, out_filter, stride)
 
     with tf.variable_scope('sub2', reuse=reuse):
-      #x = self._batch_norm('bn2', x)
+      x = self._batch_norm('bn2', x)
       if self.use_dropout:
         x = dropout(x, .5)
       x = self._relu(x, self.hps.relu_leakiness)
