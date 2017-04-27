@@ -212,10 +212,10 @@ def main(unused_args):
                                num_classes=10 if FLAGS.dataset=="cifar10" else 100,
                                min_lrn_rate=0.0001,
                                lrn_rate=FLAGS.learning_rate,
-                               num_residual_units=5,
+                               num_residual_units=0,
                                use_bottleneck=False,
-                               weight_decay_rate=0.0002,
-                               relu_leakiness=0.1,
+                               weight_decay_rate=0.0000,
+                               relu_leakiness=0.0,
                                optimizer='sgd')
 
     images, labels = cifar_input.placeholder_inputs()

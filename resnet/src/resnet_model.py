@@ -105,7 +105,8 @@ class ResNet(object):
       filters = [16, 64, 128, 256]
     else:
       res_func = self._residual
-      filters = [16, 16, 32, 64]
+      #filters = [16, 16, 32, 64]
+      filters = [16, 32, 64]
       # Uncomment the following codes to use w28-10 wide residual network.
       # It is more memory efficient than very deep residual network and has
       # comparably good performance.
@@ -127,12 +128,12 @@ class ResNet(object):
       with tf.variable_scope('unit_2_%d' % i):
         x = res_func(x, filters[2], filters[2], self._stride_arr(1), False)
 
-    with tf.variable_scope('unit_3_0'):
-      x = res_func(x, filters[2], filters[3], self._stride_arr(strides[2]),
-                   activate_before_residual[2])
-    for i in six.moves.range(1, self.hps.num_residual_units):
-      with tf.variable_scope('unit_3_%d' % i):
-        x = res_func(x, filters[3], filters[3], self._stride_arr(1), False)
+    #with tf.variable_scope('unit_3_0'):
+    #  x = res_func(x, filters[2], filters[3], self._stride_arr(strides[2]),
+    #               activate_before_residual[2])
+    #for i in six.moves.range(1, self.hps.num_residual_units):
+      #with tf.variable_scope('unit_3_%d' % i):
+        #x = res_func(x, filters[3], filters[3], self._stride_arr(1), False)
 
     with tf.variable_scope('unit_last'):
       #x = self._batch_norm('final_bn', x)
@@ -147,7 +148,7 @@ class ResNet(object):
       xent = tf.nn.softmax_cross_entropy_with_logits(
           logits=logits, labels=self.labels)
       self.cost = tf.reduce_sum(xent, name='xent')
-      self.cost += self._decay()
+      #self.cost += self._decay()
 
       tf.summary.scalar('cost', self.cost)
 
@@ -314,6 +315,7 @@ class ResNet(object):
 
   def _fully_connected(self, x, out_dim):
     """FullyConnected layer for final output."""
+    print(x.get_shape()[1])
     assert(x.get_shape()[1] == 64)
     w = tf.get_variable(
         'DW', [x.get_shape()[1], out_dim],
