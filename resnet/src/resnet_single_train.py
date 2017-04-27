@@ -306,6 +306,12 @@ def main(unused_args):
                 tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times), new_epoch_float, acc, loss))
                 t_evaluate_end = time.time()
                 evaluate_times.append(t_evaluate_end-t_evaluate_start)
+
+                # Reshuffle data
+                perm = np.random.permutation(len(images_fractional_train))
+                images_fractional_train = images_fractional_train[perm]
+                labels_fractional_train = labels_fractional_train[perm]
+
             cur_epoch_track = max(cur_epoch_track, new_epoch_track)
             feed_dict = get_feed_dict(FLAGS.batch_size)
             mon_sess.run([train_op], feed_dict=feed_dict)
