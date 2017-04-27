@@ -1,5 +1,7 @@
 from __future__ import print_function
 import sys
+import threading
+import Queue
 import json
 import time
 import numpy as np
@@ -8,7 +10,7 @@ import shutil
 import os
 import glob
 from matplotlib import pyplot as plt
-from tf_ec2 import tf_ec2_run, Cfg
+from tf_ec2 import tf_ec2_run, Cfg, cfg_resnet
 
 def load_cfg_from_file(cfg_file):
     cfg_f = open(cfg_file, "r")
@@ -30,7 +32,7 @@ def check_if_reached_epochs(cluster_string, epochs, cfg, master_file_name="out_m
         m = re.match(".*Epoch: ([0-9]*).*", line)
         if m:
             cur_iteration = max(cur_iteration, int(m.group(1)))
-    print("Currently on epoch %d" % cur_iteration)
+    print("Thread %s Currently on epoch %d" % (str(threading.current_thread()), cur_iteration))
     return cur_iteration > epochs
 
 def check_if_reached_epochs_for_ratio(cluster_string, epochs, cfg, master_file_name="out_master", outdir="/tmp/"):
@@ -44,7 +46,7 @@ def check_if_reached_epochs_for_ratio(cluster_string, epochs, cfg, master_file_n
         if m:
             timestamp, R, epoch = float(m.group(1)), float(m.group(2)), float(m.group(3))
             cur_epoch = max(cur_epoch, epoch)
-    print("Currently on epoch %d with ratio %f" % (cur_epoch, R))
+    print("Thread %s Currently on epoch %d with ratio %f" % (str(threading.current_thread()), cur_epoch, R))
     return cur_epoch > epochs
 
 def check_if_reached_accuracy(cluster_string, accuracy, cfg, master_file_name="out_master", outdir="/tmp/"):
@@ -56,7 +58,7 @@ def check_if_reached_accuracy(cluster_string, accuracy, cfg, master_file_name="o
         m = re.match(".*IInfo: ([0-9.]*) ([0-9.]*) ([0-9.]*) ([0-9.]*).*", line)
         if m:
             cur_acc = max(cur_acc, float(m.group(3)))
-    print("Currently on accuracy %f" % cur_acc)
+    print("Thread %s Currently on accuracy %f" % (str(threading.current_thread()), cur_acc))
     return cur_acc >= accuracy
 
 def run_tf_and_download_files(limit, cfg, evaluator_file_name="out_evaluator", master_file_name="out_master", ps_file_name="out_ps_0", outdir="result_dir", done=check_if_reached_epochs):
@@ -70,7 +72,7 @@ def run_tf_and_download_files(limit, cfg, evaluator_file_name="out_evaluator", m
     cluster_string = cluster_specs["cluster_string"]
 
     while not done(cluster_string, limit, cfg):
-        time.sleep(60)
+        time.sleep(60 * 5)
         # Check if things are broken
         satisfied = tf_ec2_run(["tools/tf_ec2.py", "check_running_instances_satisfy_configuration"], cfg)
         if not satisfied:
@@ -113,12 +115,22 @@ def run_experiments_speedup():
 
 def run_experiments_accuracy(argv):
 
-    if len(argv) != 3:
-        print("Usage: run_experiment config_dir output_dir")
+    if len(argv) < 3:
+        print("Usage: run_experiment config_dir output_dir [key_pair_path]")
         sys.exit(0)
+
+    custom_key_pair_path = ""
+    custom_key_pair_name = ""
+    use_custom_key_pair = len(argv) == 4
+
+    if use_custom_key_pair:
+        custom_key_pair_path = argv[3]
+        custom_key_pair_name = custom_key_pair_path.split("/")[-1].split(".")[0]
+        print("Using custom key pair %s: %s" % (custom_key_pair_name, custom_key_pair_path))
 
     config_dir = sys.argv[1]
     output_dir = sys.argv[2]
+
 
     print("Running experiments for accuracy")
     accuracy_outdir = output_dir + "/"
@@ -129,11 +141,78 @@ def run_experiments_accuracy(argv):
     accuracy_cfgs = filter_cfgs(accuracy_outdir, accuracy_cfgs)
     print(list(x["name"] for x in accuracy_cfgs))
     for cfg in accuracy_cfgs:
+        if use_custom_key_pair:
+            cfg["key_name"] = custom_key_pair_name
+            cfg["path_to_keyfile"] = custom_key_pair_path
         succeeded = False
         while not succeeded:
             shutdown_and_launch(cfg)
-            succeeded = run_tf_and_download_files(.995, cfg, done=check_if_reached_accuracy, outdir=accuracy_outdir)
+            succeeded = run_tf_and_download_files(.60, cfg, done=check_if_reached_accuracy, outdir=accuracy_outdir)
+
+def run_accuracy_single(key, work_queue, target_acc, accuracy_outdir):
+    custom_key_pair_name = key.split("/")[-1].split(".")[0]
+    custom_key_pair_path = key
+    print("Launched thread %s with keypair: %s" % (str(threading.current_thread()), custom_key_pair_name))
+    while True:
+        cfg = work_queue.get(timeout=1)
+        cfg["key_name"] = custom_key_pair_name
+        cfg["path_to_keyfile"] = custom_key_pair_path
+        succeeded = False
+        while not succeeded:
+            shutdown_and_launch(cfg)
+            succeeded = run_tf_and_download_files(target_acc, cfg, done=check_if_reached_accuracy, outdir=accuracy_outdir)
+        work_queue.task_done()
+
+def run_experiments_accuracy_parallel(argv):
+
+    if len(argv) < 3:
+        print("Usage: run_experiment config_dir output_dir path_to_key_pairs")
+        sys.exit(0)
+
+    key_pairs = glob.glob(sys.argv[3] + "/*")
+    config_dir = sys.argv[1]
+    output_dir = sys.argv[2]
+
+    print("Running experiments for accuracy")
+    accuracy_outdir = output_dir + "/"
+    accuracy_cfgs = glob.glob(config_dir + "/*")
+    accuracy_cfgs = [load_cfg_from_file(x) for x in accuracy_cfgs]
+    accuracy_cfgs = filter_cfgs(accuracy_outdir, accuracy_cfgs)
+    print(list(x["name"] for x in accuracy_cfgs))
+
+    work_queue = Queue.Queue()
+    for cfg in accuracy_cfgs:
+        work_queue.put(cfg)
+    threads = []
+    for kp in key_pairs:
+        t = threading.Thread(target=run_accuracy_single, args=(kp, work_queue, .5, accuracy_outdir))
+        t.daemon = True
+        t.start()
+        threads.append(t)
+
+    for t in threads:
+        t.join()
+
+    work_queue.join()
+
+    # Shut down everything
+    for kp in key_pairs:
+        cfg = cfg_resnet
+        cfg["key_name"] = kp.split("/")[-1].split(".")[0]
+        cfg["path_to_keyfile"] = kp
+        shutdown_args = "tools/tf_ec2.py shutdown"
+        tf_ec2_run(shutdown_args.split(), cfg)
+
+    """for cfg in accuracy_cfgs:
+        if use_custom_key_pair:
+            cfg["key_name"] = custom_key_pair_name
+            cfg["path_to_keyfile"] = custom_key_pair_path
+        succeeded = False
+        while not succeeded:
+            shutdown_and_launch(cfg)
+            succeeded = run_tf_and_download_files(.60, cfg, done=check_if_reached_accuracy, outdir=accuracy_outdir)"""
 
 if __name__ == "__main__":
     #run_experiments_speedup()
-    run_experiments_accuracy(sys.argv)
+    #run_experiments_accuracy(sys.argv)
+    run_experiments_accuracy_parallel(sys.argv)
