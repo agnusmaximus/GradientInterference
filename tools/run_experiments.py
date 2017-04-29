@@ -3,6 +3,7 @@ import sys
 import threading
 import Queue
 import json
+import copy
 import time
 import numpy as np
 import re
@@ -10,7 +11,7 @@ import shutil
 import os
 import glob
 from matplotlib import pyplot as plt
-from tf_ec2 import tf_ec2_run, Cfg, cfg_resnet
+from tf_ec2 import tf_ec2_run, Cfg, cfg_resnet_single
 
 def load_cfg_from_file(cfg_file):
     cfg_f = open(cfg_file, "r")
@@ -147,14 +148,14 @@ def run_experiments_accuracy(argv):
         succeeded = False
         while not succeeded:
             shutdown_and_launch(cfg)
-            succeeded = run_tf_and_download_files(.60, cfg, done=check_if_reached_accuracy, outdir=accuracy_outdir)
+            succeeded = run_tf_and_download_files(.995, cfg, done=check_if_reached_accuracy, outdir=accuracy_outdir)
 
 def run_accuracy_single(key, work_queue, target_acc, accuracy_outdir):
     custom_key_pair_name = key.split("/")[-1].split(".")[0]
     custom_key_pair_path = key
 
     def shutdown():
-        cfg = cfg_resnet
+        cfg = copy.deepcopy(cfg_resnet_single)
         cfg["key_name"] = custom_key_pair_name
         cfg["path_to_keyfile"] = custom_key_pair_path
         shutdown_args = "tools/tf_ec2.py shutdown"
@@ -172,6 +173,7 @@ def run_accuracy_single(key, work_queue, target_acc, accuracy_outdir):
                 succeeded = run_tf_and_download_files(target_acc, cfg, done=check_if_reached_accuracy, outdir=accuracy_outdir)
             work_queue.task_done()
     except:
+        print("Shutting down %s" % str(threading.current_thread()))
         shutdown()
 
 def run_experiments_accuracy_parallel(argv):
@@ -192,11 +194,11 @@ def run_experiments_accuracy_parallel(argv):
     print(list(x["name"] for x in accuracy_cfgs))
 
     work_queue = Queue.Queue()
-    for cfg in accuracy_cfgs:
-        work_queue.put(cfg)
+    #for cfg in accuracy_cfgs:
+    #    work_queue.put(cfg)
     threads = []
     for kp in key_pairs:
-        t = threading.Thread(target=run_accuracy_single, args=(kp, work_queue, .5, accuracy_outdir))
+        t = threading.Thread(target=run_accuracy_single, args=(kp, work_queue, .995, accuracy_outdir))
         t.daemon = True
         t.start()
         threads.append(t)
