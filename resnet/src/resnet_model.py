@@ -142,6 +142,8 @@ class ResNet(object):
 
     with tf.variable_scope('logit'):
       logits = self._fully_connected(x, self.hps.num_classes)
+      if self.use_dropout:
+        x = dropout(x, .5)
       self.predictions = tf.nn.softmax(logits)
 
     with tf.variable_scope('costs'):
@@ -238,8 +240,6 @@ class ResNet(object):
 
     with tf.variable_scope('sub2', reuse=reuse):
       x = self._batch_norm('bn2', x)
-      if self.use_dropout:
-        x = dropout(x, .5)
       x = self._relu(x, self.hps.relu_leakiness)
       x = self._conv('conv2', x, 3, out_filter, out_filter, [1, 1, 1, 1])
 
