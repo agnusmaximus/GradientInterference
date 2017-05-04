@@ -53,7 +53,7 @@ import pickle
 
 save_directory = "data_out"
 if not os.path.exists(save_directory):
-    os.makedirs(savedirectory)
+    os.makedirs(save_directory)
 
 FLAGS = tf.app.flags.FLAGS
 
