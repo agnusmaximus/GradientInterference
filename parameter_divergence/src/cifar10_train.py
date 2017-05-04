@@ -51,6 +51,10 @@ import cifar10_input
 import cPickle
 import pickle
 
+save_directory = "data_out"
+if not os.path.exists(save_directory):
+    os.makedirs(savedirectory)
+
 FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_string('train_dir', '/tmp/cifar10_train',
@@ -198,6 +202,11 @@ def train():
 
       while True:
 
+        # Reshuffle data
+        perm = np.random.permutation(len(images_raw))
+        images_raw = images_raw[perm]
+        labels_raw = labels_raw[perm]
+
         # Aggregate all parameters
         model_1_agg_variables = {}
         model_2_agg_variables = {}
@@ -235,7 +244,7 @@ def train():
                 model_2_agg_variables["all"] = np.hstack([model_2_agg_variables[agg_name], v2])
 
         # Save all variables
-        output_file_name = "parameter_difference_batchsize_%d_epoch_%d_save" % (FLAGS.batch_size, epoch)
+        output_file_name = "%s/parameter_difference_batchsize_%d_epoch_%d_save" % (save_directory, FLAGS.batch_size, epoch)
         output_file = open(output_file_name, "wb")
         cPickle.dump(all_variables, output_file)
         output_file.close()
@@ -301,7 +310,7 @@ def train():
         precision_train_1 = true_count_1 / float(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
         precision_train_2 = true_count_2 / float(cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
 
-        output_file_name = "parameter_difference_batchsize_%d_epoch_%d_train_test_error" % (FLAGS.batch_size, epoch)
+        output_file_name = "%s/parameter_difference_batchsize_%d_epoch_%d_train_test_error" % (save_directory, FLAGS.batch_size, epoch)
         output_file = open(output_file_name, "w")
         cPickle.dump([precision_train_1, precision_train_2, precision_test_1, precision_test_2], output_file)
         output_file.close()
