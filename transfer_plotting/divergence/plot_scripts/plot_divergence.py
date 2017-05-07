@@ -1,6 +1,8 @@
 import numpy as np
 import os
+import re
 import matplotlib.pyplot as plt
+import gc
 
 import sys
 import cPickle
@@ -10,24 +12,39 @@ model_match_string = "/*_save"
 train_test_match_string = "/*train_test_error"
 train_test_loss_match_string = "/*train_test_loss"
 
-#model_match_string = "/*64*_save"
-#train_test_match_string = "/*64*train_test_error"
+def extract_epoch(f):
+    matches = re.findall("epoch_([0-9]+)_", f)
+    assert(len(matches) == 1)
+    return matches[0]
 
-def load_all_models_all_batches(directory):
+def extract_batchsize(f):
+    matches = re.findall("batchsize_([0-9]+)_", f)
+    assert(len(matches) == 1)
+    return matches[0]
+
+def load_all_models_all_batches(dirnames):
     print("Loading models...")
-    model_files = glob.glob(directory + model_match_string)
-    print(len(model_files))
-    all_models = {}
-    for i, f in enumerate(model_files):
-        print("%d of %d" % (i, len(model_files)))
-        batchsize = f.split("_")[-4]
-        epoch = f.split("_")[-2]
-        f_file = open(f, "rb")
-        all_variables = cPickle.load(f_file)
-        if batchsize not in all_models:
-            all_models[batchsize] = {}
-        all_models[batchsize][epoch] = all_variables
-        f_file.close()
+    num_total_files = sum([len(glob.glob(directory + model_match_string)) for directory in dirnames])
+    count = 0
+    for directory in dirnames:
+        model_files = glob.glob(directory + model_match_string)
+        print(len(model_files))
+        all_models = {}
+        for f in model_files:
+            print("%d of %d" % (count, num_total_files))
+            count += 1
+            batchsize = extract_batchsize(f)
+            epoch = extract_epoch(f)
+            f_file = open(f, "rb")
+            gc.disable()
+            all_variables = cPickle.load(f_file)
+            gc.enable()
+            if batchsize not in all_models:
+                all_models[batchsize] = {}
+            if epoch not in all_models[batchsize]:
+                all_models[batchsize][epoch] = []
+            all_models[batchsize][epoch].append(all_variables)
+            f_file.close()
     print("Done")
     return all_models
 
@@ -71,8 +88,22 @@ def compute_parameter_distances(all_variables, use_normalized_distance=True):
 def extract_epoch_differences(model, use_normalized_distance=False):
     epoch_differences = {}
     for epoch in sorted(model.keys(), key=lambda x:int(x)):
-        diffs = compute_parameter_distances(model[epoch], use_normalized_distance=use_normalized_distance)
-        for k,v in diffs.items():
+        sum_of_diffs = {}
+        for index, run in enumerate(model[epoch]):
+            diffs = compute_parameter_distances(model[epoch][index], use_normalized_distance=use_normalized_distance)
+            if index == 0:
+                sum_of_diffs = diffs
+            else:
+                assert(len(diffs.keys()) == len(sum_of_diffs.keys()))
+                for k,v in diffs.items():
+                    sum_of_diffs[k] += v
+
+        # There has to be at least an epoch 0
+        assert("0" in model.keys())
+        num_runs = len(model["0"])
+        average_diffs = {k:v/float(num_runs) for k,v in sum_of_diffs.items()}
+
+        for k,v in average_diffs.items():
             if k not in epoch_differences:
                 epoch_differences[k] = []
             epoch_differences[k].append(v)
@@ -147,33 +178,56 @@ def plot_all_batchsize_all_non_normalized_dists(all_models):
     plt.title("all_parameter_divergence_non_normalized")
     plt.savefig("all_parameter_divergence_non_normalized.png")
 
-def load_train_test_errors(dirname):
+def load_train_test_errors(dirnames):
     print("Loading train test errors")
     train_test_errors = {}
-    for fname in glob.glob(dirname + train_test_match_string):
-        epoch = fname.split("_")[-4]
-        batchsize = fname.split("_")[-6]
-        f = open(fname, "r")
-        precision_train_1, precision_train_2, precision_test_1, precision_test_2 = cPickle.load(f)
-        f.close()
-        if batchsize not in train_test_errors:
-            train_test_errors[batchsize] = {}
-        train_test_errors[batchsize][epoch] = (1-precision_train_1, 1-precision_test_1)
+    for dirname in dirnames:
+        for fname in glob.glob(dirname + "/" + train_test_match_string):
+            epoch = extract_epoch(fname)
+            batchsize = extract_batchsize(fname)
+            f = open(fname, "r")
+            precision_train_1, precision_train_2, precision_test_1, precision_test_2 = cPickle.load(f)
+            f.close()
+            if batchsize not in train_test_errors:
+                train_test_errors[batchsize] = {}
+            if epoch not in train_test_errors[batchsize]:
+                train_test_errors[batchsize][epoch] = [0, 0, 0]
+            train_test_errors[batchsize][epoch][0] += 1-precision_train_1
+            train_test_errors[batchsize][epoch][1] += 1-precision_test_1
+            train_test_errors[batchsize][epoch][2] += 1
+
+    for batchsize in train_test_errors.keys():
+        for epoch in train_test_errors[batchsize].keys():
+            train_test_errors[batchsize][epoch][0] /= train_test_errors[batchsize][epoch][2]
+            train_test_errors[batchsize][epoch][1] /= train_test_errors[batchsize][epoch][2]
+
     print("Done")
     return train_test_errors
 
-def load_train_test_losses(dirname):
+def load_train_test_losses(dirnames):
     print("Loading train test errors")
     train_test_losses = {}
-    for fname in glob.glob(dirname + train_test_loss_match_string):
-        epoch = fname.split("_")[-4]
-        batchsize = fname.split("_")[-6]
-        f = open(fname, "r")
-        loss_train_1, loss_test_1, loss_train_2, loss_test_2 = cPickle.load(f)
-        f.close()
-        if batchsize not in train_test_losses:
-            train_test_losses[batchsize] = {}
-        train_test_losses[batchsize][epoch] = (loss_train_1, loss_test_1)
+    for dirname in dirnames:
+        for fname in glob.glob(dirname + "/" + train_test_loss_match_string):
+            epoch = extract_epoch(fname)
+            batchsize = extract_batchsize(fname)
+            f = open(fname, "r")
+            loss_train_1, loss_test_1, loss_train_2, loss_test_2 = cPickle.load(f)
+            f.close()
+            if batchsize not in train_test_losses:
+                train_test_losses[batchsize] = {}
+            if epoch not in train_test_losses[batchsize]:
+                train_test_losses[batchsize][epoch] =[0, 0, 0]
+
+            train_test_losses[batchsize][epoch][0] += 1-precision_train_1
+            train_test_losses[batchsize][epoch][1] += 1-precision_test_1
+            train_test_losses[batchsize][epoch][2] += 1
+
+    for batchsize in train_test_losses.keys():
+        for epoch in train_test_losses[batchsize].keys():
+            train_test_losses[batchsize][epoch][0] /= train_test_losses[batchsize][epoch][2]
+            train_test_losses[batchsize][epoch][1] /= train_test_losses[batchsize][epoch][0]
+
     print("Done")
     return train_test_losses
 
@@ -192,16 +246,15 @@ def plot_train_test_errors(all_models, all_train_test_errors):
 
         all_norm_differences = epoch_differences["all"]
         length = len(all_norm_differences)
-        assert(length == len(train_errors))
-        assert(length == len(test_errors))
 
-        abs_diffs = [abs(test_errors[i]-train_errors[i]) for i in range(len(test_errors))]
+        min_length = min(len(all_norm_differences), len(train_errors), len(test_errors))
+        abs_diffs = [abs(test_errors[i]-train_errors[i]) for i in range(min_length)]
 
         plt.cla()
-        plt.plot(list(range(length)), all_norm_differences, label="norm diff")
-        plt.plot(list(range(length)), train_errors, label="train error")
-        plt.plot(list(range(length)), test_errors, label="test error")
-        plt.plot(list(range(length)), abs_diffs, label="abs(train_error-test_error)")
+        plt.plot(list(range(min_length)), all_norm_differences[:min_length], label="norm diff")
+        plt.plot(list(range(min_length)), train_errors[:min_length], label="train error")
+        plt.plot(list(range(min_length)), test_errors[:min_length], label="test error")
+        plt.plot(list(range(min_length)), abs_diffs[:min_length], label="abs(train_error-test_error)")
         plt.xlabel("Epoch")
         plt.ylabel("")
         plt.legend(loc="upper right", fontsize=7)
@@ -222,8 +275,6 @@ def plot_train_test_losses(all_models, all_train_test_losses):
         test_losses = extract_errors(all_train_test_losses[batchsize], key=1)
 
         print("train test losses:")
-        print(train_losses)
-        print(test_losses)
 
         all_norm_differences = epoch_differences["all"]
         length = len(all_norm_differences)
@@ -247,12 +298,12 @@ def plot_train_test_losses(all_models, all_train_test_losses):
 if __name__ == "__main__":
     # [batchsize][epoch] contains
     if len(sys.argv) != 2:
-        print("Usage: python plot_divergence.py data_path")
+        print("Usage: python plot_divergence.py data_path_run1,data_path_run2...")
         sys.exit(0)
-    result_directory = sys.argv[1]
-    train_test_errors = load_train_test_errors(result_directory)
-    #train_test_losses = load_train_test_losses(result_directory)
-    models = load_all_models_all_batches(result_directory)
+    result_directories = sys.argv[1].split(",")
+    train_test_errors = load_train_test_errors(result_directories)
+    #train_test_losses = load_train_test_losses(result_directories)
+    models = load_all_models_all_batches(result_directories)
     plot_all_batchsize_all_non_normalized_dists(models)
     plot_all_parameter_diffs_compare_normalized_dist_and_dist(models)
     plot_all_parameter_diffs(models)
