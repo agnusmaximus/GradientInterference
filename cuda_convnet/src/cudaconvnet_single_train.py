@@ -356,7 +356,8 @@ def train():
 
         gradients_materialized = sess.run(
             [x[0] for x in grads_and_vars], feed_dict=feed_dict)
-        gradients_flattened = gradients_materialized[0].flatten()
+        #gradients_flattened = gradients_materialized[0].flatten()
+        gradients_flattened = np.hstack([x.flatten() for x in gradients_materialized])
         print("Sizes: ", gradients_flattened.shape, sum_of_gradients.shape)
 
         print("%d of %d" % (i, num_iter))
