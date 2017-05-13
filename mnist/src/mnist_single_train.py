@@ -57,7 +57,7 @@ def load_fractional_repeated_data(dataset, r=2):
   all_images, all_labesl = dataset.next_batch(dataset.num_examples)
 
   # First we assert we are using mnist training
-  assert(all_images.shape[0] == 50000)
+  assert(all_images.shape[0] == 60000)
 
   # We assert that the number of examples is divisible by r
   # assert(all_images.shape[0] % r == 0)
