@@ -201,6 +201,40 @@ def main(unused_args):
       acc /= float(num_examples)
       return acc, loss
 
+    def compute_diversity_ratio(sess):
+
+      num_examples = dataset.num_examples
+
+      print("Evaluating grad diversity for model on training set with num examples %d..." % num_examples)
+      sys.stdout.flush()
+
+      assert(num_examples == 60000)
+
+      # Make sure we are using a batchsize a multiple of number of examples
+      num_iter = int(num_examples)
+
+      total_gradient_length = sum([reduce(lambda x, y : x * y, variable.get_shape().as_list(), 1) for gradient, variable in grads])
+      sum_of_norms = 0
+      sum_of_gradients = np.zeros(total_gradient_length)
+
+      for i in range(num_iter):
+        feed_dict = get_feed_dict(1)
+        gradients_materialized = sess.run(
+            [x[0] for x in grads], feed_dict=feed_dict)
+        gradients_flattened = np.hstack([x.flatten() for x in gradients_materialized])
+        print("Sizes: ", gradients_flattened.shape, sum_of_gradients.shape)
+        assert(gradients_flattened.shape == sum_of_gradients.shape)
+
+        sum_of_gradients += gradients_flattened
+        sum_of_norms += np.linalg.norm(gradients_flattened)**2
+
+        print("%d of %d" % (i, num_iter))
+        sys.stdout.flush()
+
+      print("Done evaluating diversity...")
+
+      # Compute precision @ 1.
+      return num_iter * sum_of_norms / np.linalg.norm(sum_of_gradients)**2
 
     with tf.train.MonitoredTrainingSession(
             checkpoint_dir=FLAGS.train_dir,
@@ -221,6 +255,11 @@ def main(unused_args):
                 tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times), new_epoch_float, acc, loss))
                 t_evaluate_end = time.time()
                 evaluate_times.append(t_evaluate_end-t_evaluate_start)
+
+                if cur_iteration == 0 or acc >= .995:
+                  diversity_ratio = compute_diversity_ratio(sess)
+                  print("Accuracy: %f, Epoch: %d, diversity ratio: %f" % (acc, cur_epoch_track, diversity_ratio))
+
             cur_epoch_track = max(cur_epoch_track, new_epoch_track)
             feed_dict = get_feed_dict(FLAGS.batch_size)
             mon_sess.run([train_op], feed_dict=feed_dict)
