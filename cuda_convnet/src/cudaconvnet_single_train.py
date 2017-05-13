@@ -356,9 +356,12 @@ def train():
 
         gradients_materialized = sess.run(
             [x[0] for x in grads_and_vars], feed_dict=feed_dict)
-        #gradients_flattened = gradients_materialized[0].flatten()
         gradients_flattened = np.hstack([x.flatten() for x in gradients_materialized])
         print("Sizes: ", gradients_flattened.shape, sum_of_gradients.shape)
+        assert(gradients_flattened.shape == sum_of_gradients.shape)
+
+        sum_of_gradients += gradients_flattened
+        sum_of_norms += np.linalg.norm(gradients_flattened)**2
 
         print("%d of %d" % (i, num_iter))
         sys.stdout.flush()
@@ -367,7 +370,7 @@ def train():
       print("Done evaluating diversity...")
 
       # Compute precision @ 1.
-      return ratio
+      return num_iter * sum_of_norms / np.linalg.norm(sum_of_gradients)**2
 
     with tf.Session() as sess:
 
