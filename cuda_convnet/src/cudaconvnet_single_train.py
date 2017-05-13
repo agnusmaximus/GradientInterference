@@ -324,7 +324,6 @@ def train():
       acc /= float(num_examples)
       return acc, loss
 
-    # Helper function to evaluate on training set
     def compute_diversity_ratio(sess):
 
       num_examples = images_fractional_train.shape[0]
@@ -394,7 +393,6 @@ def train():
             sys.stdout.flush()
             t_evaluate_start = time.time()
             acc, loss = model_evaluate(sess)
-            print("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times), new_epoch_float, acc, loss))
             sys.stdout.flush()
             t_evaluate_end = time.time()
             evaluate_times.append(t_evaluate_end-t_evaluate_start)
@@ -403,6 +401,8 @@ def train():
             if cur_iteration == 0 or acc >= .995:
                 diversity_ratio = compute_diversity_ratio(sess)
                 print("Accuracy: %f, Epoch: %d, diversity ratio: %f" % (acc, cur_epoch_track, diversity_ratio))
+
+            print("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times), new_epoch_float, acc, loss))
 
         cur_epoch_track = max(cur_epoch_track, new_epoch_track)
         feed_dict = get_feed_dict(FLAGS.batch_size)
