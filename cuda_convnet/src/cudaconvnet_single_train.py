@@ -237,6 +237,7 @@ def save_model(sess, all_variables, epoch):
             assert(np.all(np.equal(variables_materialized[k].flatten(), all_variables_loaded[k].flatten())))
         print("Success!")
 
+
 def train():
     """Train CIFAR-10 for a number of steps."""
 
@@ -263,7 +264,7 @@ def train():
         labels = tf.placeholder(tf.int32, shape=(None,))
         logits = cifar10.inference(images, use_dropout=FLAGS.dropout)
         loss_op = cifar10.loss(logits, labels, scope_name)
-        train_op = cifar10.train(loss_op, scope_name)
+        train_op, grads_and_vars = cifar10.train(loss_op, scope_name)
         top_k_op = tf.nn.in_top_k(logits, labels, 1)
 
     # We keep track of all variables of the model for saving
@@ -323,6 +324,50 @@ def train():
       acc /= float(num_examples)
       return acc, loss
 
+    # Helper function to evaluate on training set
+    def compute_diversity_ratio(sess):
+
+      num_examples = images_fractional_train.shape[0]
+
+      print("Evaluating grad diversity for model on training set with num examples %d..." % num_examples)
+      sys.stdout.flush()
+
+      # This simply makes sure that we are evaluating on the training set
+      if FLAGS.replicate_data_in_full:
+          assert(num_examples == cifar10.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN * FLAGS.dataset_replication_factor)
+      else:
+          assert(num_examples == cifar10.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
+
+      # Make sure we are using a batchsize a multiple of number of examples
+      num_iter = int(num_examples)
+
+      total_gradient_length = sum([reduce(lambda x, y : x * y, variable.get_shape().as_list(), 1) for gradient, variable in grads_and_vars])
+      sum_of_norms = 0
+      sum_of_gradients = np.zeros(total_gradient_length)
+
+      for i in range(num_iter):
+        feed_dict = get_feed_dict(1)
+
+        if FLAGS.dropout:
+            # We need to 0 out the dropout weights to prevent incorrect answers
+            dropouts = tf.get_collection(cifar10.DROPOUTS)
+            for prob in dropouts:
+                feed_dict[prob] = 1.0
+
+        gradients_materialized = sess.run(
+            [x[0] for x in grads_and_vars], feed_dict=feed_dict)
+        gradients_flattened = gradients.flatten()
+        print("Sizes: ", gradients_flattened.shape, sum_of_gradients.shape)
+
+        print("%d of %d" % (i, num_iter))
+        sys.stdout.flush()
+
+
+      print("Done evaluating diversity...")
+
+      # Compute precision @ 1.
+      return ratio
+
     with tf.Session() as sess:
 
       tf.initialize_all_variables().run()
@@ -350,6 +395,7 @@ def train():
             t_evaluate_end = time.time()
             evaluate_times.append(t_evaluate_end-t_evaluate_start)
             #save_model(sess, model_variables, new_epoch_track)
+            compute_diversity_ratio(sess)
 
         cur_epoch_track = max(cur_epoch_track, new_epoch_track)
         feed_dict = get_feed_dict(FLAGS.batch_size)
