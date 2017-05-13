@@ -257,7 +257,7 @@ def main(unused_args):
                 evaluate_times.append(t_evaluate_end-t_evaluate_start)
 
                 if cur_iteration == 0 or acc >= .995:
-                  diversity_ratio = compute_diversity_ratio(sess)
+                  diversity_ratio = compute_diversity_ratio(mon_sess)
                   print("Accuracy: %f, Epoch: %d, diversity ratio: %f" % (acc, cur_epoch_track, diversity_ratio))
 
             cur_epoch_track = max(cur_epoch_track, new_epoch_track)
