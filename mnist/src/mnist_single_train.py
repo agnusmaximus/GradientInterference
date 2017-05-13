@@ -54,44 +54,40 @@ np.set_printoptions(threshold=np.nan)
 # where (s1, ... s_n/r) is appearing r times
 def load_fractional_repeated_data(dataset, r=2):
 
+  all_images, all_labesl = dataset.next_batch(dataset.num_examples)
+
   # First we assert we are using mnist training
-  assert(dataset.num_examples == 60000)
+  assert(all_images.shape[0] == 50000)
 
   # We assert that the number of examples is divisible by r
-  assert(dataset.num_examples % r == 0)
+  # assert(all_images.shape[0] % r == 0)
 
-  # We pop all 60,000 elements from the dataset
-  all_images, all_labels = dataset.next_batch(dataset.num_examples)
+  num_examples = all_images.shape[0]
 
   # We take a fraction of each
-  images_fractional = all_images[:int(dataset.num_examples / r)]
-  labels_fractional = all_labels[:int(dataset.num_examples / r)]
+  images_fractional = all_images[:int(num_examples / r)]
+  labels_fractional = all_labels[:int(num_examples / r)]
 
   # We tile each fractional set r times
-  images_final = np.tile(images_fractional, (r, 1, 1, 1))
-  labels_final = np.tile(labels_fractional, r)
+  # images_final = np.tile(images_fractional, (r, 1, 1, 1))
+  # labels_final = np.tile(labels_fractional, r)
+
+  # Instead of tiling each set r times, we continually add examples from the
+  # fractional set into our final set until.
+  images_final = np.array(images_fractional)
+  labels_final = np.array(labels_fractional)
+  indices_to_add = [np.random.randint(0, len(images_fractional)) for i in range(all_images.shape[0]-images_final.shape[0])]
+  images_final = np.vstack([images_final,images_fractional[indices_to_add]])
+  labels_final = np.hstack([labels_final,labels_fractional[indices_to_add]])
+
   print(images_final.shape)
   print(labels_final.shape)
-  assert(images_final.shape == (dataset.num_examples, mnist.IMAGE_SIZE, mnist.IMAGE_SIZE, mnist.NUM_CHANNELS))
-  assert(labels_final.shape == (dataset.num_examples,))
+  assert(images_final.shape == (num_examples, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, cifar10.NUM_CHANNELS))
+  assert(labels_final.shape == (num_examples,))
 
-  # Just as a sanity check let's compare image segments
-  if r != 1:
-    images_first_segment = images_final[:int(dataset.num_examples/r)]
-    images_second_segment = images_final[int(dataset.num_examples/r):2*int(dataset.num_examples/r)]
-    assert(np.linalg.norm(images_first_segment - images_second_segment) == 0)
+  perm = np.random.permutation(len(images_final))
 
-    # Also sanity check label segments
-    labels_first_segment = labels_final[:int(dataset.num_examples/r)]
-    labels_second_segment = labels_final[int(dataset.num_examples/r):2*int(dataset.num_examples/r)]
-    assert(np.linalg.norm(labels_first_segment-labels_second_segment) == 0)
-
-    # Full sanity check to make sure that the original data is not repeated
-    images_first_segment = all_images[:int(dataset.num_examples/r)]
-    images_second_segment = all_images[int(dataset.num_examples/r):2*int(dataset.num_examples/r)]
-    assert(np.linalg.norm(images_first_segment - images_second_segment) != 0)
-
-  return images_final, labels_final
+  return images_final[perm], labels_final[perm]
 
 def get_next_fractional_batch(fractional_images, fractional_labels, cur_index, batch_size):
   print("Getting next batch from fractional repeated dataset")
