@@ -82,7 +82,7 @@ def load_fractional_repeated_data(dataset, r=2):
 
   print(images_final.shape)
   print(labels_final.shape)
-  assert(images_final.shape == (num_examples, cifar10.IMAGE_SIZE, cifar10.IMAGE_SIZE, cifar10.NUM_CHANNELS))
+  assert(images_final.shape == (num_examples, mnist.IMAGE_SIZE, mnist.IMAGE_SIZE, mnist.NUM_CHANNELS))
   assert(labels_final.shape == (num_examples,))
 
   perm = np.random.permutation(len(images_final))
