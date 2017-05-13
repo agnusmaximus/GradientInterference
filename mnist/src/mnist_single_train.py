@@ -43,7 +43,7 @@ tf.app.flags.DEFINE_integer('checkpoint_save_secs', 60*10,
                            """Seconds between checkpoint saving""")
 tf.app.flags.DEFINE_bool('use_fractional_dataset', False,
                          """Use fractional dataset""")
-tf.app.flags.DEFINE_integer('dataset_fraction', 2,
+tf.app.flags.DEFINE_integer('dataset_fraction', 1,
                            """Fractional repeated dataset fraction""")
 
 
