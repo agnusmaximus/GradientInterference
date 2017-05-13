@@ -399,7 +399,10 @@ def train():
             t_evaluate_end = time.time()
             evaluate_times.append(t_evaluate_end-t_evaluate_start)
             #save_model(sess, model_variables, new_epoch_track)
-            compute_diversity_ratio(sess)
+
+            if cur_iteration == 0 or acc >= .995:
+                diversity_ratio = compute_diversity_ratio(sess)
+                print("Accuracy:%f, Epoch:%d, diversity ratio: %f" % (acc, cur_epoch_track, diversity_ratio))
 
         cur_epoch_track = max(cur_epoch_track, new_epoch_track)
         feed_dict = get_feed_dict(FLAGS.batch_size)
