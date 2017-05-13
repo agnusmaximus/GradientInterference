@@ -54,7 +54,7 @@ np.set_printoptions(threshold=np.nan)
 # where (s1, ... s_n/r) is appearing r times
 def load_fractional_repeated_data(dataset, r=2):
 
-  all_images, all_labesl = dataset.next_batch(dataset.num_examples)
+  all_images, all_labels = dataset.next_batch(dataset.num_examples)
 
   # First we assert we are using mnist training
   assert(all_images.shape[0] == 60000)
