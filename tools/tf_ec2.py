@@ -494,8 +494,8 @@ cfg_convnet_single = Cfg({
     ],
 
     # Model configuration
-    "batch_size" : "8",
-    "learning_rate" : ".006",
+    "batch_size" : "128",
+    "learning_rate" : ".0008",
 
     # Train command specifies how the ps/workers execute tensorflow.
     # PS_HOSTS - special string replaced with actual list of ps hosts.
@@ -510,8 +510,8 @@ cfg_convnet_single = Cfg({
         "--batch_size=%(batch_size)s "
         "--learning_rate=%(learning_rate)s "
         "--replicate_data_in_full=false "
-        "--dataset_replication_factor=2 "
-        "--dataset_fraction=1.5 "
+        "--dataset_replication_factor=1 "
+        "--dataset_fraction=1 "
         "--train_dir=%(base_out_dir)s/train_dir "
         "--shared_filesystem_directory=%(base_out_dir)s "
         "--dropout=false "
@@ -584,8 +584,8 @@ cfg_resnet_single = Cfg({
     ],
 
     # Model configuration
-    "batch_size" : "128",
-    "learning_rate" : ".008",
+    "batch_size" : "1536",
+    "learning_rate" : ".0004",
 
     # Train command specifies how the ps/workers execute tensorflow.
     # PS_HOSTS - special string replaced with actual list of ps hosts.
@@ -1534,9 +1534,9 @@ def tf_ec2_run(argv, configuration):
 
 if __name__ == "__main__":
     #cfg = cfg_resnet
-    #cfg = cfg_mnist_single
+    cfg = cfg_mnist_single
     #cfg = cfg_convnet_single
-    cfg = cfg_resnet_single
+    #cfg = cfg_resnet_single
     #cfg = cfg_dcgan
     #cfg = cfg_resnet_cifar100
     #cfg = cfg_lstm

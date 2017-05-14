@@ -26,10 +26,10 @@ def load_all_models_all_batches(dirnames):
     print("Loading models...")
     num_total_files = sum([len(glob.glob(directory + model_match_string)) for directory in dirnames])
     count = 0
+    all_models = {}
     for directory in dirnames:
         model_files = glob.glob(directory + model_match_string)
         print(len(model_files))
-        all_models = {}
         for f in model_files:
             print("%d of %d" % (count, num_total_files))
             count += 1
@@ -86,27 +86,47 @@ def compute_parameter_distances(all_variables, use_normalized_distance=True):
     return diffs
 
 def extract_epoch_differences(model, use_normalized_distance=False):
+    key_name = "epoch_differences"
+    if use_normalized_distance:
+        key_name += "_normalized"
+
     epoch_differences = {}
-    for epoch in sorted(model.keys(), key=lambda x:int(x)):
+
+    epoch_keys = []
+    for k in model.keys():
+        try:
+            integer_epoch = int(k)
+            epoch_keys.append(k)
+        except:
+            pass
+
+    if len(epoch_keys) == 0:
+        return model[key_name]
+    assert(len(epoch_keys) > 0)
+
+    for epoch in sorted(epoch_keys, key=lambda x:int(x)):
         sum_of_diffs = {}
         for index, run in enumerate(model[epoch]):
             diffs = compute_parameter_distances(model[epoch][index], use_normalized_distance=use_normalized_distance)
-            if index == 0:
-                sum_of_diffs = diffs
-            else:
-                assert(len(diffs.keys()) == len(sum_of_diffs.keys()))
-                for k,v in diffs.items():
-                    sum_of_diffs[k] += v
+            for k,v in diffs.items():
+                if k not in sum_of_diffs.keys():
+                    sum_of_diffs[k] = []
+            assert(len(diffs.keys()) == len(sum_of_diffs.keys()))
+            for k,v in diffs.items():
+                sum_of_diffs[k].append(v)
 
         # There has to be at least an epoch 0
-        assert("0" in model.keys())
-        num_runs = len(model["0"])
-        average_diffs = {k:v/float(num_runs) for k,v in sum_of_diffs.items()}
+        assert("0" in epoch_keys)
+        average_diffs = {k:sum(v)/len(v) for k,v in sum_of_diffs.items()}
 
         for k,v in average_diffs.items():
             if k not in epoch_differences:
                 epoch_differences[k] = []
             epoch_differences[k].append(v)
+
+    # Cache results
+    model[key_name] = epoch_differences
+
     return epoch_differences
 
 def plot_differences(batchsize, epoch_differences, name_prefix=""):
@@ -300,12 +320,25 @@ if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python plot_divergence.py data_path_run1,data_path_run2...")
         sys.exit(0)
+
     result_directories = sys.argv[1].split(",")
     train_test_errors = load_train_test_errors(result_directories)
     #train_test_losses = load_train_test_losses(result_directories)
-    models = load_all_models_all_batches(result_directories)
+    if os.path.exists("cache_model"):
+        with open("cache_model", "rb") as f:
+            models = cPickle.load(f)
+    else:
+        models = load_all_models_all_batches(result_directories)
     plot_all_batchsize_all_non_normalized_dists(models)
     plot_all_parameter_diffs_compare_normalized_dist_and_dist(models)
     plot_all_parameter_diffs(models)
     plot_train_test_errors(models, train_test_errors)
     #plot_train_test_losses(models, train_test_losses)
+
+    # Save cached results
+    for batchsize in models.keys():
+        for k in models[batchsize].keys():
+            if "epoch_differences" not in k:
+                del models[batchsize][k]
+    with open("cache_model", "wb") as f:
+        cPickle.dump(models, f)

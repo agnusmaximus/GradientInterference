@@ -251,9 +251,9 @@ def main(unused_args):
                 t_evaluate_end = time.time()
                 evaluate_times.append(t_evaluate_end-t_evaluate_start)
 
-                if cur_iteration == 0 or acc >= .995:
-                  diversity_ratio = compute_diversity_ratio(mon_sess)
-                  print("Accuracy: %f, Epoch: %d, diversity ratio: %f" % (acc, cur_epoch_track, diversity_ratio))
+                #if cur_iteration == 0 or acc >= .995:
+                  #diversity_ratio = compute_diversity_ratio(mon_sess)
+                  #print("Accuracy: %f, Epoch: %d, diversity ratio: %f" % (acc, cur_epoch_track, diversity_ratio))
 
                 tf.logging.info("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times), new_epoch_float, acc, loss))
 

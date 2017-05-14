@@ -194,8 +194,8 @@ def run_experiments_accuracy_parallel(argv):
     print(list(x["name"] for x in accuracy_cfgs))
 
     work_queue = Queue.Queue()
-    #for cfg in accuracy_cfgs:
-    #    work_queue.put(cfg)
+    for cfg in accuracy_cfgs:
+        work_queue.put(cfg)
     threads = []
     for kp in key_pairs:
         t = threading.Thread(target=run_accuracy_single, args=(kp, work_queue, .995, accuracy_outdir))
