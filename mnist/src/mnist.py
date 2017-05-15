@@ -162,6 +162,7 @@ def inference(images, train=True):
   # Add a 50% dropout during training only. Dropout also scales
   # activations such that no rescaling is needed at evaluation time.
   if FLAGS.dropout:
+    print("YOOO DROPOUT")
     hidden = dropout(hidden, .5)
 
   logits = tf.matmul(hidden, fc2_weights) + fc2_biases
