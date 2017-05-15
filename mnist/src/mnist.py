@@ -33,6 +33,30 @@ SEED = 0  # Set to None for random seed.
 
 FLAGS = tf.app.flags.FLAGS
 
+DROPOUTS = "dropouts"
+
+def dropout(tensor_in, prob, name=None):
+  """Adds dropout node and stores probability tensor into graph collection.
+
+  Args:
+  tensor_in: Input tensor.
+  prob: Float or Tensor.
+
+  Returns:
+  Tensor of the same shape of `tensor_in`.
+
+  Raises:
+  ValueError: If `keep_prob` is not in `(0, 1]`.
+  """
+  with tf.op_scope([tensor_in], name, "dropout") as name:
+    if isinstance(prob, float):
+      prob = tf.get_variable("prob", [],
+                             initializer=tf.constant_initializer(prob))
+      tf.add_to_collection(DROPOUTS, prob)
+
+      # Descale
+      return tf.nn.dropout(tensor_in, prob, seed=0)
+
 def placeholder_inputs(batch_size):
   """Generate placeholder variables to represent the input tensors.
   These placeholders are used as inputs by the rest of the model building
@@ -137,11 +161,8 @@ def inference(images, train=True):
   hidden = tf.nn.relu(tf.matmul(reshape, fc1_weights) + fc1_biases)
   # Add a 50% dropout during training only. Dropout also scales
   # activations such that no rescaling is needed at evaluation time.
-  #if train:
-  #    hidden = tf.nn.dropout(hidden, 0.5, seed=SEED)
-
-  #reg = (tf.nn.l2_loss(fc1_weights) + tf.nn.l2_loss(fc1_biases) +
-  #       tf.nn.l2_loss(fc2_weights) + tf.nn.l2_loss(fc2_biases))
+  if FLAGS.dropout:
+    hidden = dropout(hidden, .5)
 
   logits = tf.matmul(hidden, fc2_weights) + fc2_biases
 

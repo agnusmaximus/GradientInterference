@@ -43,6 +43,8 @@ tf.app.flags.DEFINE_integer('checkpoint_save_secs', 60*10,
                            """Seconds between checkpoint saving""")
 tf.app.flags.DEFINE_bool('use_fractional_dataset', False,
                          """Use fractional dataset""")
+tf.app.flags.DEFINE_bool('dropout', False,
+                         """Use dropout""")
 tf.app.flags.DEFINE_float('dataset_fraction', 1,
                           """Fractional repeated dataset fraction""")
 
@@ -182,6 +184,13 @@ def main(unused_args):
 
       for i in range(num_iter):
         feed_dict = get_feed_dict(FLAGS.evaluate_batch_size)
+
+        if FLAGS.dropout:
+            # We need to 0 out the dropout weights to prevent incorrect answers
+            dropouts = tf.get_collection(mnist.DROPOUTS)
+            for prob in dropouts:
+                feed_dict[prob] = 1.0
+
         acc_p, loss_p = sess.run(
           [val_acc, total_loss], feed_dict=feed_dict)
 
