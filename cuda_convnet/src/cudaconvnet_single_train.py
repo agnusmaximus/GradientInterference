@@ -398,9 +398,9 @@ def train():
             evaluate_times.append(t_evaluate_end-t_evaluate_start)
             #save_model(sess, model_variables, new_epoch_track)
 
-            if cur_iteration == 0 or acc >= .995:
-                diversity_ratio = compute_diversity_ratio(sess)
-                print("Accuracy: %f, Epoch: %d, diversity ratio: %f" % (acc, cur_epoch_track, diversity_ratio))
+            #if cur_iteration == 0 or acc >= .995:
+            #    diversity_ratio = compute_diversity_ratio(sess)
+            #    print("Accuracy: %f, Epoch: %d, diversity ratio: %f" % (acc, cur_epoch_track, diversity_ratio))
 
             print("IInfo: %f %f %f %f" % (t_evaluate_start-sum(evaluate_times), new_epoch_float, acc, loss))
 
