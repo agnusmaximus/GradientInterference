@@ -25,6 +25,7 @@ def extract_batchsize(f):
 def load_all_models_all_batches(dirnames):
     print("Loading models...")
     num_total_files = sum([len(glob.glob(directory + model_match_string)) for directory in dirnames])
+    print(num_total_files)
     count = 0
     all_models = {}
     for directory in dirnames:
@@ -70,6 +71,10 @@ def aggregate_conv_layer_variables(model_variables):
         agg_variables["all"] = np.hstack([agg_variables["all"], v.flatten()])
     return agg_variables
 
+def compute_euclidean_distance(v1, v2):
+    print("compute_euclidean_distance", v1.shape, v2.shape)
+    return np.sqrt(np.linalg.norm(v1-v2)**2 / (np.linalg.norm(v1)**2 + np.linalg.norm(v2)**2))
+
 def compute_parameter_distances(all_variables, use_normalized_distance=True):
     m1_variables, m2_variables = separate_model1_model2_variables(all_variables)
     assert(set(m1_variables.keys()) == set(m2_variables.keys()))
@@ -79,8 +84,8 @@ def compute_parameter_distances(all_variables, use_normalized_distance=True):
     for k in m1_variables.keys():
         if not use_normalized_distance:
             difference = np.linalg.norm(m1_variables[k]-m2_variables[k])
-        elif use_normalized_distance:
-            difference = np.linalg.norm(m1_variables[k]/np.linalg.norm(m1_variables[k])-m2_variables[k]/np.linalg.norm(m2_variables[k]))
+        else:
+            difference = compute_euclidean_distance(m1_variables[k], m2_variables[k])
         diffs[k] = difference
     print(diffs)
     return diffs
